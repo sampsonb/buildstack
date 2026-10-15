@@ -1,0 +1,23 @@
+name = "buildstack"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+account_id = "a32e0b653b1be7c11c523ee35d43921e"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "buildstack"
+database_id = "8f4d6b5b-c0d6-4e2a-99c0-56119b8ef851"
+
+[vars]
+SITE_URL = "https://buildstack.tier11.com"
+SITE_NAME = "BuildStack"
+STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_6oU00k5JhdKycn7aEC8so00"
+STRIPE_MODE = "test"
+
+[observability]
+enabled = true
+
+[[routes]]
+pattern = "buildstack.tier11.com"
+custom_domain = true
