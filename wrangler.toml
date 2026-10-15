@@ -14,6 +14,7 @@ SITE_URL = "https://buildstack.tier11.com"
 SITE_NAME = "BuildStack"
 STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_6oU00k5JhdKycn7aEC8so00"
 STRIPE_MODE = "test"
+CONTACT_EMAIL = "buildstack@tier11.com"
 
 [observability]
 enabled = true

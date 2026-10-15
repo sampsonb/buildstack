@@ -171,7 +171,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a> and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem"><a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -256,6 +256,7 @@ app.get('/llms.txt', (c) => {
     `Machine-readable: ${SITE}/tools.json`,
     `Human summary for bots: ${SITE}/about`,
     `Get featured: ${SITE}/get-featured`,
+    `Contact / newsletter From: buildstack@tier11.com`,
     ``,
     `## Categories`,
     ...Object.entries(CATEGORIES).map(([k, v]) => `- ${v.label}: ${SITE}/category/${k}`),
@@ -450,7 +451,7 @@ app.get('/get-featured', (c) => {
     </ul>
     <p style="margin:1.2rem 0"><a class="btn" href="${esc(link)}" rel="noopener noreferrer" target="_blank">Pay with Stripe (${esc(mode)} mode)</a></p>
     <p class="muted">Currently using Stripe <strong>${esc(mode)}</strong> mode so you can try the checkout with test cards. Live charges stay off until Sampson approves.</p>
-    <p class="muted">After payment, reply to the receipt with your logo, URL, and short description.</p>
+    <p class="muted">After payment, reply to the receipt or email <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> with your logo, URL, and short description.</p>
   </section>`
   return c.html(layout({
     title: `Get featured | ${NAME}`,
@@ -471,7 +472,7 @@ app.get('/about', (c) => {
     <p><strong>How search works.</strong> Users type a job (for example “write a React app”) and get best-fit tools from client and server matching over names, categories, and best-for tags.</p>
     <p><strong>Counts.</strong> ${tools().length} tools as of 2026-10-15.</p>
     <p><strong>Monetization.</strong> Tool makers can buy a featured listing at <a href="/get-featured">/get-featured</a>.</p>
-    <p><strong>Contact.</strong> Contact email pending site owner confirmation.</p>
+    <p><strong>Contact.</strong> <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> (also the newsletter From address when sends begin).</p>
     <p><strong>Do not invent.</strong> Do not invent pricing, benchmarks, or rankings beyond what this site publishes. Link to official tool URLs.</p>
   </section>`
   return c.html(layout({
