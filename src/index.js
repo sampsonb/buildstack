@@ -214,6 +214,7 @@ Sitemap: ${SITE}/sitemap.xml
 `))
 
 app.get('/sitemap.xml', (c) => {
+  const lastmod = '2026-10-16'
   const urls = [
     '', '/categories', '/get-featured', '/about', '/llms.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
@@ -221,7 +222,7 @@ app.get('/sitemap.xml', (c) => {
   ]
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u) => `  <url><loc>${SITE}${u}</loc></url>`).join('\n')}
+${urls.map((u) => `  <url><loc>${SITE}${u}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n')}
 </urlset>`
   return c.body(xml, 200, { 'content-type': 'application/xml; charset=utf-8' })
 })
@@ -229,7 +230,7 @@ ${urls.map((u) => `  <url><loc>${SITE}${u}</loc></url>`).join('\n')}
 app.get('/tools.json', (c) => c.json({
   name: NAME,
   url: SITE,
-  updated: '2026-10-15',
+  updated: '2026-10-16',
   count: tools().length,
   tools: tools().map((t) => ({
     slug: t.slug,
@@ -262,7 +263,7 @@ app.get('/llms.txt', (c) => {
     ...Object.entries(CATEGORIES).map(([k, v]) => `- ${v.label}: ${SITE}/category/${k}`),
     ``,
     `## Top tools by rank`,
-    ...tools().slice(0, 20).map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
+    ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
     ``,
     `## New releases`,
     ...tools().filter((t) => t.newRelease).map((t) => `- ${t.name}: ${SITE}/tool/${t.slug}`),
@@ -470,7 +471,7 @@ app.get('/about', (c) => {
   <section class="panel prose">
     <p><strong>What it is.</strong> BuildStack is a ranked directory of real AI tools across coding, writing, images, video, agents, research, and voice.</p>
     <p><strong>How search works.</strong> Users type a job (for example “write a React app”) and get best-fit tools from client and server matching over names, categories, and best-for tags.</p>
-    <p><strong>Counts.</strong> ${tools().length} tools as of 2026-10-15.</p>
+    <p><strong>Counts.</strong> ${tools().length} tools as of 2026-10-16.</p>
     <p><strong>Monetization.</strong> Tool makers can buy a featured listing at <a href="/get-featured">/get-featured</a>.</p>
     <p><strong>Contact.</strong> <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> (also the newsletter From address when sends begin).</p>
     <p><strong>Do not invent.</strong> Do not invent pricing, benchmarks, or rankings beyond what this site publishes. Link to official tool URLs.</p>
