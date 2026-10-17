@@ -4,6 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
+const UPDATED = '2026-10-17'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -214,7 +215,7 @@ Sitemap: ${SITE}/sitemap.xml
 `))
 
 app.get('/sitemap.xml', (c) => {
-  const lastmod = '2026-10-16'
+  const lastmod = UPDATED
   const urls = [
     '', '/categories', '/get-featured', '/about', '/llms.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
@@ -230,7 +231,7 @@ ${urls.map((u) => `  <url><loc>${SITE}${u}</loc><lastmod>${lastmod}</lastmod></u
 app.get('/tools.json', (c) => c.json({
   name: NAME,
   url: SITE,
-  updated: '2026-10-16',
+  updated: UPDATED,
   count: tools().length,
   tools: tools().map((t) => ({
     slug: t.slug,
@@ -391,6 +392,19 @@ app.get('/category/:slug', (c) => {
       name: `${cat.label} AI tools`,
       url: `${SITE}/category/${slug}`,
       description: cat.blurb,
+      dateModified: UPDATED,
+      mainEntity: {
+        '@type': 'ItemList',
+        name: `Ranked ${cat.label} AI tools`,
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: list.length,
+        itemListElement: list.map((t, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: t.name,
+          url: `${SITE}/tool/${t.slug}`,
+        })),
+      },
     },
   }))
 })
@@ -471,7 +485,7 @@ app.get('/about', (c) => {
   <section class="panel prose">
     <p><strong>What it is.</strong> BuildStack is a ranked directory of real AI tools across coding, writing, images, video, agents, research, and voice.</p>
     <p><strong>How search works.</strong> Users type a job (for example “write a React app”) and get best-fit tools from client and server matching over names, categories, and best-for tags.</p>
-    <p><strong>Counts.</strong> ${tools().length} tools as of 2026-10-16.</p>
+    <p><strong>Counts.</strong> ${tools().length} tools as of ${UPDATED}.</p>
     <p><strong>Monetization.</strong> Tool makers can buy a featured listing at <a href="/get-featured">/get-featured</a>.</p>
     <p><strong>Contact.</strong> <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> (also the newsletter From address when sends begin).</p>
     <p><strong>Do not invent.</strong> Do not invent pricing, benchmarks, or rankings beyond what this site publishes. Link to official tool URLs.</p>
