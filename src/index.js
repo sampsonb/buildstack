@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-17'
+const UPDATED = '2026-10-18'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -31,6 +31,18 @@ function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   })[c])
+}
+
+function breadcrumbs(items) {
+  return {
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map(([name, path], i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name,
+      item: SITE + path,
+    })),
+  }
 }
 
 function tools() {
@@ -388,6 +400,7 @@ app.get('/category/:slug', (c) => {
     body,
     jsonLd: {
       '@context': 'https://schema.org',
+      '@graph': [{
       '@type': 'CollectionPage',
       name: `${cat.label} AI tools`,
       url: `${SITE}/category/${slug}`,
@@ -405,6 +418,7 @@ app.get('/category/:slug', (c) => {
           url: `${SITE}/tool/${t.slug}`,
         })),
       },
+      }, breadcrumbs([['Home', '/'], ['Categories', '/categories'], [cat.label, `/category/${slug}`]])],
     },
   }))
 })
@@ -438,12 +452,18 @@ app.get('/tool/:slug', (c) => {
     body,
     jsonLd: {
       '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      name: t.name,
-      url: t.url,
-      applicationCategory: CATEGORIES[t.category]?.label || t.category,
-      description: t.description,
-      operatingSystem: 'Web',
+      '@graph': [{
+        '@type': 'SoftwareApplication',
+        name: t.name,
+        url: t.url,
+        applicationCategory: CATEGORIES[t.category]?.label || t.category,
+        description: t.description,
+        operatingSystem: 'Web',
+      }, breadcrumbs([
+        ['Home', '/'],
+        [CATEGORIES[t.category]?.label || t.category, `/category/${t.category}`],
+        [t.name, `/tool/${t.slug}`],
+      ])],
     },
   }))
 })
