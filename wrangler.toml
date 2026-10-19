@@ -19,6 +19,9 @@ CONTACT_EMAIL = "buildstack@tier11.com"
 [observability]
 enabled = true
 
+[assets]
+directory = "./public"
+
 [[routes]]
 pattern = "buildstack.tier11.com"
 custom_domain = true

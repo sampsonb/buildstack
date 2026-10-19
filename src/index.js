@@ -104,9 +104,18 @@ ${robots ? `<meta name="robots" content="${esc(robots)}"/>
 <meta property="og:title" content="${esc(title)}"/>
 <meta property="og:description" content="${esc(description)}"/>
 <meta property="og:url" content="${esc(url)}"/>
+<meta property="og:image" content="${SITE}/og.png"/>
+<meta property="og:image:type" content="image/png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="BuildStack. Ranked AI tools. Search by use case."/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="${esc(title)}"/>
 <meta name="twitter:description" content="${esc(description)}"/>
+<meta name="twitter:image" content="${SITE}/og.png"/>
+<meta name="twitter:image:alt" content="BuildStack. Ranked AI tools. Search by use case."/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.png" type="image/png" sizes="32x32"/>
 <link rel="alternate" type="application/json" href="/tools.json"/>
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>
 <style>
@@ -356,7 +365,7 @@ app.get('/', (c) => {
     title: q ? `Best AI tools for ${q} | ${NAME}` : `${NAME}: Ranked AI tool directory`,
     description: q
       ? `Best-fit AI tools for “${q}” from the BuildStack ranked directory.`
-      : 'Ranked AI tool directory with use-case search, new releases, and chatbot-friendly pages.',
+      : `Type a use case, get the best AI tools for it. ${tools().length} ranked tools, new releases, and llms.txt for chatbots.`,
     path: q ? `/?q=${encodeURIComponent(q)}` : '/',
     robots: q ? 'noindex, follow' : undefined,
     body,
