@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-18'
+const UPDATED = '2026-10-19'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -76,7 +76,7 @@ function searchTools(q) {
     .map((x) => x.t)
 }
 
-function layout({ title, description, path, body, jsonLd }) {
+function layout({ title, description, path, body, jsonLd, robots }) {
   const url = SITE + path
   const ld = jsonLd || {
     '@context': 'https://schema.org',
@@ -97,7 +97,8 @@ function layout({ title, description, path, body, jsonLd }) {
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}"/>
-<link rel="canonical" href="${esc(url)}"/>
+${robots ? `<meta name="robots" content="${esc(robots)}"/>
+` : ''}<link rel="canonical" href="${esc(url)}"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="${NAME}"/>
 <meta property="og:title" content="${esc(title)}"/>
@@ -357,6 +358,7 @@ app.get('/', (c) => {
       ? `Best-fit AI tools for “${q}” from the BuildStack ranked directory.`
       : 'Ranked AI tool directory with use-case search, new releases, and chatbot-friendly pages.',
     path: q ? `/?q=${encodeURIComponent(q)}` : '/',
+    robots: q ? 'noindex, follow' : undefined,
     body,
   }))
 })
