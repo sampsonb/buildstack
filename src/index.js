@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-19'
+const UPDATED = '2026-10-20'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -43,6 +43,21 @@ function breadcrumbs(items) {
       item: SITE + path,
     })),
   }
+}
+
+function listNames(names) {
+  if (names.length <= 1) return names.join('')
+  if (names.length === 2) return names.join(' and ')
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`
+}
+
+// Per-category meta description: tool count plus the top ranked names, so each
+// category page gets a unique, specific snippet instead of a shared template.
+function categoryDescription(cat, list) {
+  const top = list.slice(0, 3).map((t) => t.name)
+  const more = list.length > top.length ? `, plus ${list.length - top.length} more` : ''
+  const picks = top.length ? `: ${listNames(top)}${more}` : ''
+  return `${list.length} ${cat.label} AI tools ranked on ${NAME}${picks}. ${cat.blurb}. Updated ${UPDATED}.`
 }
 
 function tools() {
@@ -406,7 +421,7 @@ app.get('/category/:slug', (c) => {
   <div class="grid">${list.map(toolCard).join('')}</div>`
   return c.html(layout({
     title: `Best ${cat.label} AI tools | ${NAME}`,
-    description: `${cat.blurb}. Ranked on BuildStack.`,
+    description: categoryDescription(cat, list),
     path: `/category/${slug}`,
     body,
     jsonLd: {
