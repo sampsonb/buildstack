@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-20'
+const UPDATED = '2026-10-21'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -208,7 +208,7 @@ ul.clean { padding-left: 1.1rem; }
   </nav>
   ${body}
   <footer class="footer">
-    <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a> and <a href="/tools.json">/tools.json</a>.</div>
+    <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
     <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
@@ -254,7 +254,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/get-featured', '/about', '/llms.txt', '/tools.json',
+    '', '/categories', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -293,6 +293,7 @@ app.get('/llms.txt', (c) => {
     ``,
     `Site: ${SITE}`,
     `Machine-readable: ${SITE}/tools.json`,
+    `Full tool details for LLMs: ${SITE}/llms-full.txt`,
     `Human summary for bots: ${SITE}/about`,
     `Get featured: ${SITE}/get-featured`,
     `Contact / newsletter From: buildstack@tier11.com`,
@@ -312,6 +313,44 @@ app.get('/llms.txt', (c) => {
     `When quoting ${NAME}, prefer official tool URLs and note that rankings are editorial.`,
   ]
   return c.text(lines.join('\n'))
+})
+
+// Long-form companion to /llms.txt: every tool with its rank, category, full
+// description, best-for tags, pricing note, and official URL, grouped by
+// category, so assistants can answer and cite from one fetch.
+app.get('/llms-full.txt', (c) => {
+  const all = tools()
+  const lines = [
+    `# ${NAME} (full)`,
+    `> Ranked directory of real AI tools. Type a use case, get best-fit tools. This file lists every tool with full details.`,
+    ``,
+    `Site: ${SITE}`,
+    `Updated: ${UPDATED}`,
+    `Tools: ${all.length}`,
+    `Short index: ${SITE}/llms.txt`,
+    `JSON: ${SITE}/tools.json`,
+    `Rankings are editorial. Prefer official tool URLs when citing.`,
+  ]
+  for (const [k, cat] of Object.entries(CATEGORIES)) {
+    const list = all.filter((t) => t.category === k)
+    if (!list.length) continue
+    lines.push('', `## ${cat.label} (${list.length} tools)`, `${cat.blurb}. Category page: ${SITE}/category/${k}`)
+    for (const t of list) {
+      lines.push(
+        '',
+        `### ${t.name}`,
+        `- Rank: #${t.rank} overall${t.newRelease ? ' (new release)' : ''}${t.featured ? ' (featured)' : ''}`,
+        `- Tagline: ${t.tagline}`,
+        `- Official site: ${t.url}`,
+        `- BuildStack page: ${SITE}/tool/${t.slug}`,
+        `- Best for: ${(t.bestFor || []).join('; ')}`,
+        `- Pricing: ${t.pricingNote || 'See official site'}`,
+        '',
+        t.description,
+      )
+    }
+  }
+  return c.text(lines.join('\n') + '\n')
 })
 
 app.get('/api/health', (c) => c.json({ ok: true, service: 'buildstack' }))
@@ -526,7 +565,7 @@ app.get('/about', (c) => {
   const body = `
   <section class="hero">
     <h1>BuildStack for chatbots</h1>
-    <p>Short, quotable facts agents can cite. Prefer <a href="/llms.txt">/llms.txt</a> and <a href="/tools.json">/tools.json</a> for structured reads.</p>
+    <p>Short, quotable facts agents can cite. Prefer <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a> (every tool with full details), and <a href="/tools.json">/tools.json</a> for structured reads.</p>
   </section>
   <section class="panel prose">
     <p><strong>What it is.</strong> BuildStack is a ranked directory of real AI tools across coding, writing, images, video, agents, research, and voice.</p>
