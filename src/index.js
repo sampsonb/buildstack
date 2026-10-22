@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-21'
+const UPDATED = '2026-10-22'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -58,6 +58,19 @@ function categoryDescription(cat, list) {
   const more = list.length > top.length ? `, plus ${list.length - top.length} more` : ''
   const picks = top.length ? `: ${listNames(top)}${more}` : ''
   return `${list.length} ${cat.label} AI tools ranked on ${NAME}${picks}. ${cat.blurb}. Updated ${UPDATED}.`
+}
+
+// Tool page meta description: search engines cut snippets at about 155
+// characters, and full tool descriptions run 300 to 700. Lead with rank and
+// category, then the description, trimmed at a word boundary so the snippet
+// never ends mid-word.
+function toolMetaDescription(t) {
+  const label = CATEGORIES[t.category]?.label || t.category
+  const full = `#${t.rank} in ${label} on ${NAME}. ${t.description}`
+  if (full.length <= 155) return full
+  const cut = full.slice(0, 152)
+  const space = cut.lastIndexOf(' ')
+  return `${(space > 100 ? cut.slice(0, space) : cut).replace(/[\s,;:.]+$/, '')}...`
 }
 
 function tools() {
@@ -512,7 +525,7 @@ app.get('/tool/:slug', (c) => {
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
     title: `${t.name}: ${t.tagline} | ${NAME}`,
-    description: t.description,
+    description: toolMetaDescription(t),
     path: `/tool/${t.slug}`,
     body,
     jsonLd: {
