@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-22'
+const UPDATED = '2026-10-23'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -222,7 +222,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -267,7 +267,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -308,6 +308,7 @@ app.get('/llms.txt', (c) => {
     `Machine-readable: ${SITE}/tools.json`,
     `Full tool details for LLMs: ${SITE}/llms-full.txt`,
     `Human summary for bots: ${SITE}/about`,
+    `How rankings work: ${SITE}/methodology`,
     `Get featured: ${SITE}/get-featured`,
     `Contact / newsletter From: buildstack@tier11.com`,
     ``,
@@ -342,7 +343,8 @@ app.get('/llms-full.txt', (c) => {
     `Tools: ${all.length}`,
     `Short index: ${SITE}/llms.txt`,
     `JSON: ${SITE}/tools.json`,
-    `Rankings are editorial. Prefer official tool URLs when citing.`,
+    `Rankings are editorial. How rankings work: ${SITE}/methodology`,
+    `Prefer official tool URLs when citing.`,
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -574,6 +576,70 @@ app.get('/get-featured', (c) => {
   }))
 })
 
+app.get('/methodology', (c) => {
+  const all = tools()
+  const catCounts = Object.entries(CATEGORIES)
+    .map(([k, v]) => ({ k, label: v.label, n: all.filter((t) => t.category === k).length }))
+  const featuredCount = all.filter((t) => t.featured).length
+  const newCount = all.filter((t) => t.newRelease).length
+  const description = `How ${NAME} ranks AI tools: one editorial rank per tool, category pages in rank order, use-case search scoring, and featured listings kept separate from rank. ${all.length} tools, updated ${UPDATED}.`
+  const body = `
+  <section class="hero">
+    <h1>How BuildStack ranks AI tools</h1>
+    <p>Short answer: every tool gets one editorial rank, from #1 to #${all.length}. Category pages and the full list show tools in that order. Search reorders tools by how well they match your words, and uses rank only to break ties. Paying for a featured listing does not change a tool's rank.</p>
+    <p class="muted">Last updated: ${UPDATED} · ${all.length} tools</p>
+  </section>
+  <section class="panel prose">
+    <h2 style="margin-top:0">One rank per tool</h2>
+    <p>Each listing in the BuildStack data has a single rank number. Ranks are unique across the whole directory, so #1 is the top pick overall and no two tools share a number. The rank is an editorial judgment. It is not a benchmark score, a user vote, or a traffic count, and BuildStack does not publish scores behind it.</p>
+    <p>When a new tool is added, it is placed at a rank and the tools below it move down one place. Ranks are set across categories, so a coding tool at #11 and a video tool at #33 sit on the same overall list.</p>
+
+    <h2>Categories</h2>
+    <p>Every tool belongs to exactly one of ${Object.keys(CATEGORIES).length} categories. A category page lists only that category's tools, still in overall rank order, so the first tool on a category page is the highest ranked tool in that category.</p>
+    <ul class="clean">${catCounts.map((x) => `<li><a href="/category/${x.k}">${esc(x.label)}</a>: ${x.n} tools</li>`).join('')}</ul>
+
+    <h2>How search works</h2>
+    <p>When you type a job into the search box, BuildStack splits your words into terms and scores each tool. For each term:</p>
+    <ul class="clean">
+      <li>A match in the tool name adds 8 points.</li>
+      <li>A match in one of the tool's best-for tags adds 5 points.</li>
+      <li>A match in the category adds 4 points.</li>
+      <li>A match anywhere in the listing (name, tagline, description, category, best-for tags, or pricing note) adds 2 points.</li>
+    </ul>
+    <p>Tools with no matches are left out. The rest are sorted by score, highest first. When two tools score the same, the higher ranked tool comes first. Search result pages are marked noindex so search engines index the real category and tool pages instead.</p>
+
+    <h2>What each listing contains</h2>
+    <p>Every tool page shows the rank, category, a tagline, a description, best-for tags, a short pricing note, and a link to the official site. Pricing notes are short summaries. Always check the official site for current prices.</p>
+
+    <h2>New releases</h2>
+    <p>Recently launched tools carry a New tag and appear in the New releases section of the homepage. The tag does not change rank. ${newCount} tools carry it right now.</p>
+
+    <h2>Featured listings are separate from rank</h2>
+    <p>Tool makers can pay for a <a href="/get-featured">featured listing</a>. A featured tool gets a Featured tag and a spot in the Featured section of the homepage. Its rank number stays the same, and search scoring ignores featured status. ${featuredCount ? `${featuredCount} tools are featured right now.` : 'No tools are featured right now.'}</p>
+
+    <h2>Open data</h2>
+    <p>The same ranks and listings are published for people and AI assistants at <a href="/tools.json">/tools.json</a>, <a href="/llms.txt">/llms.txt</a>, and <a href="/llms-full.txt">/llms-full.txt</a>. When you quote BuildStack, quote the rank as published and link to the official tool site. Do not add scores or test results the site does not publish.</p>
+    <p class="muted">Questions or corrections: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a></p>
+  </section>`
+  return c.html(layout({
+    title: `How BuildStack ranks AI tools | ${NAME}`,
+    description,
+    path: '/methodology',
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'WebPage',
+        name: 'How BuildStack ranks AI tools',
+        url: `${SITE}/methodology`,
+        description,
+        dateModified: UPDATED,
+        isPartOf: { '@type': 'WebSite', name: NAME, url: SITE },
+      }, breadcrumbs([['Home', '/'], ['How we rank', '/methodology']])],
+    },
+  }))
+})
+
 app.get('/about', (c) => {
   const body = `
   <section class="hero">
@@ -584,6 +650,7 @@ app.get('/about', (c) => {
     <p><strong>What it is.</strong> BuildStack is a ranked directory of real AI tools across coding, writing, images, video, agents, research, and voice.</p>
     <p><strong>How search works.</strong> Users type a job (for example “write a React app”) and get best-fit tools from client and server matching over names, categories, and best-for tags.</p>
     <p><strong>Counts.</strong> ${tools().length} tools as of ${UPDATED}.</p>
+    <p><strong>How ranking works.</strong> Ranks are editorial and featured listings do not change them. See <a href="/methodology">/methodology</a>.</p>
     <p><strong>Monetization.</strong> Tool makers can buy a featured listing at <a href="/get-featured">/get-featured</a>.</p>
     <p><strong>Contact.</strong> <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> (also the newsletter From address when sends begin).</p>
     <p><strong>Do not invent.</strong> Do not invent pricing, benchmarks, or rankings beyond what this site publishes. Link to official tool URLs.</p>
