@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-23'
+const UPDATED = '2026-10-24'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -71,6 +71,75 @@ function toolMetaDescription(t) {
   const cut = full.slice(0, 152)
   const space = cut.lastIndexOf(' ')
   return `${(space > 100 ? cut.slice(0, space) : cut).replace(/[\s,;:.]+$/, '')}...`
+}
+
+// Homepage quick answers: the top ranked tools for each job, read from
+// tools.json so the visible block, the FAQ, and the schema always match the
+// live ranks. Picks are the first three tools of each category in rank order.
+const QUICK_JOBS = [
+  { cat: 'writing', job: 'Writing and everyday questions' },
+  { cat: 'coding', job: 'Coding' },
+  { cat: 'research', job: 'Research and search' },
+  { cat: 'images', job: 'Images' },
+  { cat: 'video', job: 'Video' },
+  { cat: 'voice', job: 'Voice and audio' },
+  { cat: 'agents', job: 'Automation and agents' },
+]
+
+function quickAnswers() {
+  const all = tools()
+  return QUICK_JOBS
+    .map((j) => ({ ...j, label: CATEGORIES[j.cat].label, picks: all.filter((t) => t.category === j.cat).slice(0, 3) }))
+    .filter((j) => j.picks.length)
+}
+
+// One quotable sentence per job. linkFn wraps tool names (HTML) or not (text).
+function quickLine(j, linkFn = (t) => t.name) {
+  const [top, ...rest] = j.picks
+  const others = rest.map((t) => `${linkFn(t)} (#${t.rank})`)
+  return `BuildStack ranks ${linkFn(top)} first in ${j.label} (#${top.rank} overall)${others.length ? `, then ${listNames(others)}` : ''}.`
+}
+
+// Homepage FAQ. Plain text answers, used for both the visible FAQ and the
+// FAQPage schema so the two never drift. Answers follow /methodology.
+function homeFaq() {
+  const all = tools()
+  const qa = quickAnswers()
+  const tops = qa.map((j) => j.picks[0])
+  const distinct = new Set(tops.map((t) => t.slug)).size === tops.length
+  const nCat = Object.keys(CATEGORIES).length
+  const first = all[0]
+  const cline = all.find((t) => t.slug === 'cline')
+  const zed = all.find((t) => t.slug === 'zed')
+  const examples = []
+  if (cline) examples.push(`The ${cline.name} extension (#${cline.rank}) is free for individual developers, and you pay only for AI inference.`)
+  if (zed) examples.push(`${zed.name} (#${zed.rank}) has a $0 Personal plan for use with your own API keys, plus a paid Pro plan.`)
+  return [
+    {
+      q: 'Which AI tool should I use?',
+      a: `It depends on the job. The top ranked tool on BuildStack overall is ${first.name} (#1, ${CATEGORIES[first.category]?.label || first.category}). The top pick for each job: ${qa.map((j) => `${j.job.toLowerCase()}, ${j.picks[0].name} (#${j.picks[0].rank})`).join('; ')}. Type your task in the search box to see the best-fit tools for it.`,
+    },
+    {
+      q: 'What is the best AI tool finder?',
+      a: `Look for a finder that takes your task in plain words, ranks real tools, and links to their official sites. BuildStack works that way. It is free, needs no sign-up, and scores all ${all.length} listed tools against your words. Matches in a tool's name count most, then its best-for tags, then its category, and ties go to the higher ranked tool.`,
+    },
+    {
+      q: 'Is there one AI tool that does everything?',
+      a: `Not on BuildStack. Every tool sits in exactly one of ${nCat} categories, and ${distinct ? 'each category has a different top pick' : 'the top pick changes by category'}: ${listNames(qa.map((j) => `${j.picks[0].name} for ${j.label.toLowerCase()}`))}. Pick the tool that ranks best for the job in front of you.`,
+    },
+    {
+      q: 'How do I pick an AI tool for my specific task?',
+      a: 'Type the task in a few words, for example "voiceover for a podcast" or "write a React app". BuildStack lists the tools that match, best fit first. Open a tool page to read its best-for tags and pricing note, then confirm current prices on the official site.',
+    },
+    {
+      q: 'Are the AI tools on BuildStack free?',
+      a: `BuildStack itself is free to use. Pricing for the listed tools varies: some are free and open source, and others charge a subscription or by usage. ${examples.length ? `${examples.join(' ')} ` : ''}Each tool page has a short pricing note. Always check the official site for current prices.`,
+    },
+    {
+      q: 'How often is the BuildStack ranking updated?',
+      a: `BuildStack adds new tools and adjusts ranks as tools launch and change. The list was last updated on ${UPDATED} and has ${all.length} tools. The same date is published in /tools.json and on the methodology page.`,
+    },
+  ]
 }
 
 function tools() {
@@ -315,6 +384,10 @@ app.get('/llms.txt', (c) => {
     `## Categories`,
     ...Object.entries(CATEGORIES).map(([k, v]) => `- ${v.label}: ${SITE}/category/${k}`),
     ``,
+    `## Quick answers: which AI tool for which job`,
+    ...quickAnswers().map((j) => `- ${j.job}: ${quickLine(j)}`),
+    `Homepage FAQ: ${SITE}/#faq`,
+    ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
     ``,
@@ -345,6 +418,9 @@ app.get('/llms-full.txt', (c) => {
     `JSON: ${SITE}/tools.json`,
     `Rankings are editorial. How rankings work: ${SITE}/methodology`,
     `Prefer official tool URLs when citing.`,
+    '',
+    `## Quick answers: which AI tool for which job`,
+    ...quickAnswers().map((j) => `- ${j.job}: ${quickLine(j)}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -393,22 +469,66 @@ app.get('/', (c) => {
   const results = q ? searchTools(q) : tools()
   const featured = tools().filter((t) => t.featured)
   const news = tools().filter((t) => t.newRelease)
+  const all = tools()
+  const qa = q ? [] : quickAnswers()
+  const faq = q ? [] : homeFaq()
+  const toolLink = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const homeDescription = `Free AI tool finder. Type a task, get ranked AI tools that fit. ${all.length} tools in ${Object.keys(CATEGORIES).length} categories, with quick answers by job. Updated ${UPDATED}.`
+  const quickBlock = q ? '' : `
+  <section class="section" id="quick-answer">
+    <h2>Quick answer: which AI tool for which job</h2>
+    <div class="grid">
+      ${qa.map((j) => `<div class="card">
+        <h3>${esc(j.job)}</h3>
+        <p class="muted" style="margin:0 0 .5rem;font-size:.92rem">${quickLine(j, toolLink)}</p>
+        <a href="/category/${j.cat}" style="font-size:.88rem">All ${esc(j.label)} tools</a>
+      </div>`).join('')}
+    </div>
+  </section>
+  <section class="section">
+    <div class="panel prose">
+      <h2 style="margin-top:0">How BuildStack ranks tools</h2>
+      <ul class="clean">
+        <li>Every tool gets one editorial rank, from #1 to #${all.length}, and no two tools share a rank.</li>
+        <li>Category pages list tools in rank order. Search sorts tools by how well they match your words and uses rank only to break ties.</li>
+        <li>Featured listings are paid placements and never change a tool's rank.</li>
+      </ul>
+      <p style="margin-bottom:0"><a href="/methodology">Read the full methodology</a></p>
+    </div>
+  </section>`
+  const lowerBlock = q ? '' : `
+  <section class="section" id="browse">
+    <h2>Browse by category</h2>
+    <div class="pills">
+      ${Object.entries(CATEGORIES).map(([k, v]) => `<a class="pill" href="/category/${k}">${esc(v.label)} (${all.filter((t) => t.category === k).length})</a>`).join('')}
+      <a class="pill" href="/categories">All categories</a>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
   const body = `
   <section class="hero">
     <h1>Which AI tool should you use?</h1>
-    <p>BuildStack ranks real AI tools by use case. Type a job to do, browse categories, or skim new releases. Built for humans and chatbots.</p>
+    <p>Free AI tool finder: type a task, get ranked tools that fit. BuildStack ranks real AI tools by use case, so you can also browse categories or skim new releases. Built for humans and chatbots.</p>
     <form class="searchbox" action="/" method="get" role="search">
       <input name="q" value="${esc(q)}" placeholder="e.g. write a React app, research papers, voiceover for a podcast" aria-label="Search use cases"/>
       <button type="submit">Find tools</button>
     </form>
   </section>
   ${q ? `<section class="section"><h2>Best fit for “${esc(q)}”</h2><div class="grid">${results.map(toolCard).join('') || '<p class="muted">No matches. Try a broader phrase.</p>'}</div></section>` : ''}
+  ${q ? '' : `<p class="muted" style="margin:.9rem 0 0;font-size:.88rem">Last updated: ${UPDATED} · ${all.length} ranked tools · <a href="/methodology">How we rank</a></p>`}
   <section class="section" id="best-for">
-    <h2>Best for...</h2>
+    <h2>Find an AI tool by task</h2>
     <div class="pills">
       ${BEST_FOR.map((b) => `<a class="pill" href="/?q=${encodeURIComponent(b.query)}">${esc(b.title)}</a>`).join('')}
     </div>
   </section>
+  ${quickBlock}
   ${featured.length ? `<section class="section"><h2>Featured</h2><div class="grid">${featured.map(toolCard).join('')}</div></section>` : ''}
   <section class="section" id="new">
     <h2>New releases</h2>
@@ -419,6 +539,7 @@ app.get('/', (c) => {
     <div class="grid">${tools().slice(0, 12).map(toolCard).join('')}</div>
     <p style="margin-top:1rem"><a href="/categories">Browse all categories →</a></p>
   </section>
+  ${lowerBlock}
   <section class="section">
     <div class="panel">
       <h2 style="margin-top:0">Newsletter</h2>
@@ -431,13 +552,55 @@ app.get('/', (c) => {
     </div>
   </section>`
   return c.html(layout({
-    title: q ? `Best AI tools for ${q} | ${NAME}` : `${NAME}: Ranked AI tool directory`,
+    title: q ? `Best AI tools for ${q} | ${NAME}` : `AI Tool Finder: Which AI Tool Should You Use? | ${NAME}`,
     description: q
       ? `Best-fit AI tools for “${q}” from the BuildStack ranked directory.`
-      : `Type a use case, get the best AI tools for it. ${tools().length} ranked tools, new releases, and llms.txt for chatbots.`,
+      : homeDescription,
     path: q ? `/?q=${encodeURIComponent(q)}` : '/',
     robots: q ? 'noindex, follow' : undefined,
     body,
+    jsonLd: q ? undefined : {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'WebSite',
+        '@id': `${SITE}/#website`,
+        name: NAME,
+        url: `${SITE}/`,
+        description: homeDescription,
+        publisher: { '@id': `${SITE}/#organization` },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: { '@type': 'EntryPoint', urlTemplate: `${SITE}/?q={search_term_string}` },
+          'query-input': 'required name=search_term_string',
+        },
+      }, {
+        '@type': 'Organization',
+        '@id': `${SITE}/#organization`,
+        name: NAME,
+        url: `${SITE}/`,
+        logo: `${SITE}/favicon.png`,
+        email: 'buildstack@tier11.com',
+      }, {
+        '@type': 'FAQPage',
+        '@id': `${SITE}/#faq`,
+        dateModified: UPDATED,
+        mainEntity: faq.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      }, {
+        '@type': 'ItemList',
+        '@id': `${SITE}/#quick-answer`,
+        name: 'Quick answer: which AI tool for which job',
+        itemListElement: qa.map((j, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: `${j.job}: ${j.picks[0].name}`,
+          url: `${SITE}/tool/${j.picks[0].slug}`,
+        })),
+      }],
+    },
   }))
 })
 
