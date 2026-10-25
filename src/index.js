@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-24'
+const UPDATED = '2026-10-25'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -265,6 +265,9 @@ a:hover { text-decoration: underline; }
 .btn { display: inline-block; background: linear-gradient(135deg, var(--accent), #ff9a3c); color: #1a0f05 !important; font-weight: 750; border-radius: 999px; padding: .75rem 1.2rem; text-decoration: none !important; }
 .btn.secondary { background: transparent; color: var(--text) !important; border: 1px solid var(--line); }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; }
+.cmp { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.cmp th, .cmp td { text-align: left; padding: .55rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.cmp th { color: var(--muted); font-weight: 600; }
 .muted { color: var(--muted); }
 .formrow { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .8rem; }
 .formrow input { flex: 1; min-width: 220px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; color: var(--text); padding: .7rem .85rem; }
@@ -291,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -336,7 +339,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -388,6 +391,9 @@ app.get('/llms.txt', (c) => {
     ...quickAnswers().map((j) => `- ${j.job}: ${quickLine(j)}`),
     `Homepage FAQ: ${SITE}/#faq`,
     ``,
+    `## Guides`,
+    `- Best Cursor alternatives, sorted by how you code: ${SITE}/alternatives/cursor`,
+    ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
     ``,
@@ -421,6 +427,10 @@ app.get('/llms-full.txt', (c) => {
     '',
     `## Quick answers: which AI tool for which job`,
     ...quickAnswers().map((j) => `- ${j.job}: ${quickLine(j)}`),
+    '',
+    `## Guides`,
+    `- Best Cursor alternatives, sorted by how you code: ${SITE}/alternatives/cursor`,
+    ...cursorAltData().groups.map((g) => `  - ${g.title}: ${g.tools.map((t) => `${t.name} (#${t.rank})`).join(', ')}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -634,6 +644,7 @@ app.get('/category/:slug', (c) => {
   <section class="hero">
     <h1>${esc(cat.label)}</h1>
     <p>${esc(cat.blurb)}</p>
+    ${slug === 'coding' ? '<p class="muted">Switching editors? See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
   </section>
   <div class="grid">${list.map(toolCard).join('')}</div>`
   return c.html(layout({
@@ -686,6 +697,7 @@ app.get('/tool/:slug', (c) => {
     <ul class="clean">${(t.bestFor || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
+    ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : CURSOR_ALT_GROUPS.some((g) => g.slugs.includes(t.slug)) ? '<p class="muted">Listed in: <a href="/alternatives/cursor">Best Cursor alternatives</a></p>' : ''}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -799,6 +811,188 @@ app.get('/methodology', (c) => {
         dateModified: UPDATED,
         isPartOf: { '@type': 'WebSite', name: NAME, url: SITE },
       }, breadcrumbs([['Home', '/'], ['How we rank', '/methodology']])],
+    },
+  }))
+})
+
+// Cursor alternatives guide (brief 2). Every name, rank, best-for tag, and
+// pricing note comes from tools.json, so the page tracks the live ranks.
+// Groups follow how people code; a slug missing from the data is skipped.
+const CURSOR_ALT_GROUPS = [
+  { id: 'ide-swap', title: 'Closest IDE swap', intro: 'Full AI editors you can move into from Cursor.', slugs: ['windsurf', 'kiro', 'zed'] },
+  { id: 'keep-editor', title: 'Keep your current editor', intro: 'Add AI to the editor you already use instead of switching.', slugs: ['github-copilot', 'cline'] },
+  { id: 'terminal', title: 'Terminal-first agents', intro: 'Agents that read your repo, edit files, and run commands from the terminal.', slugs: ['claude-code', 'openai-codex', 'opencode'] },
+  { id: 'google', title: "Google's agentic platform", intro: 'Agent-driven coding across an app, CLI, IDE, and SDK.', slugs: ['google-antigravity'] },
+  { id: 'app-builders', title: 'Build an app without an IDE', intro: 'Describe the app and get working code in the browser.', slugs: ['v0', 'lovable', 'bolt'] },
+  { id: 'open-local', title: 'Open weights and local models', intro: 'Models you can run yourself, then plug into an agent such as OpenCode or Cline.', slugs: ['recursive-flint', 'muse-spark-open', 'reflection-beam', 'deepseek'] },
+  { id: 'many-agents', title: 'Running many agents at once', intro: 'Supervise several coding agents side by side.', slugs: ['harness-autonomous'] },
+]
+
+const CURSOR_ALT_TYPES = {
+  windsurf: 'AI IDE and agent command center',
+  kiro: 'Spec-driven AI IDE, CLI, and web agent',
+  zed: 'Open source editor with AI agent',
+  'github-copilot': 'Editor plugin and GitHub assistant',
+  cline: 'Open source VS Code agent and CLI',
+  'claude-code': 'Terminal agent',
+  'openai-codex': 'Terminal agent (open source CLI)',
+  opencode: 'Open source terminal, IDE, and desktop agent',
+  'google-antigravity': 'Agentic platform (app, CLI, IDE, SDK)',
+  v0: 'App and UI builder',
+  lovable: 'App builder',
+  bolt: 'In-browser app builder',
+  'recursive-flint': 'Open-weight local coding model',
+  'muse-spark-open': 'Open-weight coding model',
+  'reflection-beam': 'Open-weight coding model',
+  deepseek: 'Coding and reasoning models',
+  'harness-autonomous': 'Multi-agent command center',
+}
+
+function cursorAltData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const cursor = find('cursor')
+  const groups = CURSOR_ALT_GROUPS
+    .map((g) => ({ ...g, tools: g.slugs.map(find).filter(Boolean) }))
+    .filter((g) => g.tools.length)
+  const seen = new Set()
+  const list = []
+  for (const g of groups) for (const t of g.tools) if (!seen.has(t.slug)) { seen.add(t.slug); list.push(t) }
+  list.sort((a, b) => a.rank - b.rank)
+  return { all, find, cursor, groups, list }
+}
+
+function cursorAltFaq(d) {
+  const { find, cursor } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const top = d.list[0]
+  const faq = []
+  faq.push({
+    q: 'What is the best alternative to Cursor?',
+    a: `On BuildStack, Cursor is #${cursor.rank} overall, and the highest ranked alternative is ${top.name} (#${top.rank}). The best pick depends on how you work: ${[
+      find('github-copilot') && `${r('github-copilot')} if you want to keep your current editor`,
+      find('claude-code') && `${r('claude-code')} or ${r('openai-codex')} for a terminal agent`,
+      find('windsurf') && `${r('windsurf')} or ${r('kiro')} for a full IDE swap`,
+      find('opencode') && `${r('opencode')} for a free, open source agent`,
+    ].filter(Boolean).join('; ')}.`,
+  })
+  const free = ['opencode', 'cline', 'zed', 'google-antigravity', 'kiro', 'recursive-flint'].map(find).filter(Boolean).sort((a, b) => a.rank - b.rank)
+  faq.push({
+    q: 'Is there a free alternative to Cursor?',
+    a: `Yes. Per BuildStack pricing notes: ${free.map((t) => `${t.name} (#${t.rank}): ${t.pricingNote}`).join('. ')}. Check each official site for current limits.`,
+  })
+  if (find('windsurf')) faq.push({
+    q: 'Is Windsurf better than Cursor?',
+    a: `BuildStack ranks Cursor #${cursor.rank} and ${find('windsurf').name} #${find('windsurf').rank}, so Cursor ranks higher. Windsurf is now called Devin Desktop. It keeps the Windsurf IDE and adds a command center for running many agents, so it fits you if you want to manage several agents from one place.`,
+  })
+  if (find('github-copilot')) faq.push({
+    q: 'Is GitHub Copilot as good as Cursor?',
+    a: `BuildStack ranks Cursor #${cursor.rank} and GitHub Copilot #${find('github-copilot').rank}. Cursor is a full AI editor built for agentic multi-file changes. Copilot works inside popular editors you may already use and helps with pull requests on GitHub, so it fits teams that do not want to switch editors.`,
+  })
+  if (find('opencode')) faq.push({
+    q: 'What is the best open source Cursor alternative?',
+    a: `${r('opencode')} is free and open source and works in your terminal, IDE, or a desktop app with 75+ model providers, including local models. ${find('cline') ? `${r('cline')} is an open source agent for VS Code and the terminal. ` : ''}${find('zed') ? `${r('zed')} is an open source editor with a built-in agent. ` : ''}${find('openai-codex') ? `The Codex CLI behind ${r('openai-codex')} is also open source, though it needs a ChatGPT plan or an OpenAI API key.` : ''}`.trim(),
+  })
+  if (find('claude-code')) faq.push({
+    q: 'Can I use Claude Code instead of Cursor?',
+    a: `Yes. ${r('claude-code')} is Anthropic's terminal-native coding agent. It reads your repo, makes edits, and runs tasks with Claude models, using a Claude subscription or the API. You can run it next to any editor${find('zed') ? `, and ${r('zed')} can host external agents such as Claude Agent inside the editor` : ''}.`,
+  })
+  return faq
+}
+
+app.get('/alternatives/cursor', (c) => {
+  const d = cursorAltData()
+  const { find, cursor, groups, list } = d
+  if (!cursor) return c.notFound()
+  const faq = cursorAltFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const top = list[0]
+  const shortParts = [
+    find('github-copilot') && ['github-copilot', 'is the highest ranked pick if you want to keep your current editor'],
+    find('windsurf') && ['windsurf', 'and', 'kiro', 'are the closest full IDE swaps'],
+    find('claude-code') && ['claude-code', 'and', 'openai-codex', 'lead the terminal agents'],
+    find('opencode') && ['opencode', 'is the top free, open source agent'],
+  ].filter(Boolean)
+  const shortHtml = shortParts.map((p) => p.length === 2 ? `${rl(p[0])} ${p[1]}` : `${rl(p[0])} ${p[1]} ${rl(p[2])} ${p[3]}`).join('. ')
+  const shortText = shortParts.map((p) => p.length === 2 ? `${rt(p[0])} ${p[1]}` : `${rt(p[0])} ${p[1]} ${rt(p[2])} ${p[3]}`).join('. ')
+  const description = `Best Cursor alternatives, sorted by how you code: ${list.slice(0, 4).map((t) => `${t.name} (#${t.rank})`).join(', ')} and more. ${list.length} coding tools from the ${NAME} ranking. Updated ${UPDATED}.`
+  const title = `Best Cursor Alternatives in 2026, Sorted by How You Code | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><a class="tag" href="/category/coding">Coding</a><span class="tag">Guide</span></div>
+    <h1>Best Cursor Alternatives in 2026, Sorted by How You Code</h1>
+    <p><strong>Short answer:</strong> ${link(cursor)} is #${cursor.rank} overall on ${NAME}, so every alternative here ranks below it. ${shortHtml}. Pick by how you work, not by one overall winner.</p>
+    <p class="muted">Last updated: ${UPDATED} · ${list.length} alternatives · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section">
+    <h2>Cursor alternatives at a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>Type</th><th>Best for</th><th>Pricing note</th></tr></thead>
+        <tbody>${list.map((t) => `<tr><td>${link(t)}</td><td>#${t.rank}</td><td>${esc(CURSOR_ALT_TYPES[t.slug] || '')}</td><td>${esc((t.bestFor || [])[0] || '')}</td><td>${esc(t.pricingNote || 'See official site')}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Pricing notes are short summaries from each tool's listing. Check the official site for current prices.</p>
+  </section>
+  <section class="section">
+    <h2>Pick by how you work</h2>
+    ${groups.map((g) => `<div class="panel prose" style="margin-bottom:1rem" id="${g.id}">
+      <h3 style="margin-top:0;color:var(--text)">${esc(g.title)}: ${g.tools.map((t) => `${esc(t.name)} (#${t.rank})`).join(', ')}</h3>
+      <p>${esc(g.intro)}</p>
+      <ul class="clean">${g.tools.map((t) => `<li>${link(t)} (#${t.rank}, ${esc(CURSOR_ALT_TYPES[t.slug] || 'coding tool')}): ${esc(t.tagline)}. Best for ${esc((t.bestFor || []).join(', '))}.</li>`).join('')}</ul>
+    </div>`).join('')}
+  </section>
+  <section class="section">
+    <div class="panel prose">
+      <h2 style="margin-top:0">When to stay on Cursor</h2>
+      <p>${esc(cursor.description)} BuildStack lists it as best for ${esc(listNames(cursor.bestFor || []))}. If that is most of your day, Cursor is still the top ranked coding tool on ${NAME}. Pricing note: ${esc(cursor.pricingNote)}.</p>
+      <h2>How to switch without losing your setup</h2>
+      <ul class="clean">
+        <li>Move your project rules. Copy the instructions you keep in Cursor rules into the rules or steering files the new tool reads.</li>
+        <li>Check extensions. ${find('kiro') ? `${link(find('kiro'))} supports Open VSX extensions and VS Code settings. ` : ''}${find('windsurf') ? `${link(find('windsurf'))} carries Windsurf plans, extensions, and settings over. ` : ''}Editor plugins like ${rl('github-copilot') || 'GitHub Copilot'} keep the editor you already have.</li>
+        <li>Pick your model. ${[find('cline') && link(find('cline')), find('opencode') && link(find('opencode')), find('zed') && link(find('zed'))].filter(Boolean).join(', ')} let you bring your own model provider or API keys.</li>
+        <li>Try one real task in the new tool before you cancel anything.</li>
+      </ul>
+      <h2>How we chose</h2>
+      <p>This page lists the coding tools on ${NAME} that can replace Cursor for at least one job, grouped by how you work. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. Featured listings do not affect rank. Read the full <a href="/methodology">methodology</a> or browse every <a href="/category/coding">coding tool</a>.</p>
+      <p class="muted">Also worth knowing, not yet ranked on ${NAME}: Aider and Tabnine.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: '/alternatives/cursor',
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: 'Best Cursor Alternatives in 2026, Sorted by How You Code',
+        description,
+        url: `${SITE}/alternatives/cursor`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${cursor.name} is #${cursor.rank} overall on ${NAME}. ${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Cursor alternatives ranked on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: list.length,
+        itemListElement: list.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.name, url: `${SITE}/tool/${t.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Coding', '/category/coding'], ['Cursor alternatives', '/alternatives/cursor']])],
     },
   }))
 })
