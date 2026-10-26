@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-25'
+const UPDATED = '2026-10-26'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -339,7 +339,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -393,6 +393,7 @@ app.get('/llms.txt', (c) => {
     ``,
     `## Guides`,
     `- Best Cursor alternatives, sorted by how you code: ${SITE}/alternatives/cursor`,
+    `- Best AI coding agents for beginners (no setup required): ${SITE}/best/ai-coding-agent-for-beginners`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -431,6 +432,8 @@ app.get('/llms-full.txt', (c) => {
     `## Guides`,
     `- Best Cursor alternatives, sorted by how you code: ${SITE}/alternatives/cursor`,
     ...cursorAltData().groups.map((g) => `  - ${g.title}: ${g.tools.map((t) => `${t.name} (#${t.rank})`).join(', ')}`),
+    `- Best AI coding agents for beginners (no setup required): ${SITE}/best/ai-coding-agent-for-beginners`,
+    ...beginnerData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.build}. Runs where: ${p.where}. Pricing: ${p.t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -512,6 +515,13 @@ app.get('/', (c) => {
     <div class="pills">
       ${Object.entries(CATEGORIES).map(([k, v]) => `<a class="pill" href="/category/${k}">${esc(v.label)} (${all.filter((t) => t.category === k).length})</a>`).join('')}
       <a class="pill" href="/categories">All categories</a>
+    </div>
+  </section>
+  <section class="section" id="guides">
+    <h2>Guides</h2>
+    <div class="pills">
+      <a class="pill" href="/alternatives/cursor">Best Cursor alternatives</a>
+      <a class="pill" href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -644,7 +654,8 @@ app.get('/category/:slug', (c) => {
   <section class="hero">
     <h1>${esc(cat.label)}</h1>
     <p>${esc(cat.blurb)}</p>
-    ${slug === 'coding' ? '<p class="muted">Switching editors? See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
+    ${slug === 'coding' ? '<p class="muted">Switching editors? See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>. New to coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
+    ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
   </section>
   <div class="grid">${list.map(toolCard).join('')}</div>`
   return c.html(layout({
@@ -697,7 +708,8 @@ app.get('/tool/:slug', (c) => {
     <ul class="clean">${(t.bestFor || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
-    ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : CURSOR_ALT_GROUPS.some((g) => g.slugs.includes(t.slug)) ? '<p class="muted">Listed in: <a href="/alternatives/cursor">Best Cursor alternatives</a></p>' : ''}
+    ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -942,6 +954,7 @@ app.get('/alternatives/cursor', (c) => {
       <h3 style="margin-top:0;color:var(--text)">${esc(g.title)}: ${g.tools.map((t) => `${esc(t.name)} (#${t.rank})`).join(', ')}</h3>
       <p>${esc(g.intro)}</p>
       <ul class="clean">${g.tools.map((t) => `<li>${link(t)} (#${t.rank}, ${esc(CURSOR_ALT_TYPES[t.slug] || 'coding tool')}): ${esc(t.tagline)}. Best for ${esc((t.bestFor || []).join(', '))}.</li>`).join('')}</ul>
+      ${g.id === 'app-builders' ? '<p class="muted" style="margin-bottom:0">Never coded before? Compare these in the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a> guide.</p>' : ''}
     </div>`).join('')}
   </section>
   <section class="section">
@@ -957,6 +970,7 @@ app.get('/alternatives/cursor', (c) => {
       </ul>
       <h2>How we chose</h2>
       <p>This page lists the coding tools on ${NAME} that can replace Cursor for at least one job, grouped by how you work. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. Featured listings do not affect rank. Read the full <a href="/methodology">methodology</a> or browse every <a href="/category/coding">coding tool</a>.</p>
+      <p>New to coding? Start with the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>, which compares the browser app builders.</p>
       <p class="muted">Also worth knowing, not yet ranked on ${NAME}: Aider and Tabnine.</p>
     </div>
   </section>
@@ -993,6 +1007,182 @@ app.get('/alternatives/cursor', (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Coding', '/category/coding'], ['Cursor alternatives', '/alternatives/cursor']])],
+    },
+  }))
+})
+
+// Beginner coding agents guide (brief 3). Names, ranks, categories, best-for
+// tags, and pricing notes come from tools.json. The "what you can build" and
+// "runs where" lines summarize each official site as checked on 2026-10-26.
+const BEGINNER_PICKS = [
+  { slug: 'lovable', build: 'Full-stack web apps and websites from a chat', where: 'Browser; hosting on Lovable Cloud', verdict: 'the most direct path from an idea to a working full-stack app when you have never written code' },
+  { slug: 'bolt', build: 'Websites and web apps with a database', where: 'Browser; hosting included, even on the free plan', verdict: 'a fast way to try ideas in the browser, with hosting and databases on the free plan' },
+  { slug: 'replit-agent', build: 'Apps you build, run, and deploy in Replit', where: 'Browser workspace on Replit; deploys from Replit', verdict: 'a good fit if you want to learn by building, with the code, the running app, and deployment in one place' },
+  { slug: 'v0', build: 'Web app screens and React or Next.js starter apps', where: 'Browser; deploys to Vercel and syncs with GitHub', verdict: 'the best start when the look of your app matters most and you may hand the code to a developer later' },
+]
+const BEGINNER_GROW = ['cursor', 'github-copilot']
+const BEGINNER_PATH = '/best/ai-coding-agent-for-beginners'
+const BEGINNER_H1 = 'Best AI Coding Agents for Beginners (No Setup Required)'
+
+function beginnerData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const picks = BEGINNER_PICKS.map((p) => ({ ...p, t: find(p.slug) })).filter((p) => p.t)
+  const byRank = [...picks].sort((a, b) => a.t.rank - b.t.rank)
+  const grow = BEGINNER_GROW.map(find).filter(Boolean)
+  return { all, find, picks, byRank, grow }
+}
+
+const BEGINNER_STEPS = [
+  { name: 'Write down one small goal', text: 'Pick one thing your app must do, for example "a page where my team can add and check off tasks". Leave everything else for later.' },
+  { name: 'Describe it in plain words', text: 'Tell the agent who the app is for, what the main screen shows, and what happens when someone clicks. Short, concrete sentences work best.' },
+  { name: 'Run it and click through', text: 'Open the preview and try every button. Write down what is wrong or missing, one item at a time.' },
+  { name: 'Fix one thing per message', text: 'Ask for one change at a time and check the result before the next request. Small steps are easier to undo and use fewer credits.' },
+  { name: 'Save, publish, and back up', text: 'Use the built-in history or connect GitHub so you can roll back, then publish the app and share the link.' },
+]
+
+function beginnerFaq(d) {
+  const { find, byRank, grow } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const free = byRank.filter((p) => /free/i.test(p.t.pricingNote || ''))
+  const faq = []
+  faq.push({
+    q: 'What is the easiest AI tool to build an app with no coding experience?',
+    a: `Start with a browser-based app builder, so there is nothing to install. On BuildStack the beginner picks are ${byRank.map((p) => r(p.slug)).join(', ')}. ${r('lovable')} builds a full-stack web app from a chat, and ${r('bolt')} includes hosting and databases even on its free plan.`,
+  })
+  if (find('replit-agent') && find('lovable')) faq.push({
+    q: 'Is Replit Agent or Lovable better for beginners?',
+    a: `BuildStack ranks ${r('lovable')} above ${r('replit-agent')}. Pick Lovable if you want to describe an app and get a working web app with as little setup as possible. Pick Replit Agent if you want to see and learn from the code as you go, since the code, the running app, and deployment all live in Replit. Lovable has a free plan; Replit Agent is part of Replit's paid Core and Pro plans.`,
+  })
+  faq.push({
+    q: 'Can I build a real app with AI for free?',
+    a: `You can start for free. ${free.map((p) => `${p.t.name}: ${p.t.pricingNote}`).join('. ')}. Free plans have daily or monthly limits, so a bigger app usually needs a paid plan. Check each official pricing page for current limits.`,
+  })
+  faq.push({
+    q: 'Do I need to learn to code to use an AI coding agent?',
+    a: 'No, not to get started. You describe what you want and the agent writes and runs the code. Learning the basics still helps: you will spot mistakes sooner, write clearer requests, and get unstuck faster when the agent loops on a bug.',
+  })
+  faq.push({
+    q: 'What is vibe coding?',
+    a: 'Vibe coding means building software by describing what you want in plain language and letting an AI agent write the code. You judge the result by running the app and asking for changes, instead of writing or reading every line yourself.',
+  })
+  if (grow.length) faq.push({
+    q: 'Which AI coding tool should a beginner move to after an app builder?',
+    a: `When you want to work on the code itself, move to an AI code editor. BuildStack ranks ${grow.map((t) => `${t.name} #${t.rank}`).join(' and ')} overall. ${r('cursor')} is a full AI editor, and ${r('github-copilot')} adds AI to editors you may already use. See the Cursor alternatives guide for more options.`,
+  })
+  return faq
+}
+
+app.get(BEGINNER_PATH, (c) => {
+  const d = beginnerData()
+  const { find, picks, byRank, grow } = d
+  if (!picks.length) return c.notFound()
+  const faq = beginnerFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const catLink = (t) => `<a href="/category/${esc(t.category)}">${esc(CATEGORIES[t.category]?.label || t.category)}</a>`
+  const shortText = `For a first app with no setup, start with ${rt('lovable')} for a full web app from a chat, ${rt('bolt')} for quick builds with free hosting, ${rt('replit-agent')} to learn by building in one place, or ${rt('v0')} for polished screens you can deploy to Vercel. All four run in your browser, so there is nothing to install`
+  const shortHtml = `For a first app with no setup, start with ${rl('lovable')} for a full web app from a chat, ${rl('bolt')} for quick builds with free hosting, ${rl('replit-agent')} to learn by building in one place, or ${rl('v0')} for polished screens you can deploy to Vercel. All four run in your browser, so there is nothing to install`
+  const description = `Best AI coding agents for beginners, no setup required: ${byRank.map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')}. Where each runs, what you can build, and how to start free. Updated ${UPDATED}.`
+  const title = `${BEGINNER_H1} | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><a class="tag" href="/category/coding">Coding</a><a class="tag" href="/category/agents">Agents</a><span class="tag">Guide</span></div>
+    <h1>${esc(BEGINNER_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}. When you outgrow them, move to ${grow.map((t) => `${link(t)} (#${t.rank})`).join(' or ')}.</p>
+    <p class="muted">Last updated: ${UPDATED} · ${picks.length} beginner picks · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section">
+    <h2>Quick picks</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>What you can build</th><th>Runs where</th><th>Pricing note</th></tr></thead>
+        <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.build)}</td><td>${esc(p.where)}</td><td>${esc(p.t.pricingNote || 'See official site')}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${UPDATED}. Prices and limits change, so check the official site before you pay.</p>
+  </section>
+  <section class="section">
+    <h2>One-line verdict for each pick</h2>
+    ${picks.map((p) => `<div class="panel prose" style="margin-bottom:1rem" id="${esc(p.slug)}">
+      <h3 style="margin-top:0;color:var(--text)">${esc(p.t.name)} (#${p.t.rank}, ${catLink(p.t)})</h3>
+      <p>${link(p.t)} is ${esc(p.verdict)}. ${esc(p.t.tagline)}. BuildStack lists it as best for ${esc(listNames(p.t.bestFor || []))}.</p>
+      <p class="muted" style="margin-bottom:0">Runs where: ${esc(p.where)}. Pricing note: ${esc(p.t.pricingNote || 'See official site')}.</p>
+    </div>`).join('')}
+    <p class="muted" style="font-size:.88rem">${rl('replit-agent')} is filed under ${catLink(find('replit-agent') || { category: 'agents' })} on ${NAME}; the other picks are under ${catLink({ category: 'coding' })}.</p>
+  </section>
+  <section class="section">
+    <div class="panel prose">
+      <h2 style="margin-top:0">When you're ready to grow</h2>
+      <p>App builders are the fastest start. When you want to change the code yourself, work on a bigger project, or use your own tools, move to an AI code editor.</p>
+      <ul class="clean">${grow.map((t) => `<li>${link(t)} (#${t.rank}): ${esc(t.tagline)}. Pricing note: ${esc(t.pricingNote || 'See official site')}.</li>`).join('')}</ul>
+      <p>Comparing editors? See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>, or browse every <a href="/category/coding">coding tool</a>.</p>
+      <h2>What "coding agent" means</h2>
+      <p>A coding agent is an AI tool that does the programming for you. You describe what you want in plain words. The agent writes the code, runs it, looks at the result, and fixes errors, then shows you a working preview. An app builder is a coding agent that also hosts the app for you, so you never have to set up a computer for development or use a terminal (the text window developers type commands into).</p>
+      <h2>How to pick</h2>
+      <p>Answer these before you choose:</p>
+      <ul class="clean">
+        <li><strong>Hosting:</strong> do you want the tool to put your app online for you? All four picks can publish your app.</li>
+        <li><strong>A database:</strong> will your app save data, such as users or orders? Bolt.new lists unlimited databases even on its free plan, Lovable stores your app's data for you, and Replit's Pro plan adds database rollback.</li>
+        <li><strong>A custom domain:</strong> do you need your own web address? On Bolt.new that starts on the paid Pro plan.</li>
+        <li><strong>Code you can export:</strong> do you want to own and move the code? v0 syncs with GitHub, and Lovable says you own the code you build.</li>
+        <li><strong>A budget cap:</strong> how much can you spend per month? Most tools charge in credits or tokens, so set a limit before you start.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="section">
+    <div class="panel prose">
+      <h2 style="margin-top:0">A first project in 5 steps</h2>
+      <ol>${BEGINNER_STEPS.map((s) => `<li><strong>${esc(s.name)}.</strong> ${esc(s.text)}</li>`).join('')}</ol>
+      <h2>Common beginner mistakes</h2>
+      <ul class="clean">
+        <li><strong>Vague prompts.</strong> "Make me an app like Uber" gives the agent too much to guess. Describe one screen and one action at a time.</li>
+        <li><strong>No version history.</strong> If you do not save versions or connect GitHub, one bad change can break the app with no easy way back.</li>
+        <li><strong>Runaway credit use.</strong> Asking the agent to fix the same bug again and again burns credits. Stop, describe the bug more clearly, or roll back.</li>
+        <li><strong>Building everything at once.</strong> Ship the smallest useful version first, then add features.</li>
+      </ul>
+      <h2>How we chose</h2>
+      <p>This page lists the tools on ${NAME} that let someone with no coding experience build and publish an app from a browser, with no local setup. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. Featured listings do not affect rank. Read the full <a href="/methodology">methodology</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: BEGINNER_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: BEGINNER_H1,
+        description,
+        url: `${SITE}${BEGINNER_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI coding agents for beginners on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: byRank.length,
+        itemListElement: byRank.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t.name, url: `${SITE}/tool/${p.t.slug}` })),
+      }, {
+        '@type': 'HowTo',
+        name: 'Build your first app with an AI coding agent in 5 steps',
+        step: BEGINNER_STEPS.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.name, text: s.text })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Coding', '/category/coding'], ['AI coding agents for beginners', BEGINNER_PATH]])],
     },
   }))
 })
