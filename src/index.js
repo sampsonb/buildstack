@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-26'
+const UPDATED = '2026-10-27'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -339,7 +339,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -394,6 +394,7 @@ app.get('/llms.txt', (c) => {
     `## Guides`,
     `- Best Cursor alternatives, sorted by how you code: ${SITE}/alternatives/cursor`,
     `- Best AI coding agents for beginners (no setup required): ${SITE}/best/ai-coding-agent-for-beginners`,
+    `- Best AI research assistants (including tools to summarize papers): ${SITE}/best/ai-research-assistant`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -434,6 +435,8 @@ app.get('/llms-full.txt', (c) => {
     ...cursorAltData().groups.map((g) => `  - ${g.title}: ${g.tools.map((t) => `${t.name} (#${t.rank})`).join(', ')}`),
     `- Best AI coding agents for beginners (no setup required): ${SITE}/best/ai-coding-agent-for-beginners`,
     ...beginnerData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.build}. Runs where: ${p.where}. Pricing: ${p.t.pricingNote}`),
+    `- Best AI research assistants (including tools to summarize papers): ${SITE}/best/ai-research-assistant`,
+    ...researchData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.best}. Sources: ${p.sources}. Pricing: ${p.t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -522,6 +525,7 @@ app.get('/', (c) => {
     <div class="pills">
       <a class="pill" href="/alternatives/cursor">Best Cursor alternatives</a>
       <a class="pill" href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>
+      <a class="pill" href="/best/ai-research-assistant">Best AI research assistants</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -656,6 +660,7 @@ app.get('/category/:slug', (c) => {
     <p>${esc(cat.blurb)}</p>
     ${slug === 'coding' ? '<p class="muted">Switching editors? See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>. New to coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
+    ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
   </section>
   <div class="grid">${list.map(toolCard).join('')}</div>`
   return c.html(layout({
@@ -709,7 +714,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -1183,6 +1188,200 @@ app.get(BEGINNER_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Coding', '/category/coding'], ['AI coding agents for beginners', BEGINNER_PATH]])],
+    },
+  }))
+})
+
+// AI research assistants guide (brief 4). Names, ranks, categories, best-for
+// tags, and pricing notes come from tools.json. The "sources" and "best" lines
+// summarize each official site as checked on 2026-10-27.
+const RESEARCH_PICKS = [
+  { slug: 'gemini', group: 'web', sources: 'The web through Deep Research, plus your Google apps', best: 'Long research reports from hundreds of web sources' },
+  { slug: 'perplexity', group: 'web', sources: 'The live web, with a citation on each answer', best: 'Quick answers you can check against cited sources' },
+  { slug: 'notebooklm', group: 'docs', sources: 'Only the documents and sources you add', best: 'Studying and questioning your own documents' },
+  { slug: 'elicit', group: 'papers', sources: 'More than 138 million academic papers', best: 'Literature reviews and pulling data out of studies' },
+  { slug: 'consensus', group: 'papers', sources: 'Peer-reviewed research papers', best: 'Seeing what studies say on a yes or no question' },
+  { slug: 'scispace', group: 'papers', sources: 'Academic literature and the papers you pick', best: 'Summarizing and comparing many papers, then checking citations' },
+  { slug: 'scholarcy', group: 'papers', sources: 'Papers, articles, chapters, and videos you add', best: 'Turning papers into summary flashcards and notes' },
+  { slug: 'claude', group: 'papers', sources: 'PDFs and files you upload, plus web search', best: 'Close reading and discussion of long PDFs' },
+  { slug: 'elorian-glimpse', group: 'papers', sources: 'Images, charts, figures, and video you provide', best: 'Reading charts, figures, and video' },
+]
+const RESEARCH_TASKS = [
+  ['Answer a question from the web, with sources', 'perplexity'],
+  ['Write a long report on a topic from many web sources', 'gemini'],
+  ['Ask questions about my own notes, PDFs, or slides', 'notebooklm'],
+  ['Run a literature review or extract data from studies', 'elicit'],
+  ['See what peer-reviewed studies say on a question', 'consensus'],
+  ['Summarize and compare a stack of papers, then check my citations', 'scispace'],
+  ['Turn papers into flashcards and study notes', 'scholarcy'],
+  ['Discuss one long PDF in depth', 'claude'],
+  ['Read a chart, figure, or video from a paper', 'elorian-glimpse'],
+]
+const RESEARCH_PATH = '/best/ai-research-assistant'
+const RESEARCH_H1 = 'Best AI Research Assistants in 2026 (Including Tools to Summarize Papers)'
+const RESEARCH_CHECKS = [
+  { name: 'Open every cited source', text: 'Click through each citation and confirm the source exists and is the paper or page the summary names. AI tools can attach a real-looking citation to the wrong claim.' },
+  { name: 'Find the exact passage', text: 'Locate the sentence, table, or figure that supports the claim. If you cannot find it, do not repeat the claim.' },
+  { name: 'Check the study details', text: 'Note the study design, sample size, population, and publication date. A summary often drops the limits that matter most.' },
+  { name: 'Look for a second source', text: 'Confirm important findings with at least one other paper or a review article, especially for health, legal, or financial claims.' },
+  { name: 'Cite the original, not the AI', text: 'Quote and cite the paper itself. Use the AI summary to find and understand sources, not as the source.' },
+]
+
+function researchData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const picks = RESEARCH_PICKS.map((p) => ({ ...p, t: find(p.slug) })).filter((p) => p.t)
+  const byRank = [...picks].sort((a, b) => a.t.rank - b.t.rank)
+  return { all, find, picks, byRank }
+}
+
+function researchFaq(d) {
+  const { find, byRank } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const free = byRank.filter((p) => /free|\$0/i.test(p.t.pricingNote || ''))
+  const faq = []
+  faq.push({
+    q: 'What is the best AI research assistant?',
+    a: `It depends on what you research. For web research with citations, BuildStack ranks ${r('gemini')} and ${r('perplexity')} highest. For your own documents, use ${r('notebooklm')}. For academic papers, start with ${r('elicit')} for literature reviews or ${r('consensus')} for evidence summaries.`,
+  })
+  faq.push({
+    q: 'What is the best AI tool for summarizing research papers?',
+    a: `For many papers at once, ${r('elicit')} and ${r('scispace')} summarize and compare studies in tables. ${r('scholarcy')} turns a single paper into summary flashcards. To discuss one PDF in depth, upload it to ${r('claude')} or ${r('notebooklm')}. For charts and figures, ${r('elorian-glimpse')} is built for visual reasoning.`,
+  })
+  faq.push({
+    q: 'Is NotebookLM good for literature reviews?',
+    a: `NotebookLM is now called Gemini Notebook. It is good for the reading stage of a review: add the papers you have already found and ask questions that are answered only from those sources. It does not search the academic literature for you, so pair it with ${r('elicit')}, ${r('consensus')}, or ${r('scispace')} to find papers first.`,
+  })
+  faq.push({
+    q: 'Perplexity vs Gemini: which is better for research?',
+    a: `BuildStack ranks ${r('gemini')} above ${r('perplexity')}. Pick Perplexity for fast answers with a citation on each claim. Pick Gemini for long Deep Research reports that pull from hundreds of sources, and if you already work in Google apps. Both have free plans.`,
+  })
+  faq.push({
+    q: 'Can I trust AI summaries of scientific papers?',
+    a: 'Use them as a starting point, not as the final word. AI summaries can drop key limits, misread numbers, or attach a citation to the wrong claim. Open each source, find the passage that supports the claim, check the study design and sample size, and cite the original paper.',
+  })
+  faq.push({
+    q: 'Is there a free AI research assistant?',
+    a: `Yes. These picks have a free plan: ${free.map((p) => `${p.t.name} (${p.t.pricingNote})`).join('; ')}. Free plans have usage limits, so check each official pricing page.`,
+  })
+  return faq
+}
+
+app.get(RESEARCH_PATH, (c) => {
+  const d = researchData()
+  const { find, picks, byRank } = d
+  if (!picks.length) return c.notFound()
+  const faq = researchFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const catLink = (t) => `<a href="/category/${esc(t.category)}">${esc(CATEGORIES[t.category]?.label || t.category)}</a>`
+  const pick = (s) => picks.find((p) => p.slug === s)
+  const shortText = `For web research with citations, start with ${rt('gemini')} or ${rt('perplexity')}. For your own documents, use ${rt('notebooklm')}. To summarize research papers, use ${rt('elicit')} for literature reviews, ${rt('consensus')} for evidence summaries, or ${rt('scispace')} to compare many papers. Always open the sources before you cite an AI summary`
+  const shortHtml = `For web research with citations, start with ${rl('gemini')} or ${rl('perplexity')}. For your own documents, use ${rl('notebooklm')}. To summarize research papers, use ${rl('elicit')} for literature reviews, ${rl('consensus')} for evidence summaries, or ${rl('scispace')} to compare many papers. Always open the sources before you cite an AI summary`
+  const description = `Best AI research assistants in 2026, including tools to summarize papers: ${byRank.slice(0, 6).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more. Sources each uses, pricing, and how to check a summary. Updated ${UPDATED}.`
+  const title = `Best AI Research Assistants in 2026 | ${NAME}`
+  const panel = (s) => { const p = pick(s); if (!p) return ''; return `<div class="panel prose" style="margin-bottom:1rem" id="${esc(p.slug)}">
+      <h3 style="margin-top:0;color:var(--text)">${esc(p.t.name)} (#${p.t.rank}, ${catLink(p.t)})</h3>
+      <p>${link(p.t)}: ${esc(p.t.tagline)}. ${esc(p.best)}. BuildStack lists it as best for ${esc(listNames(p.t.bestFor || []))}.</p>
+      <p class="muted" style="margin-bottom:0">Sources: ${esc(p.sources)}. Pricing note: ${esc(p.t.pricingNote || 'See official site')}.</p>
+    </div>` }
+  const body = `
+  <section class="hero">
+    <div class="meta"><a class="tag" href="/category/research">Research</a><span class="tag">Guide</span></div>
+    <h1>${esc(RESEARCH_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · ${picks.length} research picks · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section">
+    <h2>AI research assistants at a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>Best for</th><th>Sources it uses</th><th>Pricing note</th></tr></thead>
+        <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.best)}</td><td>${esc(p.sources)}</td><td>${esc(p.t.pricingNote || 'See official site')}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${UPDATED}. Prices and limits change, so check the official site before you pay.</p>
+  </section>
+  <section class="section">
+    <h2>Best for web research with citations</h2>
+    <p>These assistants search the open web and show where each answer came from. ${rl('gemini')} is the better pick for long reports, and ${rl('perplexity')} for quick answers you can check.</p>
+    ${panel('gemini')}${panel('perplexity')}
+  </section>
+  <section class="section">
+    <h2>Best for working with your own documents</h2>
+    <p>When the answer has to come from your own files, use a tool that stays inside the sources you give it. ${rl('notebooklm')} answers only from the notes, PDFs, and links you add to a notebook.</p>
+    ${panel('notebooklm')}
+  </section>
+  <section class="section">
+    <h2>Best for summarizing research papers</h2>
+    <div class="panel prose" style="margin-bottom:1rem">
+      <h3 style="margin-top:0;color:var(--text)">Elicit: literature review and data extraction</h3>
+      <p>${rl('elicit')} searches more than 138 million papers, summarizes them, and pulls study details into tables. Its paid plans add a systematic review workflow. Pricing note: ${esc(find('elicit')?.pricingNote || 'See official site')}.</p>
+      <h3 style="color:var(--text)">Consensus: evidence summaries</h3>
+      <p>${rl('consensus')} searches peer-reviewed papers and summarizes what the research says on your question, with links to each study. Pricing note: ${esc(find('consensus')?.pricingNote || 'See official site')}.</p>
+      <h3 style="color:var(--text)">SciSpace and Scholarcy: summarize and compare papers</h3>
+      <p>${rl('scispace')} runs an AI research agent over the papers you pick and has a Citation Verifier that checks whether your sources support your claims. ${rl('scholarcy')} turns papers, articles, and chapters into summary flashcards with key findings. </p>
+      <h3 style="color:var(--text)">Gemini Notebook and Claude: PDFs you upload</h3>
+      <p>For a handful of PDFs you already have, add them to ${rl('notebooklm')} and ask questions answered from those files, or upload them to ${rl('claude')} for a close reading and discussion of long documents. Pricing note for Claude: ${esc(find('claude')?.pricingNote || 'See official site')}.</p>
+      <h3 style="color:var(--text)">Elorian Glimpse: charts and figures</h3>
+      <p style="margin-bottom:0">${rl('elorian-glimpse')} is a visual reasoning model that zooms into images, rewatches video, and runs code to measure what it sees, which helps when a finding lives in a chart or figure. It launched as a research preview. Pricing note: ${esc(find('elorian-glimpse')?.pricingNote || 'See official site')}.</p>
+    </div>
+  </section>
+  <section class="section">
+    <h2>Pick by task</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>I need to...</th><th>Start with</th></tr></thead>
+        <tbody>${RESEARCH_TASKS.filter(([, s]) => find(s)).map(([need, s]) => `<tr><td>${esc(need)}</td><td>${rl(s)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+  </section>
+  <section class="section">
+    <div class="panel prose">
+      <h2 style="margin-top:0">How to check an AI summary before you cite it</h2>
+      <ol>${RESEARCH_CHECKS.map((s) => `<li><strong>${esc(s.name)}.</strong> ${esc(s.text)}</li>`).join('')}</ol>
+      <h2>How we chose</h2>
+      <p>This page lists the tools on ${NAME} that help you find, read, and summarize sources, from web search to academic papers and your own files. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. ${rl('claude')} is filed under ${catLink(find('claude') || { category: 'writing' })}; the other picks are under ${catLink({ category: 'research' })}. Featured listings do not affect rank. We do not publish accuracy scores. Read the full <a href="/methodology">methodology</a>, or browse every <a href="/category/research">research tool</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: RESEARCH_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: RESEARCH_H1,
+        description,
+        url: `${SITE}${RESEARCH_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI research assistants on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: byRank.length,
+        itemListElement: byRank.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t.name, url: `${SITE}/tool/${p.t.slug}` })),
+      }, {
+        '@type': 'HowTo',
+        name: 'How to check an AI research summary before you cite it',
+        step: RESEARCH_CHECKS.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.name, text: s.text })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Research', '/category/research'], ['AI research assistants', RESEARCH_PATH]])],
     },
   }))
 })
