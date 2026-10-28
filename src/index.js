@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-27'
+const UPDATED = '2026-10-28'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -339,7 +339,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -395,6 +395,7 @@ app.get('/llms.txt', (c) => {
     `- Best Cursor alternatives, sorted by how you code: ${SITE}/alternatives/cursor`,
     `- Best AI coding agents for beginners (no setup required): ${SITE}/best/ai-coding-agent-for-beginners`,
     `- Best AI research assistants (including tools to summarize papers): ${SITE}/best/ai-research-assistant`,
+    `- Best free AI tools in 2026, by what you need to do: ${SITE}/best/free-ai-tools`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -437,6 +438,8 @@ app.get('/llms-full.txt', (c) => {
     ...beginnerData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.build}. Runs where: ${p.where}. Pricing: ${p.t.pricingNote}`),
     `- Best AI research assistants (including tools to summarize papers): ${SITE}/best/ai-research-assistant`,
     ...researchData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.best}. Sources: ${p.sources}. Pricing: ${p.t.pricingNote}`),
+    `- Best free AI tools in 2026, by what you need to do: ${SITE}/best/free-ai-tools`,
+    ...freeData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}, ${p.t.category}): ${FREE_KINDS[p.kind]?.label || 'Free'}. ${p.free}. Pricing: ${p.t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -526,6 +529,7 @@ app.get('/', (c) => {
       <a class="pill" href="/alternatives/cursor">Best Cursor alternatives</a>
       <a class="pill" href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>
       <a class="pill" href="/best/ai-research-assistant">Best AI research assistants</a>
+      <a class="pill" href="/best/free-ai-tools">Best free AI tools</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -661,6 +665,7 @@ app.get('/category/:slug', (c) => {
     ${slug === 'coding' ? '<p class="muted">Switching editors? See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>. New to coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
+    <p class="muted">On a budget? See the <a href="/best/free-ai-tools#${slug === 'agents' ? 'automation' : esc(slug)}">best free AI tools for ${esc(cat.label.toLowerCase())}</a>.</p>
   </section>
   <div class="grid">${list.map(toolCard).join('')}</div>`
   return c.html(layout({
@@ -714,7 +719,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -1382,6 +1387,214 @@ app.get(RESEARCH_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Research', '/category/research'], ['AI research assistants', RESEARCH_PATH]])],
+    },
+  }))
+})
+
+// Free AI tools guide (brief 5). Names, ranks, taglines, best-for tags, and
+// pricing notes come from tools.json, so the page tracks the live ranks. The
+// "free" lines restate each official pricing page as checked on 2026-10-28.
+// A slug missing from the data is skipped.
+const FREE_KINDS = {
+  plan: { label: 'Free plan', text: 'A free tier you can keep using, usually with a sign-in and a usage cap.' },
+  account: { label: 'Free with an account', text: 'Free as part of an account you may already have, such as a Google account.' },
+  credits: { label: 'Free credits', text: 'A set number of free credits, tokens, or videos each day or month. When they run out, you wait or pay.' },
+  open: { label: 'Open source or open weights', text: 'Software or model weights you download and run yourself. The software is free, but you supply the computer or pay for the AI model it calls.' },
+}
+const FREE_GROUPS = [
+  { id: 'writing', title: 'Writing and chat', cat: 'writing', intro: 'Free chat assistants for drafting, editing, and everyday questions.' },
+  { id: 'coding', title: 'Coding', cat: 'coding', intro: 'Free editors, coding agents, and app builders.' },
+  { id: 'research', title: 'Research', cat: 'research', intro: 'Free tools for web research with citations and for academic papers.' },
+  { id: 'images', title: 'Images', cat: 'images', intro: 'Image generators with a free allowance of credits.' },
+  { id: 'video', title: 'Video', cat: 'video', intro: 'Video generators and editors you can start on for free.' },
+  { id: 'voice', title: 'Voice and audio', cat: 'voice', intro: 'Free plans for text to speech, meeting notes, and music.' },
+  { id: 'automation', title: 'Automation', cat: 'agents', intro: 'Free plans for connecting apps and running simple agents.' },
+  { id: 'open', title: 'Open-weight models you can run yourself', cat: null, intro: 'Download the model and run it on your own hardware. Check the license before you use it in a business.' },
+]
+const FREE_PICKS = [
+  { slug: 'chatgpt', group: 'writing', kind: 'plan', free: 'Free tier, with paid Plus and Pro plans for more use' },
+  { slug: 'claude', group: 'writing', kind: 'plan', free: 'Free plan, with paid Pro and Max plans for more use' },
+  { slug: 'grammarly', group: 'writing', kind: 'plan', free: 'Free version alongside paid Premium' },
+  { slug: 'google-antigravity', group: 'coding', kind: 'plan', free: 'Free for individuals, with rate limits' },
+  { slug: 'cursor', group: 'coding', kind: 'plan', free: 'Free Hobby tier' },
+  { slug: 'windsurf', group: 'coding', kind: 'plan', free: 'Free $0 plan' },
+  { slug: 'cline', group: 'coding', kind: 'open', free: 'Free and open source for individuals; you pay only for the AI model it calls' },
+  { slug: 'bolt', group: 'coding', kind: 'credits', free: '1M tokens a month plus website hosting' },
+  { slug: 'lovable', group: 'coding', kind: 'credits', free: '5 build credits a day, up to 30 a month' },
+  { slug: 'gemini', group: 'research', kind: 'account', free: 'Free with a Google account' },
+  { slug: 'perplexity', group: 'research', kind: 'plan', free: 'Free Standard plan' },
+  { slug: 'notebooklm', group: 'research', kind: 'account', free: 'Free with a Google account' },
+  { slug: 'elicit', group: 'research', kind: 'plan', free: 'Free Basic plan with unlimited paper search and summaries' },
+  { slug: 'consensus', group: 'research', kind: 'plan', free: 'Free plan with unlimited paper searches' },
+  { slug: 'krea-3', group: 'images', kind: 'credits', free: 'Free plan with a daily compute allowance' },
+  { slug: 'ideogram', group: 'images', kind: 'credits', free: 'Free credits, with paid credits for more' },
+  { slug: 'leonardo', group: 'images', kind: 'credits', free: 'Free tokens, with paid plans for more' },
+  { slug: 'veo-3-1', group: 'video', kind: 'credits', free: '50 free Google Flow credits a day, enough for 5 Veo 3.1 Lite videos' },
+  { slug: 'heygen', group: 'video', kind: 'credits', free: '3 watermarked avatar videos a month' },
+  { slug: 'capcut', group: 'video', kind: 'plan', free: 'Free editor with paid Pro upgrades' },
+  { slug: 'descript', group: 'video', kind: 'plan', free: 'Free plan alongside paid plans' },
+  { slug: 'elevenlabs', group: 'voice', kind: 'credits', free: '10,000 credits a month, for personal use only (no commercial license)' },
+  { slug: 'otter', group: 'voice', kind: 'plan', free: 'Free Basic plan' },
+  { slug: 'fireflies', group: 'voice', kind: 'plan', free: 'Free plan' },
+  { slug: 'suno', group: 'voice', kind: 'plan', free: 'Free plan' },
+  { slug: 'make', group: 'automation', kind: 'credits', free: '1,000 credits a month, with no card and no time limit' },
+  { slug: 'zapier', group: 'automation', kind: 'plan', free: '100 tasks a month with two-step Zaps' },
+  { slug: 'agentspot', group: 'automation', kind: 'plan', free: 'Free plan with no time limit and no card, with a weekly usage allowance' },
+  { slug: 'n8n', group: 'automation', kind: 'open', free: 'Free to self-host on your own server' },
+  { slug: 'liquid-lfm3', group: 'open', kind: 'open', free: 'Free open weights; free commercial use under $10 million in annual revenue' },
+  { slug: 'recursive-flint', group: 'open', kind: 'open', free: 'Free open weights under Apache 2.0' },
+  { slug: 'reflection-beam', group: 'open', kind: 'open', free: 'Free open weights under Apache 2.0' },
+  { slug: 'ibm-granite-speech-5', group: 'open', kind: 'open', free: 'Free open weights under Apache 2.0' },
+  { slug: 'fish-audio-drama-3', group: 'open', kind: 'open', free: 'Open weights free for commercial use under US$500K in annual revenue' },
+]
+const FREE_WATCH = [
+  { name: 'Usage caps', text: 'Free plans run out. Zapier stops at 100 tasks a month, Make at 1,000 credits, and Lovable at 5 build credits a day. Google Flow may not let free users make videos at peak hours.' },
+  { name: 'Commercial use', text: 'Some free plans are for personal use only. The ElevenLabs free plan has no commercial license; you need a paid plan to use the audio in a business.' },
+  { name: 'Watermarks', text: 'Free HeyGen videos carry a watermark. Every Veo video carries an invisible SynthID watermark, on free and paid plans.' },
+  { name: 'Open-weight licenses', text: 'Open weights are not always free for every business. LFM3 is free for commercial use only for companies under $10 million in annual revenue, and Fish Audio Drama 3 under US$500K. Apache 2.0 models have no revenue limit.' },
+  { name: 'Private data', text: 'Before you paste private or client data into a free tool, read its privacy settings and terms. Some services use conversations to improve their models unless you opt out, and rules can differ between free and paid plans.' },
+  { name: 'Credit cards', text: 'Make, Zapier, and AgentSpot let you start without a card. If a free trial asks for one, set a reminder to cancel before it renews.' },
+]
+const FREE_PATH = '/best/free-ai-tools'
+const FREE_H1 = 'Best Free AI Tools in 2026, by What You Need to Do'
+
+function freeData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const picks = FREE_PICKS.map((p) => ({ ...p, t: find(p.slug) })).filter((p) => p.t)
+  const byRank = [...picks].sort((a, b) => a.t.rank - b.t.rank)
+  return { all, find, picks, byRank }
+}
+
+function freeFaq(d) {
+  const { find, picks } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const inGroup = (g) => picks.filter((p) => p.group === g)
+  const faq = []
+  faq.push({
+    q: 'What are the best free AI tools right now?',
+    a: `It depends on the job. On free plans, BuildStack ranks ${r('claude')} and ${r('chatgpt')} highest for writing and questions, ${r('gemini')} and ${r('perplexity')} for research, ${r('google-antigravity')} and ${r('cline')} for coding, ${r('veo-3-1')} for video, and ${r('make')} and ${r('zapier')} for automation.`,
+  })
+  faq.push({
+    q: 'Which AI tools are completely free, with no trial?',
+    a: `Open-source tools and open-weight models are free to download and use with no trial: ${listNames(picks.filter((p) => p.kind === 'open').map((p) => `${p.t.name} (#${p.t.rank})`))}. Check each license, and note that you still pay for your own computer or for the AI model a tool calls. Free plans such as ${r('chatgpt')} and ${r('gemini')} have no end date, but they cap how much you can use.`,
+  })
+  faq.push({
+    q: 'What is the best free AI for writing?',
+    a: `${r('claude')} and ${r('chatgpt')} both have free plans for drafting and editing, and ${r('grammarly')} has a free version for grammar and tone checks as you type. The free plans have usage limits, so heavy users may hit a cap.`,
+  })
+  faq.push({
+    q: 'Is there a free AI coding assistant?',
+    a: `Yes. ${r('google-antigravity')} is free for individuals with rate limits, ${r('cursor')} has a free Hobby tier, and ${r('windsurf')} has a $0 plan. ${r('cline')} is open source and you pay only for the AI model it calls. To build an app without coding, ${r('bolt')} and ${r('lovable')} have free plans with monthly or daily credits.`,
+  })
+  faq.push({
+    q: 'Are free AI tools safe to use with private data?',
+    a: 'Treat free tools with care. Read each tool\'s privacy settings and terms before you paste private or client data, because some services use conversations to improve their models unless you opt out, and rules can differ between free and paid plans. For sensitive work, a business plan with clear data terms or an open-weight model you run yourself keeps more control in your hands.',
+  })
+  faq.push({
+    q: 'What is the difference between a free tier and open weights?',
+    a: `A free tier is a hosted service you use for free up to a limit, such as ${r('perplexity')}. Open weights are model files you download and run on your own hardware, such as ${listNames(inGroup('open').slice(0, 2).map((p) => `${p.t.name} (#${p.t.rank})`))}. Open weights have no usage cap from the vendor and keep your data on your machine, but you need the hardware and the know-how, and the license may limit business use.`,
+  })
+  return faq
+}
+
+app.get(FREE_PATH, (c) => {
+  const d = freeData()
+  const { find, picks, byRank } = d
+  if (!picks.length) return c.notFound()
+  const faq = freeFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const catLink = (t) => `<a href="/category/${esc(t.category)}">${esc(CATEGORIES[t.category]?.label || t.category)}</a>`
+  const short = (f) => `For writing and everyday questions, start with ${f('claude')} or ${f('chatgpt')} on their free plans. For research, use ${f('gemini')} or ${f('perplexity')}. For coding, ${f('google-antigravity')} is free for individuals and ${f('cline')} is open source. For video, ${f('veo-3-1')} gives you 50 free Google Flow credits a day. For automation, ${f('make')} includes 1,000 free credits a month. To avoid vendor limits entirely, run an open-weight model such as ${f('liquid-lfm3')} on your own hardware`
+  const shortText = short(rt)
+  const shortHtml = short(rl)
+  const description = `Best free AI tools in 2026 by task: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with what each free plan includes and the limits to watch. Updated ${UPDATED}.`
+  const title = `Best Free AI Tools in 2026, by Task | ${NAME}`
+  const kindLabel = (p) => FREE_KINDS[p.kind]?.label || 'Free'
+  const groupHtml = (g) => {
+    const list = picks.filter((p) => p.group === g.id).sort((a, b) => a.t.rank - b.t.rank)
+    if (!list.length) return ''
+    const more = g.cat ? ` Browse every <a href="/category/${g.cat}">${esc(CATEGORIES[g.cat].label.toLowerCase())} tool</a>.` : ''
+    return `<section class="section" id="${esc(g.id)}">
+    <h2>Best free AI tools for ${esc(g.title.charAt(0).toLowerCase() + g.title.slice(1))}</h2>
+    <p>${esc(g.intro)}${more}</p>
+    ${list.map((p) => `<div class="panel prose" style="margin-bottom:1rem" id="${esc(p.slug)}">
+      <h3 style="margin-top:0;color:var(--text)">${esc(p.t.name)} (#${p.t.rank}, ${catLink(p.t)})</h3>
+      <p>${link(p.t)}: ${esc(p.t.tagline)}. BuildStack lists it as best for ${esc(listNames(p.t.bestFor || []))}.</p>
+      <p style="margin-bottom:.4rem"><strong>${esc(kindLabel(p))}:</strong> ${esc(p.free)}.</p>
+      <p class="muted" style="margin-bottom:0">Pricing note: ${esc((p.t.pricingNote || 'See official site').replace(/\.$/, ''))}.</p>
+    </div>`).join('')}
+  </section>`
+  }
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Free</span></div>
+    <h1>${esc(FREE_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · Free plans checked on ${UPDATED} · ${picks.length} free picks · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section">
+    <h2>Free AI tools at a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>Category</th><th>Type of free</th><th>What you get free</th></tr></thead>
+        <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${catLink(p.t)}</td><td>${esc(kindLabel(p))}</td><td>${esc(p.free)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Free plans were checked against each official pricing page or the pricing note on BuildStack. Free limits change often, so check the official site before you rely on one.</p>
+  </section>
+  <section class="section">
+    <div class="panel prose">
+      <h2 style="margin-top:0">How we define free</h2>
+      <p>Every tool on this page lets you do real work without paying. Each one carries one of these labels:</p>
+      <ul class="clean">${Object.values(FREE_KINDS).map((k) => `<li><strong>${esc(k.label)}.</strong> ${esc(k.text)}</li>`).join('')}</ul>
+      <p style="margin-bottom:0">Short free trials that end in a charge do not count, so tools that are paid only, or free only for a few days, are left out.</p>
+    </div>
+  </section>
+  ${FREE_GROUPS.map(groupHtml).join('')}
+  <section class="section">
+    <div class="panel prose">
+      <h2 style="margin-top:0">Watch-outs before you rely on a free plan</h2>
+      <ol>${FREE_WATCH.map((w) => `<li><strong>${esc(w.name)}.</strong> ${esc(w.text)}</li>`).join('')}</ol>
+      <h2>How we chose</h2>
+      <p>This page lists the tools on ${NAME} that have a lasting free plan, free credits, or free open weights. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. Featured listings do not affect rank. Read the full <a href="/methodology">methodology</a>, browse the <a href="/categories">categories</a> (${Object.entries(CATEGORIES).map(([k, v]) => `<a href="/category/${k}">${esc(v.label)}</a>`).join(', ')}), or describe your task in the <a href="/">tool finder</a> to see every match.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: FREE_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: FREE_H1,
+        description,
+        url: `${SITE}${FREE_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best free AI tools on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: byRank.length,
+        itemListElement: byRank.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t.name, url: `${SITE}/tool/${p.t.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Best free AI tools', FREE_PATH]])],
     },
   }))
 })
