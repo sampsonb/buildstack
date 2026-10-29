@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-28'
+const UPDATED = '2026-10-29'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -339,7 +339,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -396,6 +396,7 @@ app.get('/llms.txt', (c) => {
     `- Best AI coding agents for beginners (no setup required): ${SITE}/best/ai-coding-agent-for-beginners`,
     `- Best AI research assistants (including tools to summarize papers): ${SITE}/best/ai-research-assistant`,
     `- Best free AI tools in 2026, by what you need to do: ${SITE}/best/free-ai-tools`,
+    `- Best AI voice generators and text to speech tools: ${SITE}/best/ai-voice-generator`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -440,6 +441,8 @@ app.get('/llms-full.txt', (c) => {
     ...researchData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.best}. Sources: ${p.sources}. Pricing: ${p.t.pricingNote}`),
     `- Best free AI tools in 2026, by what you need to do: ${SITE}/best/free-ai-tools`,
     ...freeData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}, ${p.t.category}): ${FREE_KINDS[p.kind]?.label || 'Free'}. ${p.free}. Pricing: ${p.t.pricingNote}`),
+    `- Best AI voice generators and text to speech tools: ${SITE}/best/ai-voice-generator`,
+    ...voiceData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Type: ${VOICE_TYPES[p.type]}. Pricing: ${p.price}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -530,6 +533,7 @@ app.get('/', (c) => {
       <a class="pill" href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>
       <a class="pill" href="/best/ai-research-assistant">Best AI research assistants</a>
       <a class="pill" href="/best/free-ai-tools">Best free AI tools</a>
+      <a class="pill" href="/best/ai-voice-generator">Best AI voice generators</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -664,6 +668,7 @@ app.get('/category/:slug', (c) => {
     <p>${esc(cat.blurb)}</p>
     ${slug === 'coding' ? '<p class="muted">Switching editors? See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>. New to coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
+    ${slug === 'voice' ? '<p class="muted">Need a voiceover or a text to speech API? See the <a href="/best/ai-voice-generator">best AI voice generators and text to speech tools</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
     <p class="muted">On a budget? See the <a href="/best/free-ai-tools#${slug === 'agents' ? 'automation' : esc(slug)}">best free AI tools for ${esc(cat.label.toLowerCase())}</a>.</p>
   </section>
@@ -719,7 +724,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -1446,6 +1451,7 @@ const FREE_PICKS = [
   { slug: 'reflection-beam', group: 'open', kind: 'open', free: 'Free open weights under Apache 2.0' },
   { slug: 'ibm-granite-speech-5', group: 'open', kind: 'open', free: 'Free open weights under Apache 2.0' },
   { slug: 'fish-audio-drama-3', group: 'open', kind: 'open', free: 'Open weights free for commercial use under US$500K in annual revenue' },
+  { slug: 'gradium-phonon', group: 'open', kind: 'open', free: 'Free open weights and code under Apache 2.0, small enough to run on a phone or in a browser' },
 ]
 const FREE_WATCH = [
   { name: 'Usage caps', text: 'Free plans run out. Zapier stops at 100 tasks a month, Make at 1,000 credits, and Lovable at 5 build credits a day. Google Flow may not let free users make videos at peak hours.' },
@@ -1595,6 +1601,169 @@ app.get(FREE_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Best free AI tools', FREE_PATH]])],
+    },
+  }))
+})
+
+// AI voice generator guide (brief 6). Names, ranks, taglines, and best-for tags
+// come from tools.json, so the page tracks the live ranks. The "price" lines
+// restate each official pricing page or launch post as checked on 2026-10-29;
+// where a price could not be verified, the page says so instead of guessing.
+const VOICE_TYPES = {
+  app: 'Creator app and API',
+  api: 'Developer API',
+  open: 'Open weights you run yourself',
+  agent: 'Voice agent platform',
+  music: 'Music and vocals',
+}
+const VOICE_PICKS = [
+  { slug: 'elevenlabs', type: 'app', id: 'best-overall', heading: 'Best overall: realistic voiceovers in many languages', role: 'Best overall for realistic voiceovers, narration, and dubbing',
+    price: 'Free plan with 10,000 credits a month and no commercial license; Starter $6 a month adds a commercial license and instant voice cloning; Creator $22 a month adds professional voice cloning; Pro $99 a month',
+    why: 'ElevenLabs is the easiest place to start if you want a voiceover that sounds like a person. You type or paste a script, pick a voice from the library or clone your own, and download the audio. The same voices are available through an API, and the dubbing tools translate a video into other languages while keeping the speaker\'s voice.',
+    watch: 'The free plan is for personal use. For YouTube, ads, or client work you need at least the Starter plan.' },
+  { slug: 'fish-audio-drama-3', type: 'open', id: 'expressive-narration', heading: 'Best for directed, expressive narration', role: 'Best for audiobooks, audio drama, and game dialogue where you direct the delivery',
+    price: 'API launch price $10 per 1M characters through November 12, 2026, then $50 list; creator plans on fish.audio; open weights free for commercial use under US$500K annual revenue',
+    why: 'Fish Audio Drama 3 is built for performance rather than plain reading. It suits audiobooks, audio drama, and character dialogue where you want to direct how each line is delivered. You can use it in the Fish Audio app, call the API, or download the open weights and run it yourself.',
+    watch: 'The $10 launch price ends November 12, 2026. The open-weight license bans cloning a real person\'s voice without their consent.' },
+  { slug: 'mistral-voxtral-3', type: 'api', id: 'multilingual-api', heading: 'Best for multilingual text to speech and voice agents', role: 'Best for developers who want speech in, speech out, and voice agents from one vendor',
+    price: 'Voxtral Mini TTS 3 is $13 per 1M characters on the Mistral API; transcription from $0.0035 a minute; voice agent API from $0.04 a minute',
+    why: 'Voxtral 3 covers the whole voice loop in one family: transcription, text to speech, and a voice agent API. That makes it a good fit if you are building a multilingual assistant and want fewer vendors to manage.',
+    watch: 'It is a developer API, not a point-and-click voiceover studio.' },
+  { slug: 'assemblyai-tts-1', type: 'api', id: 'voice-agents', heading: 'Best for low-latency voice agents', role: 'Best for phone and web voice agents that need fast, steady speech',
+    price: '$15 per 1M characters, pay as you go, with every voice, language, and voice cloning included; volume pricing for committed usage',
+    why: 'AssemblyAI-TTS-1 went generally available on October 27, 2026 and is tuned for agents: about 90 ms to first audio in production, unlimited concurrency on pay-as-you-go, and reference agents for LiveKit and Pipecat. It has more than 4,000 voices, word timestamps, and US or EU processing.',
+    watch: 'At launch it speaks six languages (English, Spanish, French, German, Italian, and Portuguese). AssemblyAI lists professional cloning, SSML, speed control, and emotion tags as not yet available.' },
+  { slug: 'gradium-phonon', type: 'open', id: 'on-device', heading: 'Best for on-device and private speech', role: 'Best for apps that need speech offline, on a phone, or in the browser',
+    price: 'Free open weights and code under Apache 2.0; voice cloning and voice design through the Gradium API',
+    why: 'Phonon is small enough (31M and 40M parameter versions) to ship inside a mobile app or load in a browser tab, so text and audio never leave the device. It speaks English, French, German, Spanish, and Portuguese in one model, with integrations for Rust, Python, Swift, and WebAssembly.',
+    watch: 'It runs on your hardware, so you handle setup. Voice cloning is not in the open model; it goes through the Gradium API.' },
+  { slug: 'hume', type: 'agent', id: 'emotion-aware', heading: 'Best for emotion-aware voice apps', role: 'Best for conversational voice apps that respond to tone and emotion',
+    price: 'Current pricing could not be verified on hume.ai; check the official site',
+    why: 'Hume builds voice AI that pays attention to how something is said, not only what is said. Its Octave text to speech model and its empathic voice interface are aimed at conversational apps, coaching, and characters where tone matters.',
+    watch: 'Hume\'s site now leads with tools for evaluating voice AI, so check what is on offer before you commit.' },
+  { slug: 'suno', type: 'music', id: 'music-and-vocals', heading: 'Bonus: music and sung vocals', role: 'Bonus pick for songs, jingles, and vocal demos rather than spoken voiceovers',
+    price: 'Free plan with the v6-mini model; paid Pro and Premier plans add the v6 and v6-wild models',
+    why: 'Suno is not a text to speech tool, but if what you need is a sung vocal, a jingle, or a song draft, it is the faster route. You describe the song or paste lyrics and it generates the track with vocals.',
+    watch: 'Check which plan includes commercial rights before you publish a track.' },
+]
+const VOICE_PATH = '/best/ai-voice-generator'
+const VOICE_H1 = 'Best AI Voice Generators and Text to Speech Tools in 2026'
+
+function voiceData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const picks = VOICE_PICKS.map((p) => ({ ...p, t: find(p.slug) })).filter((p) => p.t)
+  const byRank = [...picks].sort((a, b) => a.t.rank - b.t.rank)
+  return { all, find, picks, byRank }
+}
+
+function voiceFaq(d) {
+  const { find } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  return [
+    { q: 'What is the most realistic AI voice generator?',
+      a: `For ready-to-use voiceovers, BuildStack ranks ${r('elevenlabs')} first among voice generators. For directed, emotional performances such as audiobooks and character dialogue, ${r('fish-audio-drama-3')} is the stronger pick. Realism depends on the voice and the script, so try a short sample of your own text in each before you commit.` },
+    { q: 'What is the best free text to speech AI?',
+      a: `${r('elevenlabs')} has a free plan with 10,000 credits a month, but it has no commercial license. If you want free with no vendor limits, ${r('gradium-phonon')} is open source under Apache 2.0 and runs on your own device, and ${r('fish-audio-drama-3')} has open weights that are free for commercial use under US$500K in annual revenue.` },
+    { q: 'Is ElevenLabs worth paying for?',
+      a: 'If you publish audio, usually yes. The free plan is for personal use only, and the Starter plan at $6 a month adds a commercial license and instant voice cloning. Creator at $22 a month adds professional voice cloning and more credits, which suits regular YouTube or podcast work.' },
+    { q: 'What is the cheapest text to speech API?',
+      a: `Among the APIs on this page with published per-character prices, ${r('fish-audio-drama-3')} is $10 per 1M characters through November 12, 2026 ($50 list after that), ${r('mistral-voxtral-3')} is $13 per 1M characters for Voxtral Mini TTS 3, and ${r('assemblyai-tts-1')} is $15 per 1M characters with every voice and cloning included. Running ${r('gradium-phonon')} on your own device has no per-character fee at all.` },
+    { q: 'Can I use AI voices commercially on YouTube?',
+      a: 'Often, but it depends on your plan and license. On ElevenLabs the free plan has no commercial license, so you need a paid plan. Open-weight models come with their own licenses, such as the US$500K revenue limit on Fish Audio Drama 3. Read the license for the plan you use, and follow YouTube\'s own rules on disclosing synthetic content.' },
+    { q: 'Is it legal to clone a voice with AI?',
+      a: 'Cloning your own voice, or a voice you have clear permission to use, is the safe path. Cloning a real person without consent can break the tool\'s terms and, depending on where you are, laws on likeness and fraud. AssemblyAI asks you to confirm the speaker\'s permission before cloning, and the Fish Audio Drama 3 license bans cloning a real person\'s voice without consent. This is not legal advice; ask a lawyer for anything commercial or sensitive.' },
+  ]
+}
+
+app.get(VOICE_PATH, (c) => {
+  const d = voiceData()
+  const { find, picks, byRank } = d
+  if (!picks.length) return c.notFound()
+  const faq = voiceFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const short = (f) => `For realistic voiceovers, start with ${f('elevenlabs')}. For directed, expressive narration, use ${f('fish-audio-drama-3')}. Developers building multilingual voice apps should look at ${f('mistral-voxtral-3')}, and ${f('assemblyai-tts-1')} is built for low-latency voice agents. To keep speech on the device, run ${f('gradium-phonon')}`
+  const shortText = short(rt)
+  const shortHtml = short(rl)
+  const description = `Best AI voice generators and text to speech tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with verified pricing and what each is best for. Updated ${UPDATED}.`
+  const title = `Best AI Voice Generators and Text to Speech in 2026 | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Voice</span></div>
+    <h1>${esc(VOICE_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · Pricing checked on ${UPDATED} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section">
+    <h2>AI voice generators at a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>Type</th><th>Best for</th><th>Pricing</th></tr></thead>
+        <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(VOICE_TYPES[p.type])}</td><td>${esc(listNames(p.t.bestFor || []))}</td><td>${esc(p.price)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Prices were checked against each official pricing page or launch post. Voice pricing changes often, so check the official site before you buy.</p>
+  </section>
+  ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
+    <h2>${esc(p.heading)}</h2>
+    <div class="panel prose">
+      <h3 style="margin-top:0;color:var(--text)">${link(p.t)} (#${p.t.rank} overall)</h3>
+      <p>${esc(p.t.tagline)}. ${esc(p.why)}</p>
+      <p><strong>Best for:</strong> ${esc(listNames(p.t.bestFor || []))}.</p>
+      <p><strong>Pricing:</strong> ${esc(p.price)}.</p>
+      <p class="muted" style="margin-bottom:0"><strong>Watch out:</strong> ${esc(p.watch)}</p>
+    </div>
+  </section>`).join('')}
+  <section class="section" id="generator-vs-api">
+    <div class="panel prose">
+      <h2 style="margin-top:0">Voice generator or text to speech API?</h2>
+      <p>A <strong>voice generator</strong> is an app: you paste a script, pick a voice, and download the audio. That is what most YouTubers, podcasters, and marketers want, and ${rl('elevenlabs')} is the usual starting point.</p>
+      <p>A <strong>text to speech API</strong> is for developers who need speech inside their own product, such as a phone agent or an app that reads text aloud. Here the questions are latency, price per character, languages, and concurrency. ${rl('assemblyai-tts-1')} and ${rl('mistral-voxtral-3')} are API-first. ${rl('gradium-phonon')} skips the API and runs on the device.</p>
+      <h2 id="cloning-and-commercial-use">Voice cloning, consent, and commercial use</h2>
+      <ul class="clean">
+        <li><strong>Get consent.</strong> Only clone your own voice or a voice you have written permission to use. AssemblyAI asks you to confirm permission, and the Fish Audio Drama 3 license bans cloning a real person without consent.</li>
+        <li><strong>Check the commercial license.</strong> The ElevenLabs free plan has no commercial license; paid plans start at $6 a month. Open weights have their own terms, such as the US$500K revenue limit on Fish Audio Drama 3 and the Apache 2.0 license on Phonon.</li>
+        <li><strong>Disclose synthetic voices</strong> where your platform asks you to, and never use a cloned voice to impersonate someone.</li>
+      </ul>
+      <h2>How we chose</h2>
+      <p>This page covers the voice tools ranked on ${NAME} that generate speech or vocals. Ranks are the same editorial ranks used across the site; featured listings do not affect rank. Voice tools that are not yet ranked on ${NAME}, such as Murf and Cartesia, are left out until they are reviewed. For meeting notes and transcription, browse the full <a href="/category/voice">voice category</a>. For free options across every category, see the <a href="/best/free-ai-tools#voice">best free AI tools</a>. Read the full <a href="/methodology">methodology</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: VOICE_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: VOICE_H1,
+        description,
+        url: `${SITE}${VOICE_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI voice generators and text to speech tools on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: byRank.length,
+        itemListElement: byRank.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t.name, url: `${SITE}/tool/${p.t.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Voice', '/category/voice'], ['AI voice generators', VOICE_PATH]])],
     },
   }))
 })
