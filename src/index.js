@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-29'
+const UPDATED = '2026-10-30'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -339,7 +339,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -397,6 +397,7 @@ app.get('/llms.txt', (c) => {
     `- Best AI research assistants (including tools to summarize papers): ${SITE}/best/ai-research-assistant`,
     `- Best free AI tools in 2026, by what you need to do: ${SITE}/best/free-ai-tools`,
     `- Best AI voice generators and text to speech tools: ${SITE}/best/ai-voice-generator`,
+    `- Best AI coding assistants in 2026, ranked: ${SITE}/best/ai-coding-assistant`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -443,6 +444,8 @@ app.get('/llms-full.txt', (c) => {
     ...freeData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}, ${p.t.category}): ${FREE_KINDS[p.kind]?.label || 'Free'}. ${p.free}. Pricing: ${p.t.pricingNote}`),
     `- Best AI voice generators and text to speech tools: ${SITE}/best/ai-voice-generator`,
     ...voiceData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Type: ${VOICE_TYPES[p.type]}. Pricing: ${p.price}`),
+    `- Best AI coding assistants in 2026, ranked: ${SITE}/best/ai-coding-assistant`,
+    ...codingData().list.map((t) => `  - ${t.name} (#${t.rank}): ${CODING_TYPES[t.slug] || 'Coding tool'}. Best for: ${listNames(t.bestFor || [])}. Pricing: ${t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -534,6 +537,7 @@ app.get('/', (c) => {
       <a class="pill" href="/best/ai-research-assistant">Best AI research assistants</a>
       <a class="pill" href="/best/free-ai-tools">Best free AI tools</a>
       <a class="pill" href="/best/ai-voice-generator">Best AI voice generators</a>
+      <a class="pill" href="/best/ai-coding-assistant">Best AI coding assistants</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -666,6 +670,7 @@ app.get('/category/:slug', (c) => {
   <section class="hero">
     <h1>${esc(cat.label)}</h1>
     <p>${esc(cat.blurb)}</p>
+    ${slug === 'coding' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-coding-assistant">best AI coding assistants, ranked</a>.</p>' : ''}
     ${slug === 'coding' ? '<p class="muted">Switching editors? See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>. New to coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'voice' ? '<p class="muted">Need a voiceover or a text to speech API? See the <a href="/best/ai-voice-generator">best AI voice generators and text to speech tools</a>.</p>' : ''}
@@ -724,7 +729,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -851,7 +856,7 @@ const CURSOR_ALT_GROUPS = [
   { id: 'terminal', title: 'Terminal-first agents', intro: 'Agents that read your repo, edit files, and run commands from the terminal.', slugs: ['claude-code', 'openai-codex', 'opencode'] },
   { id: 'google', title: "Google's agentic platform", intro: 'Agent-driven coding across an app, CLI, IDE, and SDK.', slugs: ['google-antigravity'] },
   { id: 'app-builders', title: 'Build an app without an IDE', intro: 'Describe the app and get working code in the browser.', slugs: ['v0', 'lovable', 'bolt'] },
-  { id: 'open-local', title: 'Open weights and local models', intro: 'Models you can run yourself, then plug into an agent such as OpenCode or Cline.', slugs: ['recursive-flint', 'muse-spark-open', 'reflection-beam', 'deepseek'] },
+  { id: 'open-local', title: 'Open weights and local models', intro: 'Models you can run yourself, then plug into an agent such as OpenCode or Cline.', slugs: ['recursive-flint', 'mistral-large-4', 'muse-spark-open', 'reflection-beam', 'deepseek'] },
   { id: 'many-agents', title: 'Running many agents at once', intro: 'Supervise several coding agents side by side.', slugs: ['harness-autonomous'] },
 ]
 
@@ -869,6 +874,7 @@ const CURSOR_ALT_TYPES = {
   lovable: 'App builder',
   bolt: 'In-browser app builder',
   'recursive-flint': 'Open-weight local coding model',
+  'mistral-large-4': 'Open-weight frontier coding model',
   'muse-spark-open': 'Open-weight coding model',
   'reflection-beam': 'Open-weight coding model',
   deepseek: 'Coding and reasoning models',
@@ -1421,7 +1427,7 @@ const FREE_PICKS = [
   { slug: 'claude', group: 'writing', kind: 'plan', free: 'Free plan, with paid Pro and Max plans for more use' },
   { slug: 'grammarly', group: 'writing', kind: 'plan', free: 'Free version alongside paid Premium' },
   { slug: 'google-antigravity', group: 'coding', kind: 'plan', free: 'Free for individuals, with rate limits' },
-  { slug: 'cursor', group: 'coding', kind: 'plan', free: 'Free Hobby tier' },
+  { slug: 'cursor', group: 'coding', kind: 'plan', free: 'Free plan with limited agent requests' },
   { slug: 'windsurf', group: 'coding', kind: 'plan', free: 'Free $0 plan' },
   { slug: 'cline', group: 'coding', kind: 'open', free: 'Free and open source for individuals; you pay only for the AI model it calls' },
   { slug: 'bolt', group: 'coding', kind: 'credits', free: '1M tokens a month plus website hosting' },
@@ -1491,7 +1497,7 @@ function freeFaq(d) {
   })
   faq.push({
     q: 'Is there a free AI coding assistant?',
-    a: `Yes. ${r('google-antigravity')} is free for individuals with rate limits, ${r('cursor')} has a free Hobby tier, and ${r('windsurf')} has a $0 plan. ${r('cline')} is open source and you pay only for the AI model it calls. To build an app without coding, ${r('bolt')} and ${r('lovable')} have free plans with monthly or daily credits.`,
+    a: `Yes. ${r('google-antigravity')} is free for individuals with rate limits, ${r('cursor')} has a free plan with limited agent requests, and ${r('windsurf')} has a $0 plan. ${r('cline')} is open source and you pay only for the AI model it calls. To build an app without coding, ${r('bolt')} and ${r('lovable')} have free plans with monthly or daily credits.`,
   })
   faq.push({
     q: 'Are free AI tools safe to use with private data?',
@@ -1764,6 +1770,179 @@ app.get(VOICE_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Voice', '/category/voice'], ['AI voice generators', VOICE_PATH]])],
+    },
+  }))
+})
+
+// AI coding assistant guide (brief 7). The table lists every coding tool in
+// tools.json in category order, so names, ranks, best-for tags, and pricing
+// notes track the live data. Pricing notes for the tools in CODING_PRICE_CHECKED
+// were re-checked against the official pricing page or launch post on
+// 2026-10-30; the rest come from each tool's BuildStack listing.
+const CODING_PATH = '/best/ai-coding-assistant'
+const CODING_H1 = 'Best AI Coding Assistants in 2026, Ranked'
+const CODING_PRICE_CHECKED = ['cursor', 'github-copilot', 'google-antigravity', 'v0', 'bolt', 'windsurf', 'zed', 'kiro', 'mistral-large-4']
+const CODING_TYPES = {
+  ...CURSOR_ALT_TYPES,
+  cursor: 'AI code editor (VS Code based)',
+  'muse-wonder': 'Frontier coding model (API)',
+  'github-replica': 'Open source prototyping tool',
+}
+const CODING_SECTIONS = [
+  { id: 'best-overall', heading: 'Best overall: Cursor', items: [
+    { slug: 'cursor', text: 'Cursor is a full code editor built on VS Code with AI at the center. It handles inline edits, chat about your repo, and agent runs that change several files at once. Because it is VS Code underneath, your extensions and shortcuts carry over.' },
+  ], watch: 'Cursor\'s plans changed recently. The $8 Plus plan uses Grok models only, and third-party models are billed at API list price on Premium and above, so check which models you need before you pick a plan.' },
+  { id: 'existing-ide', heading: 'Best inside your existing IDE: GitHub Copilot', items: [
+    { slug: 'github-copilot', text: 'Copilot adds AI to the editor you already use and to GitHub itself, with inline completions, chat, agent mode, pull request summaries, and code review. It is the easy choice when a team works across several editors or does not want to switch.' },
+  ], watch: 'Usage limits differ by plan, so if you lean on agents heavily, check your plan\'s allowance on GitHub\'s plans page.' },
+  { id: 'terminal-agents', heading: 'Best terminal agents: Claude Code and OpenAI Codex', items: [
+    { slug: 'claude-code', text: 'Claude Code is Anthropic\'s coding agent for the terminal. It reads your repo, plans a change, edits files, and runs commands, which makes it strong for repo-wide refactors and scripted CLI workflows.' },
+    { slug: 'openai-codex', text: 'Codex is OpenAI\'s open-source coding agent for the terminal. It makes multi-file edits and runs commands in a sandbox, and it is the natural pick if your team already pays for ChatGPT.' },
+  ], watch: 'Terminal agents run commands on your machine. Read the plan before you approve it, and keep your work in git so you can roll back.' },
+  { id: 'google', heading: 'Best agentic platform from Google: Google Antigravity', items: [
+    { slug: 'google-antigravity', text: 'Antigravity is Google\'s agent-first coding platform across a desktop app, CLI, IDE extensions, and an SDK. It is free for individuals with weekly rate limits, and Google AI Pro ($20 a month) or Ultra ($100 or $200 a month) raise the limits.' },
+  ], watch: 'Free limits refresh weekly, so a big project can stall until the reset.' },
+  { id: 'open-source-agents', heading: 'Best open source agents: OpenCode and Cline', items: [
+    { slug: 'opencode', text: 'OpenCode is an open source agent for the terminal, IDE, and desktop that works with almost any model provider and can run several sessions in parallel.' },
+    { slug: 'cline', text: 'Cline is an open source agent that lives in VS Code and the terminal. You bring your own API keys, pick the model, and connect tools through MCP.' },
+  ], watch: 'You pay for the model you connect, so your costs depend on which model you choose and how much the agent runs.' },
+  { id: 'app-builders', heading: 'Best for UI and app prototypes: v0, Lovable, and Bolt.new', items: [
+    { slug: 'v0', text: 'v0 is Vercel\'s AI builder for React and Next.js interfaces, with deploys to Vercel.' },
+    { slug: 'lovable', text: 'Lovable builds full-stack web apps from a chat, and suits people who do not code.' },
+    { slug: 'bolt', text: 'Bolt.new builds and runs full-stack apps in the browser using StackBlitz WebContainers, and the free plan includes website hosting.' },
+  ], watch: 'These are fastest for a first version. For a large or long-lived codebase, you will usually move the code into an editor such as Cursor.' },
+  { id: 'open-weight', heading: 'Best open-weight and local models', items: [
+    { slug: 'recursive-flint', text: 'Recursive Flint is an open coding model built to run fast on a laptop, so you can code offline and privately with no API fees.' },
+    { slug: 'mistral-large-4', text: 'Mistral Large 4 is Mistral\'s open-weight flagship, released with open weights on October 29, 2026. Mistral calls it the best open-weight model for coding, and it has a 1M-token context window and three reasoning effort settings.' },
+    { slug: 'muse-spark-open', text: 'Muse Spark Open is Meta\'s open-weight model for coding and agentic work, also hosted by providers such as OpenRouter, Together AI, and Groq.' },
+    { slug: 'reflection-beam', text: 'Reflection Beam is an open-weight model under Apache 2.0, aimed at long-running coding agents and custom fine-tuning.' },
+    { slug: 'deepseek', text: 'DeepSeek offers cost-efficient coding and reasoning models through a free web app and a low-cost API.' },
+  ], watch: 'Big models such as Mistral Large 4, with about 1 trillion parameters, need data-center GPUs to self-host. Recursive Flint is the one built for a laptop. Check each license, since Muse Spark Open has limited commercial terms.' },
+]
+
+function codingData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const list = all.filter((t) => t.category === 'coding')
+  const sections = CODING_SECTIONS.map((g) => ({ ...g, items: g.items.map((it) => ({ ...it, t: find(it.slug) })).filter((it) => it.t) })).filter((g) => g.items.length)
+  return { all, find, list, sections }
+}
+
+function codingFaq(d) {
+  const { find } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  return [
+    { q: 'What is the best AI coding assistant right now?',
+      a: `${NAME} ranks ${r('cursor')} first among coding tools. It is a full AI code editor, so it suits most developers who write code every day. If you would rather keep your current editor, ${r('github-copilot')} is the top-ranked plugin, and ${r('claude-code')} is the top-ranked terminal agent.` },
+    { q: 'Is Cursor better than GitHub Copilot?',
+      a: `It depends on how you work. ${r('cursor')} is a whole editor built around AI, which gives it deep repo context and multi-file agent edits. ${r('github-copilot')} plugs into the IDE you already use and into GitHub itself, which suits teams on mixed editors. On price, Copilot Pro is $10 a month, and Cursor's paid plans start at $8 a month for Plus (Grok models only) or $30 for Premium.` },
+    { q: 'What is the best free AI coding assistant?',
+      a: `${r('google-antigravity')} is free for individuals with weekly rate limits. ${r('cursor')}, ${r('github-copilot')}, and ${r('windsurf')} all have free plans with limited use. ${r('opencode')} and ${r('cline')} are free and open source, so you pay only for the model you connect, and ${r('recursive-flint')} is a free open-weight model you can run on a laptop.` },
+    { q: 'What is the difference between an AI coding assistant and a coding agent?',
+      a: 'An assistant works alongside you: it completes lines, answers questions about your code, and makes edits you approve one at a time. An agent takes a whole task, plans the steps, edits many files, and runs commands or tests until it is done. Most tools on this page now do both, so the real question is how much you want to hand off.' },
+    { q: 'Which AI coding tool is best for large codebases?',
+      a: `Look for strong repo context and planning. ${r('kiro')} is built around written specs for larger codebases, ${r('claude-code')} handles repo-wide refactors from the terminal, and ${r('cursor')} makes agentic multi-file changes with repo context. If you run your own model, ${r('mistral-large-4')} has a 1M-token context window.` },
+    { q: 'Can I run an AI coding assistant locally?',
+      a: `Yes. ${r('recursive-flint')} is an open model built to run fast on a laptop, and you can plug it into an open source agent such as ${r('opencode')} or ${r('cline')}. Larger open-weight models such as ${r('mistral-large-4')}, ${r('muse-spark-open')}, and ${r('reflection-beam')} can also be self-hosted, but they need far more powerful hardware.` },
+  ]
+}
+
+app.get(CODING_PATH, (c) => {
+  const d = codingData()
+  const { find, list, sections } = d
+  if (!list.length) return c.notFound()
+  const faq = codingFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const short = (f) => `For most developers, start with ${f('cursor')}, an AI-first code editor built on VS Code. To keep the IDE you already use, add ${f('github-copilot')}. For agents that work from the terminal, use ${f('claude-code')} or ${f('openai-codex')}, and to run a model yourself, look at ${f('mistral-large-4')} or ${f('recursive-flint')}`
+  const shortText = short(rt)
+  const shortHtml = short(rl)
+  const checked = CODING_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
+  const description = `Best AI coding assistants in 2026, ranked: ${list.slice(0, 5).map((t) => `${t.name} (#${t.rank})`).join(', ')} and ${list.length - 5} more, with what each is best for and pricing notes. Updated ${UPDATED}.`
+  const title = `Best AI Coding Assistants in 2026, Ranked | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Coding</span></div>
+    <h1>${esc(CODING_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · ${list.length} coding tools ranked · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section" id="ranking">
+    <h2>${esc(NAME)}'s coding ranking</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>Type</th><th>Best for</th><th>Pricing note</th></tr></thead>
+        <tbody>${list.map((t) => `<tr><td>${link(t)}</td><td>#${t.rank}</td><td>${esc(CODING_TYPES[t.slug] || 'Coding tool')}</td><td>${esc(listNames(t.bestFor || []))}</td><td>${esc(t.pricingNote)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/coding">coding category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${UPDATED}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+  </section>
+  ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
+    <h2>${esc(g.heading)}</h2>
+    <div class="panel prose">
+      ${g.items.map((it, i) => `<h3 style="${i ? '' : 'margin-top:0;'}color:var(--text)">${link(it.t)} (#${it.t.rank} overall)</h3>
+      <p>${esc(it.t.tagline)}. ${esc(it.text)}</p>
+      <p><strong>Best for:</strong> ${esc(listNames(it.t.bestFor || []))}. <strong>Pricing:</strong> ${esc(it.t.pricingNote)}.</p>`).join('')}
+      <p class="muted" style="margin-bottom:0"><strong>Watch out:</strong> ${esc(g.watch)}</p>
+    </div>
+  </section>`).join('')}
+  <section class="section" id="also-ranked">
+    <div class="panel prose">
+      <h2 style="margin-top:0">Also ranked: more editors and agent tools</h2>
+      <ul class="clean">
+        <li>${rl('windsurf')}: Cognition's agentic IDE and agent command center, formerly Windsurf.</li>
+        <li>${rl('kiro')}: AWS's spec-driven IDE, CLI, and web agent for planned work on larger codebases.</li>
+        <li>${rl('zed')}: a fast open source editor with a built-in agent that can also run external agents.</li>
+        <li>${rl('muse-wonder')}: Meta's frontier model for coding and agents. Pricing note: ${esc(find('muse-wonder')?.pricingNote || '')}.</li>
+        <li>${rl('harness-autonomous')}: an open source command center for running several coding agents in parallel across your machines.</li>
+        <li>${rl('github-replica')}: open-source AI prototyping that builds from your own design system.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="section" id="assistant-vs-agent">
+    <div class="panel prose">
+      <h2 style="margin-top:0">Assistant or agent: which do you need?</h2>
+      <p>An <strong>AI coding assistant</strong> works next to you. It completes the line you are typing, answers questions about your code, and makes edits you review one at a time. ${rl('github-copilot')} started here, and it is still the lightest way to add AI to an editor.</p>
+      <p>A <strong>coding agent</strong> takes a whole task. It plans the steps, edits many files, and runs commands and tests until the job is done, and you review the result. ${rl('claude-code')}, ${rl('openai-codex')}, and ${rl('opencode')} work this way from the terminal, and ${rl('cursor')} and ${rl('google-antigravity')} offer it inside an editor or app.</p>
+      <p>Most tools now do both. If you are new to coding, start with the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>. If you already use Cursor and want something else, see the <a href="/alternatives/cursor">best Cursor alternatives</a>. To supervise several agents at once, look at ${rl('harness-autonomous')}.</p>
+      <h2 id="how-we-rank">How we rank</h2>
+      <p>This page lists every tool in the ${esc(NAME)} <a href="/category/coding">coding category</a>, using the same editorial ranks as the rest of the site. Featured listings do not affect rank. We do not run lab tests or publish benchmark scores; the ranking is a maintained editorial list that we update as tools ship. Read the full <a href="/methodology">methodology</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: CODING_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: CODING_H1,
+        description,
+        url: `${SITE}${CODING_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI coding assistants on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: list.length,
+        itemListElement: list.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.name, url: `${SITE}/tool/${t.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Coding', '/category/coding'], ['AI coding assistants', CODING_PATH]])],
     },
   }))
 })
