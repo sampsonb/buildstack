@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-30'
+const UPDATED = '2026-10-31'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -339,7 +339,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -398,6 +398,7 @@ app.get('/llms.txt', (c) => {
     `- Best free AI tools in 2026, by what you need to do: ${SITE}/best/free-ai-tools`,
     `- Best AI voice generators and text to speech tools: ${SITE}/best/ai-voice-generator`,
     `- Best AI coding assistants in 2026, ranked: ${SITE}/best/ai-coding-assistant`,
+    `- Best AI agent builders and automation tools in 2026: ${SITE}/best/ai-agent-builder`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -446,6 +447,8 @@ app.get('/llms-full.txt', (c) => {
     ...voiceData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Type: ${VOICE_TYPES[p.type]}. Pricing: ${p.price}`),
     `- Best AI coding assistants in 2026, ranked: ${SITE}/best/ai-coding-assistant`,
     ...codingData().list.map((t) => `  - ${t.name} (#${t.rank}): ${CODING_TYPES[t.slug] || 'Coding tool'}. Best for: ${listNames(t.bestFor || [])}. Pricing: ${t.pricingNote}`),
+    `- Best AI agent builders and automation tools in 2026: ${SITE}/best/ai-agent-builder`,
+    ...agentData().list.map((t) => `  - ${t.name} (#${t.rank}): ${AGENT_TYPES[t.slug] || 'Agent tool'}. Best for: ${listNames(t.bestFor || [])}. Pricing: ${t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -538,6 +541,7 @@ app.get('/', (c) => {
       <a class="pill" href="/best/free-ai-tools">Best free AI tools</a>
       <a class="pill" href="/best/ai-voice-generator">Best AI voice generators</a>
       <a class="pill" href="/best/ai-coding-assistant">Best AI coding assistants</a>
+      <a class="pill" href="/best/ai-agent-builder">Best AI agent builders</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -672,6 +676,7 @@ app.get('/category/:slug', (c) => {
     <p>${esc(cat.blurb)}</p>
     ${slug === 'coding' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-coding-assistant">best AI coding assistants, ranked</a>.</p>' : ''}
     ${slug === 'coding' ? '<p class="muted">Switching editors? See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>. New to coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
+    ${slug === 'agents' ? '<p class="muted">Comparing agent builders and automation tools? See the <a href="/best/ai-agent-builder">best AI agent builders and automation tools</a>.</p>' : ''}
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'voice' ? '<p class="muted">Need a voiceover or a text to speech API? See the <a href="/best/ai-voice-generator">best AI voice generators and text to speech tools</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
@@ -729,7 +734,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -1943,6 +1948,205 @@ app.get(CODING_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Coding', '/category/coding'], ['AI coding assistants', CODING_PATH]])],
+    },
+  }))
+})
+
+// Brief 8: best AI agent builders and automation tools. Lists every tool in the
+// agents category from live data, so ranks and pricing notes track tools.json.
+// Pricing for the tools in AGENT_PRICE_CHECKED was checked against official pages.
+const AGENT_PATH = '/best/ai-agent-builder'
+const AGENT_H1 = 'Best AI Agent Builders and Automation Tools in 2026'
+const AGENT_PRICE_CHECKED = ['lindy', 'manus', 'n8n', 'firecrawl', 'local-code', 'copilot-studio', 'relevance-ai']
+const AGENT_TYPES = {
+  'replit-agent': 'App-building agent (no code)',
+  'claude-duet': 'Proactive personal agent (no code)',
+  lindy: 'No-code agent builder',
+  manus: 'Autonomous agent (no code)',
+  'gpt-6-1-terra': 'Model for agents (technical, API)',
+  'kimi-k3-1-pro': 'Open-weight model for agents (technical)',
+  'minimax-m3-1-flash': 'Model for agents (technical, API)',
+  'liquid-lfm3': 'Small open-weight model (technical)',
+  'local-code': 'Private agent app for Mac (no code)',
+  n8n: 'Workflow automation (technical, self-host)',
+  make: 'Visual automation (no code)',
+  'copilot-studio': 'No-code agent builder (Microsoft)',
+  gumloop: 'No-code agent builder',
+  'relevance-ai': 'Agent workforce platform (low code)',
+  agentspot: 'Team agent builder (no code)',
+  velozity: 'Team workspace for agents (no code)',
+  'mercury-3': 'Fast model for agents (technical, API)',
+  zapier: 'App automation (no code)',
+  firecrawl: 'Web data API for agents (technical)',
+}
+const AGENT_SECTIONS = [
+  { id: 'no-code', heading: 'Best no-code agent builder: Lindy', items: [
+    { slug: 'lindy', text: 'Lindy builds agents for business processes without code, and it is strongest on email and calendar work, such as sorting your inbox and handling scheduling.' },
+    { slug: 'gumloop', text: 'Gumloop is a no-code alternative for teams, with agents that work across your business apps on jobs like email triage and meeting prep.' },
+  ], watch: 'Both price by credits, and longer agent runs use more of them. Start with the free credits or trial and watch your usage before you add seats.' },
+  { id: 'connect-apps', heading: 'Best for connecting your apps: Zapier and Make', items: [
+    { slug: 'zapier', text: 'Zapier is the long-standing no-code way to connect SaaS apps: a trigger in one app runs steps in others, and AI steps can help along the way.' },
+    { slug: 'make', text: 'Make gives you a visual canvas across 3,500+ apps, plus AI agents that use tools and limits you set, and you can start an automation by describing it in a chat.' },
+  ], watch: 'Zapier counts tasks and Make counts credits, so a busy multi-step workflow can push you onto a bigger plan. Check how each one counts a run before you build anything high volume.' },
+  { id: 'self-hosted', heading: 'Best for self-hosted and custom pipelines: n8n', items: [
+    { slug: 'n8n', text: 'n8n is workflow automation with AI nodes. You can self-host the free Community Edition on your own server, which keeps data in your environment, or use n8n Cloud. It suits technical teams that want custom pipelines connecting language models to their apps.' },
+  ], watch: 'The Community Edition uses a fair-code license rather than a standard open source one, and self-hosting means you handle updates, backups, and security yourself.' },
+  { id: 'autonomous', heading: 'Best autonomous agent for multi-step work: Manus', items: [
+    { slug: 'manus', text: 'Manus takes a goal and works through the steps on its own, such as researching a topic and delivering a report, a slide deck, or a website.' },
+  ], watch: 'Manus uses credits based on how complex a task is, so a big task can use a lot of them. Clear, specific instructions and checking results along the way keep costs down.' },
+  { id: 'personal-agent', heading: 'Best proactive personal agent: Claude Duet', items: [
+    { slug: 'claude-duet', text: 'Claude Duet is Anthropic\'s proactive agent. It briefs you across email and calendar, works on tasks in the background, and asks before it takes an action.' },
+  ], watch: 'Claude Duet is a research preview with a waitlist for US Pro and Max subscribers, so most people cannot use it yet.' },
+  { id: 'teams', heading: 'Best for teams running many agents: Relevance AI, Copilot Studio, AgentSpot, and Velozity', items: [
+    { slug: 'relevance-ai', text: 'Relevance AI builds multi-agent workforces for sales, support, and ops. Its Invent 2.0 agent interviews you about a process, builds the agents, and sets tests before anything goes live.' },
+    { slug: 'copilot-studio', text: 'Copilot Studio is the natural pick for companies on Microsoft 365. Agents publish to Teams, SharePoint, and Microsoft 365 Copilot, under the security and audit controls IT already uses.' },
+    { slug: 'agentspot', text: 'AgentSpot lets a team build, share, and schedule agents on company data, with audit trails, and its free plan has no time limit.' },
+    { slug: 'velozity', text: 'Velozity is a multiplayer AI office where people and agents work together in shared workspaces.' },
+  ], watch: 'Team platforms charge by actions, credits, or usage rather than by seat alone, so estimate how many agent runs you need each month before you commit.' },
+  { id: 'developers', heading: 'Best for developers building agents', items: [
+    { slug: 'gpt-6-1-terra', text: 'GPT-6.1 Terra is OpenAI\'s fast, low-cost model for computer use agents that fill in forms and act on screens.' },
+    { slug: 'minimax-m3-1-flash', text: 'MiniMax M3.1 Flash is a low-cost model for agent workflows, long coding tasks, and computer use.' },
+    { slug: 'mercury-3', text: 'Mercury 3 is a diffusion language model that generates more than 1,000 tokens per second, which keeps agent loops fast.' },
+    { slug: 'kimi-k3-1-pro', text: 'Kimi K3.1 Pro is an open-weight model for long multi-step agent tasks with a 1M-token context.' },
+    { slug: 'firecrawl', text: 'Firecrawl turns websites into LLM-ready markdown, so your agent can read the web or you can prepare data for retrieval.' },
+  ], watch: 'These are building blocks, not finished agents. You write the code, choose the framework, and pay per token or per page.' },
+  { id: 'private', heading: 'Best private, on-device agent: Local Code', items: [
+    { slug: 'local-code', text: 'Local Code, released October 28, 2026 by the makers of Draw Things, runs an agent on your Mac\'s own GPU with Python, Node.js, and a shell built in, so it can work on local files, documents, and slides, even offline.' },
+    { slug: 'liquid-lfm3', text: 'Liquid AI LFM3 is a family of small open-weight models for agents that run on a phone or laptop, with tool calling and a 256K context.' },
+  ], watch: 'Local models need a lot of memory. Local Code\'s smallest on-device model needs 16 GB, and the larger DeepSeek models need 32 GB or more. Choosing a cloud model in Local Code sends your prompts and files to that provider.' },
+]
+const AGENT_TASKS = [
+  { task: 'Email triage and replies', first: 'lindy', also: ['gumloop', 'claude-duet'] },
+  { task: 'Calendar and meeting prep', first: 'lindy', also: ['gumloop', 'claude-duet'] },
+  { task: 'CRM updates and sales follow-up', first: 'relevance-ai', also: ['zapier', 'make'] },
+  { task: 'Research reports', first: 'manus', also: ['kimi-k3-1-pro'] },
+  { task: 'Web data and scraping', first: 'firecrawl', also: ['n8n'] },
+  { task: 'Connecting SaaS apps', first: 'zapier', also: ['make', 'n8n'] },
+  { task: 'Agents inside Microsoft 365 and Teams', first: 'copilot-studio', also: [] },
+  { task: 'Private work on files on your own computer', first: 'local-code', also: ['liquid-lfm3'] },
+]
+
+function agentData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const list = all.filter((t) => t.category === 'agents')
+  const sections = AGENT_SECTIONS.map((g) => ({ ...g, items: g.items.map((it) => ({ ...it, t: find(it.slug) })).filter((it) => it.t) })).filter((g) => g.items.length)
+  const tasks = AGENT_TASKS.filter((x) => find(x.first))
+  return { all, find, list, sections, tasks }
+}
+
+function agentFaq(d) {
+  const { find } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  return [
+    { q: 'What is the best AI agent builder for non-technical users?',
+      a: `${NAME} picks ${r('lindy')} for most non-technical users, since you build agents for email, calendar, and business workflows without code. ${r('gumloop')} and ${r('make')} are strong no-code alternatives, and if your company runs on Microsoft 365, ${r('copilot-studio')} publishes agents straight to Teams and SharePoint.` },
+    { q: 'What are the best tools for automating repetitive tasks?',
+      a: `For tasks that follow the same steps every time, use a workflow tool: ${r('zapier')} and ${r('make')} connect thousands of apps with no code, and ${r('n8n')} is the pick if you want to self-host. For tasks that need judgment, such as sorting email or drafting replies, an agent builder like ${r('lindy')} or ${r('gumloop')} fits better.` },
+    { q: 'Zapier or n8n: which should I use?',
+      a: `${r('zapier')} is hosted and no-code, with a free plan of 100 tasks a month and Professional from $19.99 a month billed annually. ${r('n8n')} is more technical: you can self-host the free Community Edition or use n8n Cloud from 20 euros a month billed annually, and cloud plans charge per workflow execution. Pick Zapier for speed and simplicity, and n8n for control, custom code, and keeping data on your own servers.` },
+    { q: 'Can I build an AI agent without coding?',
+      a: `Yes. ${r('lindy')}, ${r('gumloop')}, ${r('make')}, ${r('copilot-studio')}, and ${r('agentspot')} all let you build agents without writing code. ${r('relevance-ai')} goes a step further: its Invent agent builds agents for you after asking about your process. Nothing on that list needs a developer to get started.` },
+    { q: 'Is n8n free?',
+      a: `The self-hosted Community Edition of ${r('n8n')} is free to use; you pay only for your own server. n8n Cloud is paid, starting at 20 euros a month billed annually, with a free trial that needs no card. The Community Edition uses a fair-code license, so read the terms if you plan to build a commercial service on top of it.` },
+    { q: 'What is the difference between an AI agent and an automation?',
+      a: 'An automation follows fixed steps you define: when a form is submitted, add a row and send an email. An AI agent gets a goal and decides the steps itself, using tools and judgment along the way. Many tools now mix both, running fixed workflows with AI steps or agents inside them.' },
+  ]
+}
+
+app.get(AGENT_PATH, (c) => {
+  const d = agentData()
+  const { find, list, sections, tasks } = d
+  if (!list.length) return c.notFound()
+  const faq = agentFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const short = (f) => `For most people, start with ${f('lindy')}, a no-code agent builder for email, calendar, and business workflows. To connect apps with fixed steps, use ${f('zapier')} or ${f('make')}, or self-host ${f('n8n')}. For an agent that takes a goal and works through the steps itself, try ${f('manus')}, and for companies on Microsoft 365, look at ${f('copilot-studio')}`
+  const shortText = short(rt)
+  const shortHtml = short(rl)
+  const checked = AGENT_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
+  const description = `Best AI agent builders and automation tools in 2026: Lindy, Zapier, Make, n8n, Manus, Copilot Studio and ${list.length - 6} more, compared by no-code or technical, best use, and pricing. Updated ${UPDATED}.`
+  const title = `Best AI Agent Builders and Automation Tools in 2026 | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Agents</span></div>
+    <h1>${esc(AGENT_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · ${list.length} agent and automation tools ranked · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section" id="at-a-glance">
+    <h2>At a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>Type</th><th>Best for</th><th>Pricing note</th></tr></thead>
+        <tbody>${list.map((t) => `<tr><td>${link(t)}</td><td>#${t.rank}</td><td>${esc(AGENT_TYPES[t.slug] || 'Agent tool')}</td><td>${esc(listNames(t.bestFor || []))}</td><td>${esc(t.pricingNote)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/agents">agents category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${UPDATED}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+  </section>
+  ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
+    <h2>${esc(g.heading)}</h2>
+    <div class="panel prose">
+      ${g.items.map((it, i) => `<h3 style="${i ? '' : 'margin-top:0;'}color:var(--text)">${link(it.t)} (#${it.t.rank} overall)</h3>
+      <p>${esc(it.t.tagline)}. ${esc(it.text)}</p>
+      <p><strong>Best for:</strong> ${esc(listNames(it.t.bestFor || []))}. <strong>Pricing:</strong> ${esc(it.t.pricingNote)}.</p>`).join('')}
+      <p class="muted" style="margin-bottom:0"><strong>Watch out:</strong> ${esc(g.watch)}</p>
+    </div>
+  </section>`).join('')}
+  <section class="section" id="by-task">
+    <h2>Pick by task</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Task</th><th>Start with</th><th>Also consider</th></tr></thead>
+        <tbody>${tasks.map((x) => `<tr><td>${esc(x.task)}</td><td>${rl(x.first)}</td><td>${x.also.map(rl).filter(Boolean).join(', ') || 'None yet'}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+  </section>
+  <section class="section" id="builder-vs-automation">
+    <div class="panel prose">
+      <h2 style="margin-top:0">Agent builder, automation tool, or autonomous agent?</h2>
+      <p>An <strong>automation tool</strong> runs fixed steps you define: when something happens in one app, do these things in others. ${rl('zapier')}, ${rl('make')}, and ${rl('n8n')} started here, and all now add AI steps or agents inside workflows.</p>
+      <p>An <strong>agent builder</strong> lets you set up an AI agent with instructions, tools, and limits, then let it decide the steps for each case. ${rl('lindy')}, ${rl('gumloop')}, ${rl('relevance-ai')}, and ${rl('copilot-studio')} work this way, with no code or low code.</p>
+      <p>An <strong>autonomous agent</strong> is ready to use: you give it a goal and it plans and does the work. ${rl('manus')} and ${rl('claude-duet')} are examples, and ${rl('local-code')} does the same on your own Mac.</p>
+      <p>Want an agent that builds a whole app? ${rl('replit-agent')} builds and deploys apps in Replit, and the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a> compares it with other app builders.</p>
+      <h2 id="how-we-rank">How we rank</h2>
+      <p>This page lists every tool in the ${esc(NAME)} <a href="/category/agents">agents category</a>, using the same editorial ranks as the rest of the site. Featured listings do not affect rank. We do not run lab tests or publish benchmark scores; the ranking is a maintained editorial list that we update as tools ship. On a budget? See the <a href="/best/free-ai-tools#automation">best free AI tools for automation</a>. Read the full <a href="/methodology">methodology</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: AGENT_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: AGENT_H1,
+        description,
+        url: `${SITE}${AGENT_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI agent builders and automation tools on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: list.length,
+        itemListElement: list.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.name, url: `${SITE}/tool/${t.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Agents', '/category/agents'], ['AI agent builders', AGENT_PATH]])],
     },
   }))
 })
