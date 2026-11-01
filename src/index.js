@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-10-31'
+const UPDATED = '2026-11-01'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -382,7 +382,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -442,6 +442,7 @@ app.get('/llms.txt', (c) => {
     `- Best AI voice generators and text to speech tools: ${SITE}/best/ai-voice-generator`,
     `- Best AI coding assistants in 2026, ranked: ${SITE}/best/ai-coding-assistant`,
     `- Best AI agent builders and automation tools in 2026: ${SITE}/best/ai-agent-builder`,
+    `- Best AI tools for small business, a starter stack by job: ${SITE}/best/ai-tools-for-small-business`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -492,6 +493,8 @@ app.get('/llms-full.txt', (c) => {
     ...codingData().list.map((t) => `  - ${t.name} (#${t.rank}): ${CODING_TYPES[t.slug] || 'Coding tool'}. Best for: ${listNames(t.bestFor || [])}. Pricing: ${t.pricingNote}`),
     `- Best AI agent builders and automation tools in 2026: ${SITE}/best/ai-agent-builder`,
     ...agentData().list.map((t) => `  - ${t.name} (#${t.rank}): ${AGENT_TYPES[t.slug] || 'Agent tool'}. Best for: ${listNames(t.bestFor || [])}. Pricing: ${t.pricingNote}`),
+    `- Best AI tools for small business, a starter stack by job: ${SITE}/best/ai-tools-for-small-business`,
+    ...smbData().stack.map((x) => `  - ${x.job}: ${x.t.name} (#${x.t.rank}). Pricing: ${x.t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -585,6 +588,7 @@ app.get('/', (c) => {
       <a class="pill" href="/best/ai-voice-generator">Best AI voice generators</a>
       <a class="pill" href="/best/ai-coding-assistant">Best AI coding assistants</a>
       <a class="pill" href="/best/ai-agent-builder">Best AI agent builders</a>
+      <a class="pill" href="/best/ai-tools-for-small-business">Best AI tools for small business</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -720,6 +724,7 @@ app.get('/category/:slug', (c) => {
     ${slug === 'coding' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-coding-assistant">best AI coding assistants, ranked</a>.</p>' : ''}
     ${slug === 'coding' ? '<p class="muted">Switching editors? See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>. New to coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'agents' ? '<p class="muted">Comparing agent builders and automation tools? See the <a href="/best/ai-agent-builder">best AI agent builders and automation tools</a>.</p>' : ''}
+    ${slug === 'agents' || slug === 'writing' ? '<p class="muted">Running a small business? See the <a href="/best/ai-tools-for-small-business">best AI tools for small business, a starter stack by job</a>.</p>' : ''}
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'voice' ? '<p class="muted">Need a voiceover or a text to speech API? See the <a href="/best/ai-voice-generator">best AI voice generators and text to speech tools</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
@@ -777,7 +782,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -1471,9 +1476,9 @@ const FREE_GROUPS = [
   { id: 'open', title: 'Open-weight models you can run yourself', cat: null, intro: 'Download the model and run it on your own hardware. Check the license before you use it in a business.' },
 ]
 const FREE_PICKS = [
-  { slug: 'chatgpt', group: 'writing', kind: 'plan', free: 'Free tier, with paid Plus and Pro plans for more use' },
+  { slug: 'chatgpt', group: 'writing', kind: 'plan', free: 'Free plan, with paid Go, Plus, and Pro plans for more use' },
   { slug: 'claude', group: 'writing', kind: 'plan', free: 'Free plan, with paid Pro and Max plans for more use' },
-  { slug: 'grammarly', group: 'writing', kind: 'plan', free: 'Free version alongside paid Premium' },
+  { slug: 'grammarly', group: 'writing', kind: 'plan', free: 'Free plan with 100 AI prompts a month, alongside paid Pro' },
   { slug: 'google-antigravity', group: 'coding', kind: 'plan', free: 'Free for individuals, with rate limits' },
   { slug: 'cursor', group: 'coding', kind: 'plan', free: 'Free plan with limited agent requests' },
   { slug: 'windsurf', group: 'coding', kind: 'plan', free: 'Free $0 plan' },
@@ -1835,6 +1840,7 @@ const CODING_TYPES = {
   cursor: 'AI code editor (VS Code based)',
   'muse-wonder': 'Frontier coding model (API)',
   'github-replica': 'Open source prototyping tool',
+  'github-agentic-workflows': 'Repo automation agents (GitHub Actions)',
 }
 const CODING_SECTIONS = [
   { id: 'best-overall', heading: 'Best overall: Cursor', items: [
@@ -1945,6 +1951,7 @@ app.get(CODING_PATH, (c) => {
         <li>${rl('muse-wonder')}: Meta's frontier model for coding and agents. Pricing note: ${esc(find('muse-wonder')?.pricingNote || '')}.</li>
         <li>${rl('harness-autonomous')}: an open source command center for running several coding agents in parallel across your machines.</li>
         <li>${rl('github-replica')}: open-source AI prototyping that builds from your own design system.</li>
+        <li>${rl('github-agentic-workflows')}: repository automations written in Markdown and run by a coding agent in GitHub Actions, read-only by default.</li>
       </ul>
     </div>
   </section>
@@ -2190,6 +2197,178 @@ app.get(AGENT_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Agents', '/category/agents'], ['AI agent builders', AGENT_PATH]])],
+    },
+  }))
+})
+
+// AI tools for small business guide (brief 9). A starter stack by job, built from
+// tools across categories. Names, ranks, taglines, best-for tags, and pricing notes
+// come from tools.json so the page tracks the live ranks. Pricing for the tools in
+// SMB_PRICE_CHECKED was checked on official pricing pages on 2026-11-01.
+const SMB_PATH = '/best/ai-tools-for-small-business'
+const SMB_H1 = 'Best AI Tools for Small Business: A Starter Stack by Job'
+const SMB_PRICE_CHECKED = ['chatgpt', 'grammarly', 'notion-ai', 'jasper', 'canva', 'lindy']
+const SMB_STACK = [
+  { job: 'Writing, email, and everyday questions', slug: 'chatgpt' },
+  { job: 'Graphics, social posts, and presentations', slug: 'canva' },
+  { job: 'Notes, docs, and meeting summaries', slug: 'notion-ai' },
+  { job: 'Connecting apps and automating admin', slug: 'zapier' },
+  { job: 'Research you can check', slug: 'perplexity' },
+]
+const SMB_SECTIONS = [
+  { id: 'writing-and-email', heading: 'Everyday writing and email: ChatGPT, Claude, and Grammarly', items: [
+    { slug: 'chatgpt', text: 'ChatGPT is the broadest place to start. One app drafts emails and posts, answers questions, summarizes documents, and makes images, and the free plan is enough to learn what it does well before anyone pays.' },
+    { slug: 'claude', text: 'Claude is a strong second assistant for careful writing and long documents, such as reading a proposal, a contract, or a long customer thread and drafting a reply.' },
+    { slug: 'grammarly', text: 'Grammarly checks spelling, grammar, clarity, and tone where you already type, including email and the browser, so it helps people who never open a chat assistant.' },
+  ], watch: 'AI drafts can sound generic or get facts wrong. Have a person read anything that goes to a customer, and keep passwords and payment details out of prompts.' },
+  { id: 'marketing-copy', heading: 'Marketing copy in your brand voice: Jasper', items: [
+    { slug: 'jasper', text: 'Jasper is built for marketing teams, with brand voice controls so campaign copy, product descriptions, and posts sound like your business. It makes the most sense once you publish marketing content every week, or several people write for the brand.' },
+  ], watch: 'Jasper is priced per seat and costs more than a general assistant. Try ChatGPT or Claude for marketing drafts first, and move to Jasper when keeping one voice across writers becomes the problem.' },
+  { id: 'notes-and-meetings', heading: 'Notes, wikis, and meeting summaries: Notion AI and Fireflies', items: [
+    { slug: 'notion-ai', text: 'If your team already keeps docs, wikis, or projects in Notion, Notion AI drafts and summarizes pages and answers questions over what you have written. The Business plan adds AI Meeting Notes.' },
+    { slug: 'fireflies', text: 'Fireflies joins Zoom, Google Meet, and Microsoft Teams calls to record, transcribe, and summarize them, and it can send notes and action items to your CRM or Slack.' },
+  ], watch: 'Tell people when a call is recorded, and check the recording laws where you and your callers are. Check names, numbers, and dates in AI notes before you act on them.' },
+  { id: 'automating-admin', heading: 'Automating admin: Zapier, Lindy, and Claude Duet', items: [
+    { slug: 'zapier', text: 'Zapier connects the apps you already pay for. When a form is filled in, a payment comes through, or an email arrives, it can add a row, create a task, or send a message, with AI steps for sorting and drafting along the way.' },
+    { slug: 'lindy', text: 'Lindy builds AI agents for admin that needs judgment, such as sorting the inbox, drafting replies, and handling scheduling, without code.' },
+    { slug: 'claude-duet', text: 'Claude Duet is Anthropic\'s proactive agent. It sends a short brief from your connected apps, works on tasks in the background, and asks before it sends, pays, or deletes anything.' },
+  ], watch: 'Start with one small, low-risk workflow and check its results for a while before you let it contact customers on its own. Claude Duet is a research preview with a waitlist, so most people cannot use it yet.' },
+  { id: 'social-and-graphics', heading: 'Social video and graphics: Canva, CapCut, Ideogram, and Adobe Firefly', items: [
+    { slug: 'canva', text: 'Canva is the easiest starting point for small business graphics: social posts, flyers, presentations, and brand kits from templates, with Canva AI for edits. Canva Brush, announced October 29, 2026 for Canva Pro subscribers, can restyle an image or turn a slide into an Instagram graphic, and the result stays editable.' },
+    { slug: 'capcut', text: 'CapCut is a popular editor for short-form social video, with AI captions and effects for quick edits.' },
+    { slug: 'ideogram', text: 'Ideogram generates images with readable text, which helps with posters, sale graphics, and logo drafts.' },
+    { slug: 'adobe-firefly', text: 'Adobe Firefly works inside Adobe apps and is trained with commercial use in mind, which suits a business that already pays for Adobe.' },
+  ], watch: 'Check each tool\'s license before you use AI images in ads or on products, and do not generate images that copy another brand\'s logo or a real person\'s likeness.' },
+  { id: 'research', heading: 'Research and competitor checks: Perplexity', items: [
+    { slug: 'perplexity', text: 'Perplexity answers questions with live web sources and citations, so you can see where a claim came from. It suits supplier comparisons, pricing research, and keeping an eye on competitors.' },
+  ], watch: 'Open the sources before you rely on an answer, especially for legal, tax, or financial questions.' },
+  { id: 'ai-answers', heading: 'Showing up in AI answers: ReSO AI', items: [
+    { slug: 'reso-ai', text: 'Customers can now ask AI assistants for product and service recommendations. ReSO AI tracks how brands show up in those AI answers and in generative search, so you can see where you are missing.' },
+  ], watch: 'This is a newer kind of tool. Get the basics right first: a clear website, accurate business listings, and pages that answer the questions your customers ask.' },
+  { id: 'simple-app-or-site', heading: 'Building a simple app or site: Lovable', items: [
+    { slug: 'lovable', text: 'Lovable turns a plain-language description into a working web app, which suits a booking form, an internal tracker, or a first version of a product idea without hiring a developer.' },
+  ], watch: 'Anything that takes payments or stores customer data needs a careful security review before it goes live.' },
+]
+
+function smbData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const stack = SMB_STACK.map((x) => ({ ...x, t: find(x.slug) })).filter((x) => x.t)
+  const sections = SMB_SECTIONS.map((g) => ({ ...g, items: g.items.map((it) => ({ ...it, t: find(it.slug) })).filter((it) => it.t) })).filter((g) => g.items.length)
+  const seen = new Set()
+  const list = []
+  for (const x of [...stack.map((s) => s.t), ...sections.flatMap((g) => g.items.map((it) => it.t))]) if (!seen.has(x.slug)) { seen.add(x.slug); list.push(x) }
+  return { all, find, stack, sections, list }
+}
+
+function smbFaq(d) {
+  const { find } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  return [
+    { q: 'What AI tool should a small business use first?',
+      a: `Start with one general assistant, such as ${r('chatgpt')} or ${r('claude')}, for writing, email, and everyday questions, since one tool covers many jobs. Add ${r('canva')} for graphics, and ${r('zapier')} once you notice the same admin steps repeating every week.` },
+    { q: 'What is the best free AI tool for a small business?',
+      a: `${r('chatgpt')}, ${r('claude')}, ${r('canva')}, ${r('grammarly')}, ${r('perplexity')}, and ${r('zapier')} all have free plans, so a small team can try a full starter stack before paying for anything. See the best free AI tools guide on ${NAME} for more free options by job.` },
+    { q: 'Can AI answer customer emails?',
+      a: `It can draft them well, and a person should approve them, at least at first. ${r('chatgpt')} and ${r('claude')} draft replies you paste in, and ${r('lindy')} can sort an inbox and draft replies in your voice. Keep a person reviewing anything about refunds, complaints, or account details.` },
+    { q: 'What is the best AI tool for small business marketing?',
+      a: `For copy, a general assistant is enough for occasional posts, and ${r('jasper')} fits when you publish often and want brand voice controls. For visuals, use ${r('canva')} for graphics and ${r('capcut')} for short video. To see how your business appears in AI answers, look at ${r('reso-ai')}.` },
+    { q: 'Is it safe to put customer data into AI tools?',
+      a: 'It depends on the tool and the plan. Read each vendor\'s data policy and check whether your data can be used to train models, prefer business or team plans that add admin controls, and keep passwords, card numbers, and sensitive customer records out of prompts. This is not legal advice; check the privacy rules that apply to your business.' },
+    { q: 'How much do AI tools cost for a small business?',
+      a: `Many start free. Paid plans on this page include ${r('grammarly')} Pro from $12 a month, ${r('zapier')} Professional from $19.99 a month billed annually, ${r('notion-ai')} on the Notion Business plan from $20 per member a month, ${r('lindy')} from $29.99 per active user a month, and ${r('jasper')} Pro at $59 per seat a month billed yearly. Prices change often, so check each official pricing page before you buy.` },
+  ]
+}
+
+app.get(SMB_PATH, (c) => {
+  const d = smbData()
+  const { find, stack, sections, list } = d
+  if (!stack.length) return c.notFound()
+  const faq = smbFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const short = (f) => `A simple starter stack for a small business is ${f('chatgpt')} for writing, email, and questions, ${f('canva')} for graphics and social posts, ${f('notion-ai')} for notes and meeting summaries, ${f('zapier')} for connecting apps and automating admin, and ${f('perplexity')} for research with sources. All five have a free plan or trial, so you can start at no cost and pay only for the ones your team uses`
+  const shortText = short(rt)
+  const shortHtml = short(rl)
+  const checked = SMB_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
+  const description = `Best AI tools for small business in 2026: a starter stack of ChatGPT, Canva, Notion AI, Zapier and Perplexity, plus ${list.length - 5} more picks by job, with pricing notes. Updated ${UPDATED}.`
+  const title = `Best AI Tools for Small Business: A Starter Stack by Job | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Small business</span></div>
+    <h1>${esc(SMB_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · ${list.length} tools picked by job · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section" id="starter-stack">
+    <h2>The starter stack</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Job</th><th>Tool</th><th>Rank</th><th>Pricing note</th></tr></thead>
+        <tbody>${stack.map((x) => `<tr><td>${esc(x.job)}</td><td>${link(x.t)}</td><td>#${x.t.rank}</td><td>${esc(x.t.pricingNote)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category. Pricing for ${esc(listNames(checked))} was checked against official pricing pages on ${UPDATED}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+  </section>
+  ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
+    <h2>${esc(g.heading)}</h2>
+    <div class="panel prose">
+      ${g.items.map((it, i) => `<h3 style="${i ? '' : 'margin-top:0;'}color:var(--text)">${link(it.t)} (#${it.t.rank} overall)</h3>
+      <p>${esc(it.t.tagline)}. ${esc(it.text)}</p>
+      <p><strong>Best for:</strong> ${esc(listNames(it.t.bestFor || []))}. <strong>Pricing:</strong> ${esc(it.t.pricingNote)}.</p>`).join('')}
+      <p class="muted" style="margin-bottom:0"><strong>Watch out:</strong> ${esc(g.watch)}</p>
+    </div>
+  </section>`).join('')}
+  <section class="section" id="roll-out">
+    <div class="panel prose">
+      <h2 style="margin-top:0">How to roll out AI in a small team</h2>
+      <ul class="clean">
+        <li><strong>Pick one job first.</strong> Choose a task that comes up every week, such as customer email replies or social posts, and try one tool for it before adding more.</li>
+        <li><strong>Start free.</strong> Use free plans and trials, and pay only when people use a tool regularly. The <a href="/best/free-ai-tools">best free AI tools</a> guide lists free options by job.</li>
+        <li><strong>Write down simple rules.</strong> Agree what data can go into AI tools (no passwords, card numbers, or sensitive customer records) and who checks AI output before it reaches a customer.</li>
+        <li><strong>Use business plans for shared data.</strong> Team and business plans usually add admin controls and clearer data terms, which matters once several people share customer information.</li>
+        <li><strong>Automate last.</strong> Once a manual process works, automate it with the tools in the <a href="/best/ai-agent-builder">best AI agent builders and automation tools</a> guide, and keep a person reviewing the results at first.</li>
+        <li><strong>Review costs every month.</strong> Seat and credit pricing adds up, so cancel tools nobody uses.</li>
+      </ul>
+      <p>Want more choices? Browse the <a href="/category/writing">writing tools</a> and <a href="/category/agents">agent and automation tools</a> categories.</p>
+      <h2 id="how-we-rank">How we rank</h2>
+      <p>This page picks tools from across the ${esc(NAME)} categories for common small business jobs, and shows each one's overall editorial rank from the rest of the site. Featured listings do not affect rank or which tools appear here. We do not run lab tests or publish benchmark scores; the ranking is a maintained editorial list that we update as tools ship. Read the full <a href="/methodology">methodology</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: SMB_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: SMB_H1,
+        description,
+        url: `${SITE}${SMB_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI tools for small business on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListUnordered',
+        numberOfItems: list.length,
+        itemListElement: list.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.name, url: `${SITE}/tool/${t.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Guides', '/#guides'], ['AI tools for small business', SMB_PATH]])],
     },
   }))
 })
