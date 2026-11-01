@@ -330,6 +330,49 @@ function toolCard(t) {
   </article>`
 }
 
+// Cheap scanner probe block. Runs before any D1 or page work.
+// Real routes that must stay open (do not match the rules below):
+//   /  /robots.txt  /sitemap.xml  /tools.json  /llms.txt  /llms-full.txt
+//   /api/health  /api/subscribe
+//   /categories  /category/:slug  /tool/:slug
+//   /get-featured  /methodology  /about
+//   /alternatives/*  /best/*
+//   /favicon.svg  /favicon.png  /og.png
+//   /.well-known/*  (ACME and future well-known; never block)
+const SCANNER_EXT = ['.php', '.sql', '.bak', '.tfstate', '.yml', '.yaml', '.enc', '.ini', '.cfg', '.config']
+const SCANNER_SUBSTR = [
+  'wp-admin', 'wp-login', 'wp-content', 'wp-includes', 'wp-json',
+  '/wordpress', 'xmlrpc', 'phpinfo', '/_profiler', '/cgi-bin',
+  'appsettings', 'credentials.json', 'secrets.json',
+  'docker-compose', 'gemfile', 'settings.py',
+]
+function isScannerPath(pathname) {
+  const p = String(pathname || '').toLowerCase()
+  if (!p || p === '/') return false
+  // Allow ACME / well-known; block every other dotfile segment (/.env, /.git, /.aws, ...)
+  const segments = p.split('/').filter(Boolean)
+  for (const seg of segments) {
+    if (seg.startsWith('.') && seg !== '.well-known') return true
+  }
+  if (p === '/.well-known' || p.startsWith('/.well-known/')) return false
+  if (SCANNER_EXT.some((ext) => p.endsWith(ext))) return true
+  if (SCANNER_SUBSTR.some((s) => p.includes(s))) return true
+  // Exact or prefix: /wp and /blog/wp-
+  if (p === '/wp' || p.startsWith('/wp/') || p.startsWith('/wp-') || p.startsWith('/wordpress')) return true
+  if (p === '/blog/wp-' || p.startsWith('/blog/wp-')) return true
+  return false
+}
+
+app.use('*', async (c, next) => {
+  if (isScannerPath(c.req.path)) {
+    return new Response('Forbidden', {
+      status: 403,
+      headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' },
+    })
+  }
+  return next()
+})
+
 app.get('/robots.txt', (c) => c.text(`User-agent: *
 Allow: /
 
