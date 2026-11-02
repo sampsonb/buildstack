@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-01'
+const UPDATED = '2026-11-02'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -382,7 +382,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -443,6 +443,7 @@ app.get('/llms.txt', (c) => {
     `- Best AI coding assistants in 2026, ranked: ${SITE}/best/ai-coding-assistant`,
     `- Best AI agent builders and automation tools in 2026: ${SITE}/best/ai-agent-builder`,
     `- Best AI tools for small business, a starter stack by job: ${SITE}/best/ai-tools-for-small-business`,
+    `- Best AI transcription tools for creators and developers: ${SITE}/best/ai-transcription-tool`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -495,6 +496,8 @@ app.get('/llms-full.txt', (c) => {
     ...agentData().list.map((t) => `  - ${t.name} (#${t.rank}): ${AGENT_TYPES[t.slug] || 'Agent tool'}. Best for: ${listNames(t.bestFor || [])}. Pricing: ${t.pricingNote}`),
     `- Best AI tools for small business, a starter stack by job: ${SITE}/best/ai-tools-for-small-business`,
     ...smbData().stack.map((x) => `  - ${x.job}: ${x.t.name} (#${x.t.rank}). Pricing: ${x.t.pricingNote}`),
+    `- Best AI transcription tools for creators and developers: ${SITE}/best/ai-transcription-tool`,
+    ...transData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Type: ${TRANS_TYPES[p.type]}. Pricing: ${p.t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -589,6 +592,7 @@ app.get('/', (c) => {
       <a class="pill" href="/best/ai-coding-assistant">Best AI coding assistants</a>
       <a class="pill" href="/best/ai-agent-builder">Best AI agent builders</a>
       <a class="pill" href="/best/ai-tools-for-small-business">Best AI tools for small business</a>
+      <a class="pill" href="/best/ai-transcription-tool">Best AI transcription tools</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -727,6 +731,7 @@ app.get('/category/:slug', (c) => {
     ${slug === 'agents' || slug === 'writing' ? '<p class="muted">Running a small business? See the <a href="/best/ai-tools-for-small-business">best AI tools for small business, a starter stack by job</a>.</p>' : ''}
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'voice' ? '<p class="muted">Need a voiceover or a text to speech API? See the <a href="/best/ai-voice-generator">best AI voice generators and text to speech tools</a>.</p>' : ''}
+    ${slug === 'voice' || slug === 'video' ? '<p class="muted">Need transcripts of meetings, interviews, or podcasts? See the <a href="/best/ai-transcription-tool">best AI transcription tools for creators and developers</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
     <p class="muted">On a budget? See the <a href="/best/free-ai-tools#${slug === 'agents' ? 'automation' : esc(slug)}">best free AI tools for ${esc(cat.label.toLowerCase())}</a>.</p>
   </section>
@@ -782,7 +787,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -1496,9 +1501,9 @@ const FREE_PICKS = [
   { slug: 'veo-3-1', group: 'video', kind: 'credits', free: '50 free Google Flow credits a day, enough for 5 Veo 3.1 Lite videos' },
   { slug: 'heygen', group: 'video', kind: 'credits', free: '3 watermarked avatar videos a month' },
   { slug: 'capcut', group: 'video', kind: 'plan', free: 'Free editor with paid Pro upgrades' },
-  { slug: 'descript', group: 'video', kind: 'plan', free: 'Free plan alongside paid plans' },
+  { slug: 'descript', group: 'video', kind: 'plan', free: 'Free plan with 1 media hour a month' },
   { slug: 'elevenlabs', group: 'voice', kind: 'credits', free: '10,000 credits a month, for personal use only (no commercial license)' },
-  { slug: 'otter', group: 'voice', kind: 'plan', free: 'Free Basic plan' },
+  { slug: 'otter', group: 'voice', kind: 'plan', free: 'Free Basic plan with 300 transcription minutes a month' },
   { slug: 'fireflies', group: 'voice', kind: 'plan', free: 'Free plan' },
   { slug: 'suno', group: 'voice', kind: 'plan', free: 'Free plan' },
   { slug: 'make', group: 'automation', kind: 'credits', free: '1,000 credits a month, with no card and no time limit' },
@@ -1787,7 +1792,7 @@ app.get(VOICE_PATH, (c) => {
         <li><strong>Disclose synthetic voices</strong> where your platform asks you to, and never use a cloned voice to impersonate someone.</li>
       </ul>
       <h2>How we chose</h2>
-      <p>This page covers the voice tools ranked on ${NAME} that generate speech or vocals. Ranks are the same editorial ranks used across the site; featured listings do not affect rank. Voice tools that are not yet ranked on ${NAME}, such as Murf and Cartesia, are left out until they are reviewed. For meeting notes and transcription, browse the full <a href="/category/voice">voice category</a>. For free options across every category, see the <a href="/best/free-ai-tools#voice">best free AI tools</a>. Read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page covers the voice tools ranked on ${NAME} that generate speech or vocals. Ranks are the same editorial ranks used across the site; featured listings do not affect rank. Voice tools that are not yet ranked on ${NAME}, such as Murf and Cartesia, are left out until they are reviewed. For meeting notes and transcription, see the <a href="/best/ai-transcription-tool">best AI transcription tools</a>, or browse the full <a href="/category/voice">voice category</a>. For free options across every category, see the <a href="/best/free-ai-tools#voice">best free AI tools</a>. Read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -2369,6 +2374,176 @@ app.get(SMB_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Guides', '/#guides'], ['AI tools for small business', SMB_PATH]])],
+    },
+  }))
+})
+
+// AI transcription tool guide (brief 10). Names, ranks, taglines, best-for tags,
+// and pricing notes come from tools.json, so the page tracks the live ranks and
+// the pricing notes checked against each official pricing page or launch post
+// (Otter, Descript, Riverside, Deepgram, Mistral Voxtral 3, and OpenAI rechecked
+// on 2026-11-02). The page does not rank tools by accuracy.
+const TRANS_TYPES = {
+  editor: 'Recording and editing app',
+  app: 'Meeting notetaker app',
+  workspace: 'Workspace AI with meeting notes',
+  api: 'Developer API',
+  open: 'Open weights you run yourself',
+  both: 'Developer API and open weights',
+}
+const TRANS_PICKS = [
+  { slug: 'descript', type: 'editor', id: 'best-for-editing', heading: 'Best for editing podcasts and video by transcript', role: 'Best for editing podcasts and talking-head video by editing the transcript',
+    why: "Descript transcribes your recording in 25 languages, labels speakers (it can detect 8 or more), and lets you cut audio and video by deleting words in the transcript. It can also remove filler words and translate captions into 61 languages.",
+    watch: 'Transcription counts against your monthly media hours, and the Free plan includes 1 media hour a month, so a backlog of long recordings needs a paid plan.' },
+  { slug: 'otter', type: 'app', id: 'best-for-meetings', heading: 'Best for meeting transcripts and summaries', role: 'Best for live meeting transcripts, summaries, and searching past meetings',
+    why: 'Otter joins Zoom, Microsoft Teams, and Google Meet calls, transcribes them live with speaker identification, and writes summaries with action items. You can chat with your meetings, search across them, and connect them to other assistants through the Otter MCP server.',
+    watch: 'The Basic plan includes 300 transcription minutes a month but only 3 lifetime file imports, so it suits live meetings more than uploading old recordings.' },
+  { slug: 'fireflies', type: 'app', id: 'meetings-and-uploads', heading: 'Best for meetings plus uploaded audio files', role: 'Best for teams that want meeting notes and uploaded file transcripts in one place',
+    why: 'Fireflies records and transcribes calls on Zoom, Google Meet, Microsoft Teams, and more, and it also transcribes audio and video files you upload. Notes, action items, and search are shared across your team, and it can send call notes to CRMs and Slack.',
+    watch: 'Fireflies says English is its primary language, with Spanish, French, Portuguese, Italian, and 100+ other languages in beta, so test your language first.' },
+  { slug: 'riverside', type: 'editor', id: 'best-for-interviews', heading: 'Best for recording interviews and podcasts', role: 'Best for recording remote interviews and podcasts with transcripts built in',
+    why: 'Riverside records multitrack audio and video at up to 4K, transcribes the session automatically, and lets you edit by cutting the transcript. Its new Riverside Agents, launched October 26, 2026, can prep a session, plan the edit, find clips, and draft show notes, and nothing publishes without your sign-off.',
+    watch: 'Riverside is built around recording in its own studio. If you only need to transcribe files you already have, a notetaker or an API is simpler.' },
+  { slug: 'deepgram', type: 'api', id: 'best-api', heading: 'Best transcription API for apps', role: 'Best for developers who need fast, per-second-billed speech to text in their own product',
+    why: 'Deepgram offers pre-recorded and streaming transcription through one API, billed per second. Since October 23, 2026 its Nova-3 Multilingual model covers 55 languages in a single model and handles speakers switching languages mid-conversation, and diarization is included on pre-recorded audio.',
+    watch: 'It is an API, not an app, so you need a developer. The 55-language model is for the hosted service; self-hosted Nova-3 Multilingual stays at 10 languages.' },
+  { slug: 'mistral-voxtral-3', type: 'api', id: 'low-cost-api', heading: 'Best low-cost API with speaker labels', role: 'Best for low-cost multilingual transcription with speaker labels',
+    why: 'Voxtral 3, released October 20, 2026, transcribes 50+ languages, labels who said what, and accepts key terms to improve recall on names and jargon. Voxtral Mini Transcribe 3 costs $0.0035 per minute in batch, and Mistral offers EU, US, and global endpoints or self-deployment.',
+    watch: 'The realtime transcription model costs more ($0.008 per minute) and covers fewer languages than batch.' },
+  { slug: 'nvidia-nemotron-transcribe', type: 'open', id: 'best-open-model', heading: 'Best open model for long recordings with speakers', role: 'Best open-weight model for long recordings that need speaker labels',
+    why: 'Nemotron 3.5 Transcribe, released October 28, 2026, transcribes 40 languages, labels up to 8 speakers in recordings up to an hour long, and can answer questions about the audio. NVIDIA reports it ranks first among open-weight models on the Hugging Face Open ASR Leaderboard for English.',
+    watch: 'It is built for recorded audio, not live streaming, and the full model needs a data center GPU unless you use the smaller FP8 or NVFP4 versions.' },
+  { slug: 'ibm-granite-speech-5', type: 'open', id: 'on-device-and-translation', heading: 'Best open model for on-device transcription and translation', role: 'Best for fast on-device transcription and translation under Apache 2.0',
+    why: 'Granite Speech 5.0, released October 21, 2026, includes a 2B model that transcribes six languages and translates to and from English, plus a 470M Turbo model built for speed. Everything is Apache 2.0, so you can run it on your own hardware and keep audio private.',
+    watch: 'The 2B model covers English, French, German, Spanish, Portuguese, and Japanese only, so check your language first.' },
+  { slug: 'openai-whisper', type: 'both', id: 'original-open-model', heading: 'The original open model, also on the OpenAI API', role: 'The widely used open speech model, also available through the OpenAI API',
+    why: "Whisper is OpenAI's speech recognition model for transcription and translation. The open-source models are free to run yourself and power many other apps, and the OpenAI API offers Whisper alongside newer transcription models.",
+    watch: 'On the OpenAI API, newer models such as gpt-transcribe are priced below Whisper. Running Whisper yourself means supplying your own hardware.' },
+  { slug: 'notion-ai', type: 'workspace', id: 'meetings-in-your-workspace', heading: 'Best for meeting notes inside your workspace', role: 'Best for teams that want meeting notes saved next to their docs and wiki',
+    why: 'Notion AI Meeting Notes keep transcripts and summaries inside your Notion workspace, where Notion AI can answer questions over them along with the rest of your docs.',
+    watch: 'AI Meeting Notes come with the Business plan; the Free and Plus plans only include a trial of Notion AI.' },
+]
+const TRANS_PATH = '/best/ai-transcription-tool'
+const TRANS_H1 = 'Best AI Transcription Tools in 2026, for Creators and Developers'
+
+function transData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const picks = TRANS_PICKS.map((p) => ({ ...p, t: find(p.slug) })).filter((p) => p.t)
+  const byRank = [...picks].sort((a, b) => a.t.rank - b.t.rank)
+  return { all, find, picks, byRank }
+}
+
+function transFaq(d) {
+  const { find } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  return [
+    { q: 'What is the most accurate AI transcription tool?',
+      a: `There is no single answer, because accuracy depends on your audio: accents, background noise, crosstalk, and jargon all matter. Vendors publish their own benchmarks, for example NVIDIA reports that ${r('nvidia-nemotron-transcribe')} ranks first among open-weight models on the Hugging Face Open ASR Leaderboard for English, and IBM reports ${r('ibm-granite-speech-5')} ranks second. ${NAME} does not rank by accuracy; test a short clip of your own audio in two or three tools before you commit.` },
+    { q: 'Is there a free AI transcription tool?',
+      a: `Yes. ${r('otter')} has a free Basic plan with 300 transcription minutes a month, ${r('descript')} has a free plan with 1 media hour a month, and ${r('fireflies')} has a free plan. Developers get $200 of free credit at ${r('deepgram')}. Open models such as ${r('openai-whisper')}, ${r('ibm-granite-speech-5')}, and ${r('nvidia-nemotron-transcribe')} are free to run if you have the hardware.` },
+    { q: 'Which transcription tool can run locally for privacy?',
+      a: `Open-weight models run on your own hardware, so audio never leaves your machine: ${r('openai-whisper')} has open-source models, ${r('ibm-granite-speech-5')} is Apache 2.0 with a small Turbo model built for speed, and ${r('nvidia-nemotron-transcribe')} has FP8 and NVFP4 versions for local RTX and DGX Spark machines. ${r('mistral-voxtral-3')} can also be self-deployed, and ${r('deepgram')} offers self-hosting on Enterprise plans.` },
+    { q: 'What is the best transcription API for developers?',
+      a: `${r('deepgram')} is the most complete API on this page, with pre-recorded and streaming transcription from $0.0043 per minute and per-second billing. ${r('mistral-voxtral-3')} is the lowest published price here at $0.0035 per minute for batch transcription with speaker labels. On the OpenAI API, Whisper is $0.006 per minute and gpt-transcribe is $0.0045 per minute.` },
+    { q: 'Can AI transcription tell multiple speakers apart?',
+      a: `Yes, this is called diarization. ${r('otter')} and ${r('descript')} label speakers in the app, ${r('mistral-voxtral-3')} and ${r('deepgram')} return speaker labels through their APIs, and ${r('nvidia-nemotron-transcribe')} labels up to 8 speakers in recordings up to an hour long. Speaker labels work best when people do not talk over each other.` },
+  ]
+}
+
+app.get(TRANS_PATH, (c) => {
+  const d = transData()
+  const { find, picks, byRank } = d
+  if (!picks.length) return c.notFound()
+  const faq = transFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const short = (f) => `To edit podcasts and video by transcript, start with ${f('descript')}. For meeting transcripts and summaries, use ${f('otter')} or ${f('fireflies')}. Developers adding speech to text to an app should look at ${f('deepgram')} or the lower-cost ${f('mistral-voxtral-3')}, and to keep audio private on your own hardware, run ${f('nvidia-nemotron-transcribe')} or ${f('ibm-granite-speech-5')}`
+  const shortText = short(rt)
+  const shortHtml = short(rl)
+  const description = `Best AI transcription tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with verified pricing for meetings, podcasts, and developer APIs. Updated ${UPDATED}.`
+  const title = `Best AI Transcription Tools in 2026 | ${NAME}`
+  const useCases = [
+    ['Meetings', `${rl('otter')} and ${rl('fireflies')} join your calls and send notes afterward. If your team lives in Notion, ${rl('notion-ai')} keeps meeting notes next to your docs.`],
+    ['Interviews and podcasts', `Record with ${rl('riverside')} to get multitrack recordings and a transcript, then edit by transcript in ${rl('descript')} or in Riverside itself.`],
+    ['Subtitles and captions', `${rl('descript')} translates captions into 61 languages. For a do-it-yourself pipeline, ${rl('openai-whisper')} is a common starting point for subtitle drafts.`],
+    ['Apps and products', `${rl('deepgram')} covers pre-recorded and streaming audio in one API, and ${rl('mistral-voxtral-3')} has the lowest published per-minute price on this page.`],
+    ['Sensitive audio', `Run ${rl('nvidia-nemotron-transcribe')}, ${rl('ibm-granite-speech-5')}, or open-source ${rl('openai-whisper')} on your own hardware so recordings never leave it.`],
+  ]
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Voice</span></div>
+    <h1>${esc(TRANS_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · Pricing from official pages, most rechecked on ${UPDATED} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section">
+    <h2>AI transcription tools at a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>App or model</th><th>Best for</th><th>Pricing</th></tr></thead>
+        <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(TRANS_TYPES[p.type])}</td><td>${esc(listNames(p.t.bestFor || []))}</td><td>${esc(p.t.pricingNote)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Prices come from each official pricing page or launch post. Transcription pricing changes often, so check the official site before you buy.</p>
+  </section>
+  ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
+    <h2>${esc(p.heading)}</h2>
+    <div class="panel prose">
+      <h3 style="margin-top:0;color:var(--text)">${link(p.t)} (#${p.t.rank} overall)</h3>
+      <p>${esc(p.t.tagline)}. ${esc(p.why)}</p>
+      <p><strong>Best for:</strong> ${esc(listNames(p.t.bestFor || []))}.</p>
+      <p><strong>Pricing:</strong> ${esc(p.t.pricingNote)}.</p>
+      <p class="muted" style="margin-bottom:0"><strong>Watch out:</strong> ${esc(p.watch)}</p>
+    </div>
+  </section>`).join('')}
+  <section class="section" id="by-use-case">
+    <div class="panel prose">
+      <h2 style="margin-top:0">Pick by use case</h2>
+      <ul class="clean">
+        ${useCases.map(([h, txt]) => `<li><strong>${esc(h)}:</strong> ${txt}</li>`).join('')}
+      </ul>
+      <h2 id="privacy">Privacy: cloud or local?</h2>
+      <p><strong>Cloud tools</strong> are the easiest way to start, but your audio is uploaded to the vendor. Check where it is processed and whether it is used for training. Fireflies says it does not train AI models on customer data, Descript is SOC 2 Type II compliant, ${rl('deepgram')} has a dedicated EU endpoint, and ${rl('mistral-voxtral-3')} offers EU, US, and global endpoints.</p>
+      <p><strong>Local models</strong> keep audio on hardware you control, which suits legal, medical, and other sensitive recordings. ${rl('nvidia-nemotron-transcribe')}, ${rl('ibm-granite-speech-5')}, and open-source ${rl('openai-whisper')} are free to run; you trade convenience and setup time for control.</p>
+      <h2>How we chose</h2>
+      <p>This page covers the tools ranked on ${NAME} that transcribe speech. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not rank by accuracy, since results depend on your audio. Transcription services that are not yet ranked on ${NAME}, such as Rev, are left out until they are reviewed. For text to speech and voiceovers, see the <a href="/best/ai-voice-generator">best AI voice generators</a>, or browse the full <a href="/category/voice">voice category</a>. For free options across every category, see the <a href="/best/free-ai-tools#voice">best free AI tools</a>. Read the full <a href="/methodology">methodology</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: TRANS_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: TRANS_H1,
+        description,
+        url: `${SITE}${TRANS_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI transcription tools on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: byRank.length,
+        itemListElement: byRank.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t.name, url: `${SITE}/tool/${p.t.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Voice', '/category/voice'], ['AI transcription tools', TRANS_PATH]])],
     },
   }))
 })
