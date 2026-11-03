@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-02'
+const UPDATED = '2026-11-03'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -382,7 +382,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -444,6 +444,7 @@ app.get('/llms.txt', (c) => {
     `- Best AI agent builders and automation tools in 2026: ${SITE}/best/ai-agent-builder`,
     `- Best AI tools for small business, a starter stack by job: ${SITE}/best/ai-tools-for-small-business`,
     `- Best AI transcription tools for creators and developers: ${SITE}/best/ai-transcription-tool`,
+    `- Best AI writing tools in 2026, and the best for blog posts: ${SITE}/best/ai-writing-tool`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -498,6 +499,8 @@ app.get('/llms-full.txt', (c) => {
     ...smbData().stack.map((x) => `  - ${x.job}: ${x.t.name} (#${x.t.rank}). Pricing: ${x.t.pricingNote}`),
     `- Best AI transcription tools for creators and developers: ${SITE}/best/ai-transcription-tool`,
     ...transData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Type: ${TRANS_TYPES[p.type]}. Pricing: ${p.t.pricingNote}`),
+    `- Best AI writing tools in 2026, and the best for blog posts: ${SITE}/best/ai-writing-tool`,
+    ...writeData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -593,6 +596,7 @@ app.get('/', (c) => {
       <a class="pill" href="/best/ai-agent-builder">Best AI agent builders</a>
       <a class="pill" href="/best/ai-tools-for-small-business">Best AI tools for small business</a>
       <a class="pill" href="/best/ai-transcription-tool">Best AI transcription tools</a>
+      <a class="pill" href="/best/ai-writing-tool">Best AI writing tools</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -732,6 +736,7 @@ app.get('/category/:slug', (c) => {
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'voice' ? '<p class="muted">Need a voiceover or a text to speech API? See the <a href="/best/ai-voice-generator">best AI voice generators and text to speech tools</a>.</p>' : ''}
     ${slug === 'voice' || slug === 'video' ? '<p class="muted">Need transcripts of meetings, interviews, or podcasts? See the <a href="/best/ai-transcription-tool">best AI transcription tools for creators and developers</a>.</p>' : ''}
+    ${slug === 'writing' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-writing-tool">best AI writing tools, and the best for blog posts</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
     <p class="muted">On a budget? See the <a href="/best/free-ai-tools#${slug === 'agents' ? 'automation' : esc(slug)}">best free AI tools for ${esc(cat.label.toLowerCase())}</a>.</p>
   </section>
@@ -787,7 +792,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -1482,7 +1487,7 @@ const FREE_GROUPS = [
 ]
 const FREE_PICKS = [
   { slug: 'chatgpt', group: 'writing', kind: 'plan', free: 'Free plan, with paid Go, Plus, and Pro plans for more use' },
-  { slug: 'claude', group: 'writing', kind: 'plan', free: 'Free plan, with paid Pro and Max plans for more use' },
+  { slug: 'claude', group: 'writing', kind: 'plan', free: 'Free plan, with paid Pro, Max, and Ultra plans for more use' },
   { slug: 'grammarly', group: 'writing', kind: 'plan', free: 'Free plan with 100 AI prompts a month, alongside paid Pro' },
   { slug: 'google-antigravity', group: 'coding', kind: 'plan', free: 'Free for individuals, with rate limits' },
   { slug: 'cursor', group: 'coding', kind: 'plan', free: 'Free plan with limited agent requests' },
@@ -2544,6 +2549,172 @@ app.get(TRANS_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Voice', '/category/voice'], ['AI transcription tools', TRANS_PATH]])],
+    },
+  }))
+})
+
+// AI writing tool guide (brief 11). Names, ranks, taglines, best-for tags, and
+// pricing notes come from tools.json, so the page tracks the live ranks and the
+// pricing notes checked against each official pricing page (Claude, Grok, and
+// Ideogram rechecked on 2026-11-03). The page does not score writing quality.
+const WRITE_PICKS = [
+  { slug: 'claude', id: 'best-overall', heading: 'Best overall AI writing tool', role: 'Best overall for careful, long-form writing',
+    why: 'Claude is strong at nuanced writing and long-document work: you can paste in research, transcripts, or a style guide and ask for a draft that follows it. Even the Free plan includes Projects (up to 5), memory across conversations, web search, and Claude Docs, and paid plans add more usage and more models.',
+    watch: 'Every plan has usage limits that reset every 5 hours and every week, so very long drafting sessions can hit a limit on Free or Pro.' },
+  { slug: 'chatgpt', id: 'best-all-rounder', heading: 'Best all-rounder for writing plus everything else', role: 'Best all-rounder when writing is one of many jobs',
+    why: 'ChatGPT is the broadest everyday assistant: drafting, rewriting, brainstorming, browsing for sources, and generating images all happen in one place, so it suits people who write a little of everything.',
+    watch: 'Its default style can sound generic. Give it examples of your own writing and ask it to match them, then edit the result.' },
+  { slug: 'grok', id: 'best-real-time', heading: 'Best for timely and social posts', role: 'Best for writing about what is happening right now',
+    why: 'Grok searches the web and X live with citations, which helps when a post depends on current news or trends, and it has a Canvas for long-form editing with inline suggestions. It works in 30+ languages.',
+    watch: 'Real-time posts on X are not always accurate. Check claims against the primary source before you publish.' },
+  { slug: 'grammarly', id: 'best-editing', heading: 'Best for editing and tone', role: 'Best for polishing grammar, clarity, and tone wherever you write',
+    why: 'Grammarly checks grammar, clarity, and tone across browsers and documents, so it fits the last step of almost any workflow, including drafts written by another AI tool.',
+    watch: 'The free plan includes 100 AI prompts a month; heavier rewriting needs Pro.' },
+  { slug: 'jasper', id: 'best-marketing-teams', heading: 'Best for marketing teams and brand voice', role: 'Best for marketing teams that need on-brand copy at scale',
+    why: 'Jasper is built for marketing teams, with brand voice controls and campaign workflows so many people can produce copy that sounds like one company.',
+    watch: 'It is priced per seat for teams, so it is more than most solo bloggers need. Start with the 7-day free trial.' },
+  { slug: 'notion-ai', id: 'best-in-notes', heading: 'Best for writing inside your notes and wiki', role: 'Best for drafting and summarizing inside a Notion workspace',
+    why: 'Notion AI drafts, summarizes, and answers questions over your Notion pages, so you can turn meeting notes or research already in your workspace into a first draft without copying anything out.',
+    watch: 'The Free and Plus plans only include a trial of Notion AI; full access comes with the Business plan.' },
+  { slug: 'mintlify-autopilot', id: 'best-product-docs', heading: 'Best for product documentation', role: 'Best for keeping product docs in sync with your code',
+    why: 'Mintlify Autopilot, launched in beta on October 20, 2026, watches your repos and tools like Slack and support tickets, drafts doc updates when code merges, and opens a pull request for your team to review. Nothing publishes until someone merges it.',
+    watch: 'It is for teams that host docs on Mintlify, and it is in beta on Pro and Enterprise plans only.' },
+]
+const WRITE_WORKFLOW = [
+  { slug: 'perplexity', name: 'Research with sources', text: 'Use Perplexity to gather facts with citations, and save the links you plan to use.' },
+  { slug: 'claude', name: 'Outline and draft', text: 'Paste your notes and sources into Claude or ChatGPT, ask for an outline first, fix it, then ask for a draft section by section.' },
+  { slug: 'grammarly', name: 'Edit and polish', text: 'Rewrite the draft in your own words where it sounds generic, then run Grammarly for grammar, clarity, and tone.' },
+  { slug: 'ideogram', name: 'Add images', text: 'Create a header image or diagram with Ideogram, which is known for readable text inside images.' },
+  { slug: '', name: 'Fact-check and publish', text: 'Check every number, name, and quote against the source before you publish, including your title and meta description.' },
+]
+const WRITE_PATH = '/best/ai-writing-tool'
+const WRITE_H1 = 'Best AI Writing Tools in 2026 (and the Best for Blog Posts)'
+const GOOGLE_AI_GUIDANCE = 'https://developers.google.com/search/docs/fundamentals/using-gen-ai-content'
+
+function writeData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const picks = WRITE_PICKS.map((p) => ({ ...p, t: find(p.slug) })).filter((p) => p.t)
+  const byRank = [...picks].sort((a, b) => a.t.rank - b.t.rank)
+  return { all, find, picks, byRank }
+}
+
+function writeFaq(d) {
+  const { find } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  return [
+    { q: 'What is the best AI writing tool?',
+      a: `For most people, ${r('claude')} is the best overall AI writing tool on ${NAME}, with ${r('chatgpt')} close behind as the best all-rounder. For editing and tone, add ${r('grammarly')}; for marketing teams that need one brand voice, look at ${r('jasper')}.` },
+    { q: 'What is the best AI for writing blog posts?',
+      a: `Use a short workflow rather than one tool: research with ${r('perplexity')}, outline and draft in ${r('claude')} or ${r('chatgpt')}, polish with ${r('grammarly')}, and make images with ${r('ideogram')}. Then fact-check before you publish.` },
+    { q: 'Is Claude or ChatGPT better for writing?',
+      a: `Both are strong. ${NAME} ranks ${r('claude')} just ahead of ${r('chatgpt')}: Claude is the pick for careful long-form drafts and working from long documents, while ChatGPT is the better all-rounder if you also want browsing and image generation in the same place. Both have free plans, so try the same prompt in each before you pay.` },
+    { q: 'Will Google penalize AI-written blog posts?',
+      a: `Google's Search Central guidance on generative AI content does not ban AI-assisted writing. It says generative AI can be useful for research and for adding structure to original content, but that using it to generate many pages without adding value for users may violate its spam policy on scaled content abuse. It also asks you to fact-check AI output, including titles, meta descriptions, and structured data, and to focus on accuracy, quality, and relevance. Read the full guidance at ${GOOGLE_AI_GUIDANCE}.` },
+    { q: 'What is the best free AI writing tool?',
+      a: `${r('claude')} and ${r('chatgpt')} both have free plans that are enough for drafting blog posts and emails, ${r('grok')} is free to try on grok.com, and ${r('grammarly')} has a free plan with 100 AI prompts a month for editing. See the full list of free options in our free AI tools guide.` },
+    { q: 'Can AI match my brand voice?',
+      a: `Yes, with some setup. ${r('jasper')} has brand voice controls built for marketing teams. With ${r('claude')} or ${r('chatgpt')}, paste a few examples of your best writing and a short style guide, ask the tool to describe your voice, and reuse that description in every prompt. Expect to edit the first drafts.` },
+  ]
+}
+
+app.get(WRITE_PATH, (c) => {
+  const d = writeData()
+  const { find, picks, byRank } = d
+  if (!picks.length) return c.notFound()
+  const faq = writeFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const short = (f) => `The best AI writing tool for most people is ${f('claude')}, with ${f('chatgpt')} as the best all-rounder. Add ${f('grammarly')} for editing and tone, ${f('jasper')} if a marketing team needs one brand voice, and ${f('notion-ai')} if you write inside Notion. For blog posts, research with ${f('perplexity')}, draft in Claude or ChatGPT, polish with Grammarly, and fact-check before you publish`
+  const shortText = short(rt)
+  const shortHtml = short(rl)
+  const steps = WRITE_WORKFLOW.map((s) => ({ ...s, t: s.slug ? find(s.slug) : null }))
+  const description = `Best AI writing tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus a blog post workflow and verified pricing. Updated ${UPDATED}.`
+  const title = `Best AI Writing Tools in 2026 (and for Blog Posts) | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Writing</span></div>
+    <h1>${esc(WRITE_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section">
+    <h2>AI writing tools at a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>Our pick for</th><th>Best for</th><th>Pricing</th></tr></thead>
+        <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.role)}</td><td>${esc(listNames(p.t.bestFor || []))}</td><td>${esc(p.t.pricingNote)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Prices come from each official pricing page. AI pricing changes often, so check the official site before you buy.</p>
+  </section>
+  ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
+    <h2>${esc(p.heading)}</h2>
+    <div class="panel prose">
+      <h3 style="margin-top:0;color:var(--text)">${link(p.t)} (#${p.t.rank} overall)</h3>
+      <p>${esc(p.t.tagline)}. ${esc(p.why)}</p>
+      <p><strong>Best for:</strong> ${esc(listNames(p.t.bestFor || []))}.</p>
+      <p><strong>Pricing:</strong> ${esc(p.t.pricingNote)}.</p>
+      <p class="muted" style="margin-bottom:0"><strong>Watch out:</strong> ${esc(p.watch)}</p>
+    </div>
+  </section>`).join('')}
+  <section class="section" id="blog-posts">
+    <div class="panel prose">
+      <h2 style="margin-top:0">Best AI tools for blog posts: a 5-step workflow</h2>
+      <ol>
+        ${steps.map((s) => `<li><strong>${esc(s.name)}${s.t ? ` (${link(s.t)}, #${s.t.rank})` : ''}:</strong> ${esc(s.text)}</li>`).join('')}
+      </ol>
+      <p>For deeper research, see the <a href="/best/ai-research-assistant">best AI research assistants</a>.</p>
+      <h2 id="sound-human">How to keep AI writing sounding human</h2>
+      <ul class="clean">
+        <li><strong>Start from your own material.</strong> Notes, interviews, data, and opinions you bring are what make a post worth reading; the AI should organize them, not invent them.</li>
+        <li><strong>Show, do not describe, your voice.</strong> Paste two or three examples of your writing and ask the tool to match them.</li>
+        <li><strong>Cut the filler.</strong> Delete generic intros, repeated summaries, and stock phrases, and keep sentences short.</li>
+        <li><strong>Add what only you know.</strong> A real example, a number from your own work, or a mistake you made beats any generated paragraph.</li>
+        <li><strong>Fact-check everything.</strong> <a href="${GOOGLE_AI_GUIDANCE}" rel="noopener">Google's guidance on generative AI content</a> notes that AI output can contain inaccuracies and asks publishers to review it, including titles, meta descriptions, and structured data, and warns that mass-producing pages without adding value can violate its scaled content abuse policy.</li>
+      </ul>
+      <h2>How we chose</h2>
+      <p>This page covers the writing tools ranked on ${NAME}, plus ${rl('perplexity')} and ${rl('ideogram')} for the research and image steps. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not score writing quality, since it depends on your prompts and editing. Writing tools that are not yet ranked on ${NAME}, such as Sudowrite and Copy.ai, are left out until they are reviewed. Browse the full <a href="/category/writing">writing category</a>, the <a href="/best/free-ai-tools#writing">best free AI tools for writing</a>, or read the full <a href="/methodology">methodology</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: WRITE_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: WRITE_H1,
+        description,
+        url: `${SITE}${WRITE_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI writing tools on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: byRank.length,
+        itemListElement: byRank.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t.name, url: `${SITE}/tool/${p.t.slug}` })),
+      }, {
+        '@type': 'HowTo',
+        name: 'Write a blog post with AI tools in 5 steps',
+        step: steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.name, text: s.text })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Writing', '/category/writing'], ['AI writing tools', WRITE_PATH]])],
     },
   }))
 })
