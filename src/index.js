@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-03'
+const UPDATED = '2026-11-04'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/best/ai-image-generator">AI image generators</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -382,7 +382,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -445,6 +445,7 @@ app.get('/llms.txt', (c) => {
     `- Best AI tools for small business, a starter stack by job: ${SITE}/best/ai-tools-for-small-business`,
     `- Best AI transcription tools for creators and developers: ${SITE}/best/ai-transcription-tool`,
     `- Best AI writing tools in 2026, and the best for blog posts: ${SITE}/best/ai-writing-tool`,
+    `- Best AI image generators in 2026, plus the best Midjourney alternatives: ${SITE}/best/ai-image-generator`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -501,6 +502,8 @@ app.get('/llms-full.txt', (c) => {
     ...transData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Type: ${TRANS_TYPES[p.type]}. Pricing: ${p.t.pricingNote}`),
     `- Best AI writing tools in 2026, and the best for blog posts: ${SITE}/best/ai-writing-tool`,
     ...writeData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
+    `- Best AI image generators in 2026, plus the best Midjourney alternatives: ${SITE}/best/ai-image-generator`,
+    ...imageData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -597,6 +600,7 @@ app.get('/', (c) => {
       <a class="pill" href="/best/ai-tools-for-small-business">Best AI tools for small business</a>
       <a class="pill" href="/best/ai-transcription-tool">Best AI transcription tools</a>
       <a class="pill" href="/best/ai-writing-tool">Best AI writing tools</a>
+      <a class="pill" href="/best/ai-image-generator">Best AI image generators</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -736,6 +740,7 @@ app.get('/category/:slug', (c) => {
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'voice' ? '<p class="muted">Need a voiceover or a text to speech API? See the <a href="/best/ai-voice-generator">best AI voice generators and text to speech tools</a>.</p>' : ''}
     ${slug === 'voice' || slug === 'video' ? '<p class="muted">Need transcripts of meetings, interviews, or podcasts? See the <a href="/best/ai-transcription-tool">best AI transcription tools for creators and developers</a>.</p>' : ''}
+    ${slug === 'images' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-image-generator">best AI image generators, plus the best Midjourney alternatives</a>.</p>' : ''}
     ${slug === 'writing' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-writing-tool">best AI writing tools, and the best for blog posts</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
     <p class="muted">On a budget? See the <a href="/best/free-ai-tools#${slug === 'agents' ? 'automation' : esc(slug)}">best free AI tools for ${esc(cat.label.toLowerCase())}</a>.</p>
@@ -792,7 +797,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -2715,6 +2720,152 @@ app.get(WRITE_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Writing', '/category/writing'], ['AI writing tools', WRITE_PATH]])],
+    },
+  }))
+})
+
+const IMAGE_PICKS = [
+  { slug: 'midjourney', id: 'best-artistic', heading: 'Best AI image generator for artistic images', role: 'Best for artistic, stylized images',
+    why: 'Midjourney is the highest-ranked dedicated image generator on BuildStack and the usual benchmark for concept art, mood boards, and stylized marketing visuals. Standard and higher plans include unlimited image generations in the slower Relax mode, and Pro and Mega add unlimited standard-definition video in Relax mode.',
+    watch: 'There is no free plan, Stealth Mode (private images) is only on Pro and Mega, and companies with more than $1M in yearly revenue must be on Pro or Mega.' },
+  { slug: 'ideogram', id: 'best-text', heading: 'Best AI image generator for text in images', role: 'Best for readable text in images',
+    why: 'Ideogram is known for images that include readable text, which makes it the pick for posters, logo drafts, thumbnails, and marketing graphics where the words matter. Free accounts get weekly credits, and pay as you go credits also cover API use.',
+    watch: 'Even the best text rendering makes mistakes, so check every word and number before an image goes on a product or an ad.' },
+  { slug: 'flux', id: 'best-photorealism-api', heading: 'Best for photorealism and API image generation', role: 'Best for photorealism and building on an API',
+    why: 'FLUX is the family of image models from Black Forest Labs, including FLUX 3 Image and FLUX.2. You pay per image through the API with no subscription, the Playground costs the same as the API, and the models are also served through partner platforms. Teams that want to run the models on their own servers can license the open weights.',
+    watch: 'It is built for developers first, and some open-weight versions, such as FLUX.2 [dev], are non-commercial unless you buy a license.' },
+  { slug: 'krea-3', id: 'best-consistent', heading: 'Best for consistent products and characters', role: 'Best for keeping products and characters consistent',
+    why: 'Krea 3 is built for editing as much as generating. It takes up to 6 reference images per edit and keeps products, labels, logos, characters, and text intact while changing the rest of the scene, and most edits finish in under 8 seconds at native 2K. That makes it a strong choice for product photos and campaign variants.',
+    watch: 'Krea 3 is new (released October 15, 2026), so expect its features and pricing to keep changing.' },
+  { slug: 'leonardo', id: 'best-game-assets', heading: 'Best for game assets and custom styles', role: 'Best for game assets and trained custom styles',
+    why: 'Leonardo AI gives you 80+ models in one place on paid plans, including third-party models, and lets you train personal models on a small set of your own images to lock in a style, theme, or character. That suits game assets, item sets, and any project that needs many images in one look.',
+    watch: 'Free creations are public and Leonardo keeps rights to use them, and unlimited relaxed generation only covers selected models.' },
+  { slug: 'adobe-firefly', id: 'best-commercial', heading: 'Best commercially safer AI image generator', role: 'Best commercially safer option for design teams',
+    why: 'Adobe Firefly works inside the Adobe apps many designers already use, such as Generative Fill in Photoshop. Paid Firefly plans and Creative Cloud Pro include unlimited standard image generations, and Adobe says outputs from features that are not in beta can be used in commercial projects.',
+    watch: 'Partner models from companies like Google and OpenAI count as premium features and use credits, and outputs from beta features are not covered by Adobe indemnification for teams and enterprise customers.' },
+  { slug: 'canva', id: 'best-social', heading: 'Best for social posts and marketing graphics', role: 'Best for quick social and marketing graphics',
+    why: 'Canva puts image generation next to templates, brand kits, and layout tools, so a generated image can become a finished social post, slide, or flyer in the same place. It has its own image model, Canva Craft, and the Canva Brush design model for editable AI edits.',
+    watch: 'Brush is limited to Canva Pro subscribers for now, and prices vary by region.' },
+  { slug: 'topaz-labs', id: 'best-upscaling', heading: 'Best for upscaling and fixing images', role: 'Best for upscaling and repairing images',
+    why: 'Topaz Labs is not a text-to-image generator; it is the finishing step. Its new Wonder 4 model upscales and repairs an image in one pass, handling denoising, sharpening, compression artifacts, and faces, which helps when an AI image needs to be printed or used at a larger size.',
+    watch: 'At launch Wonder 4 is in the browser-based Topaz for Web, and personal plans only allow commercial use for organizations under $1M in annual revenue.' },
+]
+const IMAGE_PATH = '/best/ai-image-generator'
+const IMAGE_H1 = 'Best AI Image Generators in 2026 (Plus the Best Midjourney Alternatives)'
+
+function imageData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const picks = IMAGE_PICKS.map((p) => ({ ...p, t: find(p.slug) })).filter((p) => p.t)
+  const byRank = [...picks].sort((a, b) => a.t.rank - b.t.rank)
+  return { all, find, picks, byRank }
+}
+
+function imageFaq(d) {
+  const { find } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  return [
+    { q: 'What is the best AI image generator right now?',
+      a: `It depends on the image. ${r('midjourney')} is the best for artistic, stylized images and is the highest-ranked image generator on ${NAME}. Pick ${r('flux')} for photorealism or an API, ${r('ideogram')} when the image needs readable text, and ${r('krea-3')} when products or characters must stay consistent across images.` },
+    { q: 'What is the best free Midjourney alternative?',
+      a: `Midjourney has no free plan. ${r('krea-3')} has a free plan with a daily compute allowance, ${r('ideogram')} gives free accounts weekly credits, ${r('leonardo')} gives 150 fast tokens a day (free creations are public), and ${r('adobe-firefly')} allows limited daily generations for free. ${r('canva')} also has a free plan.` },
+    { q: 'Which AI image generator is best at text?',
+      a: `${r('ideogram')} is the pick for readable text in images, such as posters, logos, and thumbnails. Always proofread the result before you publish it.` },
+    { q: 'Which AI image generator is safe for commercial use?',
+      a: `No tool removes all risk, so read the terms for your plan. ${r('adobe-firefly')} is the commercially safer pick: Adobe says outputs from non-beta features can be used commercially. ${r('midjourney')} lets subscribers use their images in just about any way, but companies with more than $1M in yearly revenue need the Pro or Mega plan. On ${r('leonardo')}, paid subscribers own the images they generate.` },
+    { q: 'What is the best Midjourney API alternative?',
+      a: `For developers, ${r('flux')} is the main pick: pay per image through the Black Forest Labs API with no subscription. ${r('krea-3')} has an API at $0.06 per 2K image and $0.03 per 1K image, ${r('ideogram')} sells pay as you go credits that include API use, and ${r('leonardo')} has a pay as you go API.` },
+  ]
+}
+
+app.get(IMAGE_PATH, (c) => {
+  const d = imageData()
+  const { find, picks, byRank } = d
+  if (!picks.length) return c.notFound()
+  const faq = imageFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const short = (f) => `The best AI image generator for artistic images is ${f('midjourney')}. Choose ${f('ideogram')} for readable text, ${f('flux')} for photorealism and API use, ${f('krea-3')} for consistent products and characters, ${f('leonardo')} for game assets and custom styles, and ${f('adobe-firefly')} if you want the commercially safer option inside Adobe apps`
+  const shortText = short(rt)
+  const shortHtml = short(rl)
+  const description = `Best AI image generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus the best Midjourney alternatives and verified pricing. Updated ${UPDATED}.`
+  const title = `Best AI Image Generators in 2026 (Midjourney Alternatives) | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Images</span></div>
+    <h1>${esc(IMAGE_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section">
+    <h2>AI image generators at a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>Our pick for</th><th>Best for</th><th>Pricing</th></tr></thead>
+        <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.role)}</td><td>${esc(listNames(p.t.bestFor || []))}</td><td>${esc(p.t.pricingNote)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Prices come from each official pricing page. AI pricing changes often, so check the official site before you buy.</p>
+  </section>
+  ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
+    <h2>${esc(p.heading)}</h2>
+    <div class="panel prose">
+      <h3 style="margin-top:0;color:var(--text)">${link(p.t)} (#${p.t.rank} overall)</h3>
+      <p>${esc(p.t.tagline)}. ${esc(p.why)}</p>
+      <p><strong>Best for:</strong> ${esc(listNames(p.t.bestFor || []))}.</p>
+      <p><strong>Pricing:</strong> ${esc(p.t.pricingNote)}.</p>
+      <p class="muted" style="margin-bottom:0"><strong>Watch out:</strong> ${esc(p.watch)}</p>
+    </div>
+  </section>`).join('')}
+  <section class="section" id="midjourney-alternatives">
+    <div class="panel prose">
+      <h2 style="margin-top:0">Best Midjourney alternatives</h2>
+      <p>${rl('midjourney')} is subscription only, so these are the alternatives by what you need instead.</p>
+      <ul class="clean">
+        <li><strong>Free:</strong> ${rl('krea-3')} has a free plan with a daily compute allowance, ${rl('ideogram')} gives free accounts weekly credits, ${rl('leonardo')} gives 150 fast tokens a day, and ${rl('adobe-firefly')} and ${rl('canva')} can be used for free with limits. See more in the <a href="/best/free-ai-tools#images">best free AI tools for images</a>.</li>
+        <li><strong>Text rendering:</strong> ${rl('ideogram')} is the pick when an image needs readable words, such as a poster, logo draft, or thumbnail.</li>
+        <li><strong>API:</strong> ${rl('flux')} sells pay per image API access with no subscription, and ${rl('krea-3')}, ${rl('ideogram')}, and ${rl('leonardo')} also offer APIs.</li>
+        <li><strong>Inside Adobe:</strong> ${rl('adobe-firefly')} runs in Photoshop and other Adobe apps, and paid Firefly plans include unlimited standard image generations.</li>
+        <li><strong>Already paying for an assistant:</strong> ${rl('chatgpt')} also generates images, which is enough for many quick jobs before you add a dedicated tool.</li>
+      </ul>
+      <h2>How we chose</h2>
+      <p>This page covers the image tools ranked on ${NAME}, plus ${rl('chatgpt')} as an assistant that also makes images. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not score image quality, since results depend on your prompts and style. Browse the full <a href="/category/images">images category</a>, the <a href="/best/free-ai-tools#images">best free AI tools for images</a>, or read the full <a href="/methodology">methodology</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: IMAGE_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: IMAGE_H1,
+        description,
+        url: `${SITE}${IMAGE_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI image generators on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: byRank.length,
+        itemListElement: byRank.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t.name, url: `${SITE}/tool/${p.t.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Images', '/category/images'], ['AI image generators', IMAGE_PATH]])],
     },
   }))
 })
