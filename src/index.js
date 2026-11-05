@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-04'
+const UPDATED = '2026-11-05'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/best/ai-image-generator">AI image generators</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/best/ai-image-generator">AI image generators</a> · <a href="/best/ai-video-editor-for-youtube">AI video editors for YouTube</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -382,7 +382,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -446,6 +446,7 @@ app.get('/llms.txt', (c) => {
     `- Best AI transcription tools for creators and developers: ${SITE}/best/ai-transcription-tool`,
     `- Best AI writing tools in 2026, and the best for blog posts: ${SITE}/best/ai-writing-tool`,
     `- Best AI image generators in 2026, plus the best Midjourney alternatives: ${SITE}/best/ai-image-generator`,
+    `- Best AI video editors for YouTube in 2026: ${SITE}/best/ai-video-editor-for-youtube`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -504,6 +505,8 @@ app.get('/llms-full.txt', (c) => {
     ...writeData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
     `- Best AI image generators in 2026, plus the best Midjourney alternatives: ${SITE}/best/ai-image-generator`,
     ...imageData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
+    `- Best AI video editors for YouTube in 2026: ${SITE}/best/ai-video-editor-for-youtube`,
+    ...videoData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -601,6 +604,7 @@ app.get('/', (c) => {
       <a class="pill" href="/best/ai-transcription-tool">Best AI transcription tools</a>
       <a class="pill" href="/best/ai-writing-tool">Best AI writing tools</a>
       <a class="pill" href="/best/ai-image-generator">Best AI image generators</a>
+      <a class="pill" href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -740,6 +744,7 @@ app.get('/category/:slug', (c) => {
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'voice' ? '<p class="muted">Need a voiceover or a text to speech API? See the <a href="/best/ai-voice-generator">best AI voice generators and text to speech tools</a>.</p>' : ''}
     ${slug === 'voice' || slug === 'video' ? '<p class="muted">Need transcripts of meetings, interviews, or podcasts? See the <a href="/best/ai-transcription-tool">best AI transcription tools for creators and developers</a>.</p>' : ''}
+    ${slug === 'video' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-video-editor-for-youtube">best AI video editors for YouTube</a>.</p>' : ''}
     ${slug === 'images' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-image-generator">best AI image generators, plus the best Midjourney alternatives</a>.</p>' : ''}
     ${slug === 'writing' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-writing-tool">best AI writing tools, and the best for blog posts</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
@@ -797,7 +802,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -2866,6 +2871,157 @@ app.get(IMAGE_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Images', '/category/images'], ['AI image generators', IMAGE_PATH]])],
+    },
+  }))
+})
+
+const VIDEO_PICKS = [
+  { slug: 'descript', id: 'best-talking-head', heading: 'Best for talking-head and podcast videos', role: 'Best for talking-head and podcast edits',
+    why: 'Descript lets you edit video and podcasts by editing a transcript, which is the fastest path for talking-head YouTube videos and interview shows. AI tools cover cleanup, overdub, and studio sound, and the free plan includes 1 media hour a month so you can try the workflow before you pay.',
+    watch: 'Heavier creators usually need Hobbyist or Creator for more media hours, and overdub and advanced AI features sit on paid plans.' },
+  { slug: 'opusclip', id: 'best-shorts-from-long', heading: 'Best for turning long videos into Shorts', role: 'Best for Shorts and clips from long videos',
+    why: 'OpusClip is built for turning long footage into short social clips. OpusClip 4.0 (November 2, 2026) also auto-edits raw talking-head footage into a finished video with speech cleanup, captions, and B-roll, and one edit can become highlight clips, a longer cut, or a lo-fi update. Viral Hook and Motion Graphics cover openings and on-screen graphics, and AI Producer lets you edit from ChatGPT or Claude.',
+    watch: 'The free plan uses watermarked caption templates and limited exports, so regular YouTube uploads usually need Starter or Pro.' },
+  { slug: 'capcut', id: 'best-free-shorts', heading: 'Best for Shorts and quick social edits', role: 'Best for free Shorts and quick social edits',
+    why: 'CapCut is a widely used editor with AI captions, effects, and templates aimed at short-form social video. It is the easiest free starting point when you already have a finished take and just need captions, cuts, and a vertical crop for Shorts.',
+    watch: 'Some templates, effects, and exports push you toward CapCut Pro, and accounts and cloud features are tied to the CapCut / TikTok ecosystem.' },
+  { slug: 'twelvelabs-jockey', id: 'best-search-footage', heading: 'Best for finding moments in long footage', role: 'Best for searching footage and rough cuts',
+    why: 'Jockey by TwelveLabs searches video and photo libraries by meaning, explains what happens in each clip, groups footage, and assembles highlight reels or rough cuts. That saves hours when you have long recordings and need the moments worth publishing. It works inside ChatGPT and Claude or through the TwelveLabs API.',
+    watch: 'It is stronger at finding and assembling moments than at polish edits; finish captions and color in Descript, OpusClip, or CapCut.' },
+  { slug: 'runway', id: 'best-effects-broll', heading: 'Best for creative effects and b-roll', role: 'Best for AI effects and generated b-roll',
+    why: 'Runway is the pick when you need generative video, not just cuts: text-to-video, image-to-video, and creative effects for short clips and b-roll that would be expensive to shoot. Use it to generate supporting footage, then edit the final cut in a transcript or timeline editor.',
+    watch: 'Plans are credit-based, so heavy generation burns credits quickly, and generated clips still need editing before they look like a finished YouTube video.' },
+  { slug: 'elevenlabs', id: 'best-voiceover', heading: 'Best for AI voiceover', role: 'Best for AI voiceover and dubbing',
+    why: 'ElevenLabs covers realistic text-to-speech, voice clones, and multilingual dubbing, which helps when a YouTube video needs a voiceover, a language version, or a clean read over B-roll. It pairs well with Descript or CapCut in the last mile of an edit.',
+    watch: 'The free plan has no commercial license; Starter and above add commercial use, and cloned voices need the right consent and rights.' },
+]
+const VIDEO_WORKFLOW = [
+  { slug: '', name: 'Record', text: 'Shoot your talking-head, screen, or interview footage with clean audio. Keep a simple slate or chapter markers so later tools can find moments faster.' },
+  { slug: 'descript', name: 'Transcribe and cut', text: 'Import into Descript, edit by deleting words in the transcript, and use cleanup tools for filler words and studio sound before you export a master cut.' },
+  { slug: 'opusclip', name: 'Captions and Shorts', text: 'Send the long cut to OpusClip for highlight clips and Shorts, or use CapCut when you want free captions and a quick vertical edit.' },
+  { slug: 'twelvelabs-jockey', name: 'Find moments', text: 'If you have hours of raw footage, use Jockey to search by meaning and assemble a rough cut of the moments worth publishing.' },
+  { slug: 'elevenlabs', name: 'Voiceover fixes', text: 'Add or fix narration with ElevenLabs when you need a clean voiceover, a second language, or a read over B-roll that was not recorded on camera.' },
+  { slug: '', name: 'Check YouTube AI disclosure', text: 'Before you upload, review YouTube Help on disclosing realistic generative AI content. Caption creation and minor aesthetic edits typically do not need disclosure; realistic GenAI that could mislead viewers may. Disclosing AI content alone will not limit audience or monetization eligibility per YouTube Help.' },
+]
+const VIDEO_PATH = '/best/ai-video-editor-for-youtube'
+const VIDEO_H1 = 'Best AI Video Editors for YouTube in 2026'
+const YT_AI_DISCLOSURE = 'https://support.google.com/youtube/answer/14328491'
+
+function videoData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const picks = VIDEO_PICKS.map((p) => ({ ...p, t: find(p.slug) })).filter((p) => p.t)
+  const byRank = [...picks].sort((a, b) => a.t.rank - b.t.rank)
+  return { all, find, picks, byRank }
+}
+
+function videoFaq(d) {
+  const { find } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  return [
+    { q: 'What is the best AI video editor for YouTube?',
+      a: `It depends on the job. ${r('descript')} is the best for talking-head and podcast edits because you cut by editing a transcript. ${r('opusclip')} is the pick for turning long videos into Shorts and clips. ${r('capcut')} is the best free option for quick social edits, ${r('twelvelabs-jockey')} for searching long footage, ${r('runway')} for AI effects and generated b-roll, and ${r('elevenlabs')} for AI voiceover.` },
+    { q: 'What is the best free AI video editor for YouTube?',
+      a: `${r('capcut')} is the best free starting point for Shorts and quick social edits. ${r('descript')} has a free plan with 1 media hour a month for transcript-based editing, and ${r('opusclip')} has a free plan with watermarked caption templates and limited exports. See more free options in our free AI tools guide.` },
+    { q: 'Can AI turn a long video into YouTube Shorts?',
+      a: `Yes. ${r('opusclip')} is built for that: it finds highlight moments, adds captions, and exports short clips, and OpusClip 4.0 can also auto-edit raw talking-head footage into a finished video. ${r('capcut')} is a strong free alternative when you already know the moments you want and just need a vertical cut with captions.` },
+    { q: 'Descript or CapCut for YouTube?',
+      a: `Use ${r('descript')} when the video is a talking-head or podcast and you want to edit by deleting words in a transcript. Use ${r('capcut')} when you already have a take and need free captions, effects, and a Shorts-ready vertical edit. Many creators use Descript for the long cut and CapCut or OpusClip for Shorts.` },
+    { q: 'Will YouTube demonetize videos edited with AI?',
+      a: `Per YouTube Help (${YT_AI_DISCLOSURE}), creators must disclose realistic generative AI content in some cases. Caption creation and minor aesthetic edits typically do not need disclosure. YouTube Help also says that disclosing AI content alone will not limit your audience or your eligibility for monetization. Read the full policy on YouTube Help before you upload.` },
+  ]
+}
+
+app.get(VIDEO_PATH, (c) => {
+  const d = videoData()
+  const { find, picks, byRank } = d
+  if (!picks.length) return c.notFound()
+  const faq = videoFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const short = (f) => `The best AI video editor for talking-head YouTube videos is ${f('descript')}. Choose ${f('opusclip')} to turn long videos into Shorts, ${f('capcut')} for free and quick social edits, ${f('twelvelabs-jockey')} to search long footage for moments, ${f('runway')} for AI effects and generated b-roll, and ${f('elevenlabs')} for AI voiceover`
+  const shortText = short(rt)
+  const shortHtml = short(rl)
+  const steps = VIDEO_WORKFLOW.map((s) => ({ ...s, t: s.slug ? find(s.slug) : null }))
+  const description = `Best AI video editors for YouTube in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with a Shorts workflow and verified pricing. Updated ${UPDATED}.`
+  const title = `Best AI Video Editors for YouTube in 2026 | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
+    <h1>${esc(VIDEO_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section">
+    <h2>AI video editors for YouTube at a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>Our pick for</th><th>Best for</th><th>Pricing</th></tr></thead>
+        <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.role)}</td><td>${esc(listNames(p.t.bestFor || []))}</td><td>${esc(p.t.pricingNote)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Prices come from each official pricing page. AI pricing changes often, so check the official site before you buy.</p>
+  </section>
+  ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
+    <h2>${esc(p.heading)}</h2>
+    <div class="panel prose">
+      <h3 style="margin-top:0;color:var(--text)">${link(p.t)} (#${p.t.rank} overall)</h3>
+      <p>${esc(p.t.tagline)}. ${esc(p.why)}</p>
+      <p><strong>Best for:</strong> ${esc(listNames(p.t.bestFor || []))}.</p>
+      <p><strong>Pricing:</strong> ${esc(p.t.pricingNote)}.</p>
+      <p class="muted" style="margin-bottom:0"><strong>Watch out:</strong> ${esc(p.watch)}</p>
+    </div>
+  </section>`).join('')}
+  <section class="section" id="youtube-workflow">
+    <div class="panel prose">
+      <h2 style="margin-top:0">YouTube workflow: from recording to Shorts</h2>
+      <ol>
+        ${steps.map((s) => `<li><strong>${esc(s.name)}${s.t ? ` (${link(s.t)}, #${s.t.rank})` : ''}:</strong> ${s.name === 'Check YouTube AI disclosure' ? `Before you upload, review <a href="${YT_AI_DISCLOSURE}" rel="noopener">YouTube Help on disclosing AI-generated content</a>. Caption creation and minor aesthetic edits typically do not need disclosure; realistic GenAI that could mislead viewers may. Disclosing AI content alone will not limit audience or monetization eligibility per YouTube Help.` : esc(s.text)}</li>`).join('')}
+      </ol>
+      <h2>Editors vs video generators</h2>
+      <p>This page is about editors that cut, caption, and package footage for YouTube. Generators such as ${rl('runway')} (and tools like Sora) are for making new footage from text or images. Browse the full <a href="/category/video">video category</a> for both editors and generators, or see the <a href="/best/free-ai-tools">best free AI tools</a> for free plans across categories.</p>
+      <h2>How we chose</h2>
+      <p>This page covers video editors and supporting tools ranked on ${NAME} that YouTube creators actually use for talking-head cuts, Shorts, footage search, effects, and voiceover. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not score edit quality, since results depend on your footage and taste. Browse the full <a href="/category/video">video category</a> or read the full <a href="/methodology">methodology</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${f.q === 'Will YouTube demonetize videos edited with AI?' ? `Per <a href="${YT_AI_DISCLOSURE}" rel="noopener">YouTube Help</a>, creators must disclose realistic generative AI content in some cases. Caption creation and minor aesthetic edits typically do not need disclosure. YouTube Help also says that disclosing AI content alone will not limit your audience or your eligibility for monetization. Read the full policy on YouTube Help before you upload.` : esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: VIDEO_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: VIDEO_H1,
+        description,
+        url: `${SITE}${VIDEO_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI video editors for YouTube on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: byRank.length,
+        itemListElement: byRank.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t.name, url: `${SITE}/tool/${p.t.slug}` })),
+      }, {
+        '@type': 'HowTo',
+        name: 'Edit a YouTube video with AI tools',
+        step: steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.name, text: s.text })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Video', '/category/video'], ['AI video editors for YouTube', VIDEO_PATH]])],
     },
   }))
 })
