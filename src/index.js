@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-05'
+const UPDATED = '2026-11-06'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -294,7 +294,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/best/ai-image-generator">AI image generators</a> · <a href="/best/ai-video-editor-for-youtube">AI video editors for YouTube</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/best/ai-image-generator">AI image generators</a> · <a href="/best/ai-video-editor-for-youtube">AI video editors for YouTube</a> · <a href="/best/ai-video-generator">AI video generators</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -382,7 +382,7 @@ Sitemap: ${SITE}/sitemap.xml
 app.get('/sitemap.xml', (c) => {
   const lastmod = UPDATED
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -447,6 +447,7 @@ app.get('/llms.txt', (c) => {
     `- Best AI writing tools in 2026, and the best for blog posts: ${SITE}/best/ai-writing-tool`,
     `- Best AI image generators in 2026, plus the best Midjourney alternatives: ${SITE}/best/ai-image-generator`,
     `- Best AI video editors for YouTube in 2026: ${SITE}/best/ai-video-editor-for-youtube`,
+    `- Best AI video generators in 2026, by what you want to make: ${SITE}/best/ai-video-generator`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -507,6 +508,8 @@ app.get('/llms-full.txt', (c) => {
     ...imageData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
     `- Best AI video editors for YouTube in 2026: ${SITE}/best/ai-video-editor-for-youtube`,
     ...videoData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
+    `- Best AI video generators in 2026, by what you want to make: ${SITE}/best/ai-video-generator`,
+    ...videogenData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -605,6 +608,7 @@ app.get('/', (c) => {
       <a class="pill" href="/best/ai-writing-tool">Best AI writing tools</a>
       <a class="pill" href="/best/ai-image-generator">Best AI image generators</a>
       <a class="pill" href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>
+      <a class="pill" href="/best/ai-video-generator">Best AI video generators</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -744,7 +748,7 @@ app.get('/category/:slug', (c) => {
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'voice' ? '<p class="muted">Need a voiceover or a text to speech API? See the <a href="/best/ai-voice-generator">best AI voice generators and text to speech tools</a>.</p>' : ''}
     ${slug === 'voice' || slug === 'video' ? '<p class="muted">Need transcripts of meetings, interviews, or podcasts? See the <a href="/best/ai-transcription-tool">best AI transcription tools for creators and developers</a>.</p>' : ''}
-    ${slug === 'video' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-video-editor-for-youtube">best AI video editors for YouTube</a>.</p>' : ''}
+    ${slug === 'video' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-video-editor-for-youtube">best AI video editors for YouTube</a> or the <a href="/best/ai-video-generator">best AI video generators</a>.</p>' : ''}
     ${slug === 'images' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-image-generator">best AI image generators, plus the best Midjourney alternatives</a>.</p>' : ''}
     ${slug === 'writing' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-writing-tool">best AI writing tools, and the best for blog posts</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
@@ -802,7 +806,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
@@ -2980,7 +2984,7 @@ app.get(VIDEO_PATH, (c) => {
         ${steps.map((s) => `<li><strong>${esc(s.name)}${s.t ? ` (${link(s.t)}, #${s.t.rank})` : ''}:</strong> ${s.name === 'Check YouTube AI disclosure' ? `Before you upload, review <a href="${YT_AI_DISCLOSURE}" rel="noopener">YouTube Help on disclosing AI-generated content</a>. Caption creation and minor aesthetic edits typically do not need disclosure; realistic GenAI that could mislead viewers may. Disclosing AI content alone will not limit audience or monetization eligibility per YouTube Help.` : esc(s.text)}</li>`).join('')}
       </ol>
       <h2>Editors vs video generators</h2>
-      <p>This page is about editors that cut, caption, and package footage for YouTube. Generators such as ${rl('runway')} (and tools like Sora) are for making new footage from text or images. Browse the full <a href="/category/video">video category</a> for both editors and generators, or see the <a href="/best/free-ai-tools">best free AI tools</a> for free plans across categories.</p>
+      <p>This page is about editors that cut, caption, and package footage for YouTube. Generators such as ${rl('runway')} are for making new footage from text or images. See the <a href="/best/ai-video-generator">best AI video generators</a> guide for side-by-side picks, or browse the full <a href="/category/video">video category</a> for both editors and generators.</p>
       <h2>How we chose</h2>
       <p>This page covers video editors and supporting tools ranked on ${NAME} that YouTube creators actually use for talking-head cuts, Shorts, footage search, effects, and voiceover. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not score edit quality, since results depend on your footage and taste. Browse the full <a href="/category/video">video category</a> or read the full <a href="/methodology">methodology</a>.</p>
     </div>
@@ -3022,6 +3026,154 @@ app.get(VIDEO_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Video', '/category/video'], ['AI video editors for YouTube', VIDEO_PATH]])],
+    },
+  }))
+})
+
+const VIDEOGEN_PICKS = [
+  { slug: 'runway', id: 'best-overall', heading: 'Best overall AI video generator for creators', role: 'Best overall for creators', mode: 'Text-to-video and image-to-video',
+    why: 'Runway is the highest-ranked video tool on BuildStack and the broadest creator studio for generative clips: text-to-video, image-to-video, partner models, App Studio, and ad workflows sit in one credit-based product. It is the default starting point when you need new footage, not just cuts.',
+    watch: 'Credits burn quickly on longer or higher-resolution clips, and generated shots still need an editor before they look like a finished video.' },
+  { slug: 'kling', id: 'best-social', heading: 'Best for short social clips', role: 'Best for short social clips', mode: 'Text-to-video and image-to-video',
+    why: 'Kling AI is built for short-form creative clips with competitive motion quality from text or images. Paid plans add professional mode, watermark removal, and video extension, which suits creators who iterate on vertical social shots.',
+    watch: 'Unused monthly credits do not roll over on typical plans, and credit cost varies by model, resolution, duration, and audio.' },
+  { slug: 'veo-3-1', id: 'best-cinematic', heading: 'Best for cinematic storytelling with sound', role: 'Best for cinematic storytelling', mode: 'Text-to-video and image-to-video',
+    why: 'Google Veo 3.1 generates picture together with sound effects, ambient noise, and dialogue, follows reference images for character consistency, and supports first/last-frame control with 1080p or 4K output in Google Flow. It is the strongest listed option for cinematic short stories now that OpenAI Sora is discontinued.',
+    watch: 'Free Flow users get a small daily credit allotment and may be unable to generate at peak hours; Quality mode uses far more credits than Lite or Fast.' },
+  { slug: 'luma-dream-machine', id: 'best-concept', heading: 'Best for fast concept shots', role: 'Best for fast concept shots', mode: 'Text-to-video and image-to-video',
+    why: 'Luma Dream Machine is aimed at fast concepting: turn a prompt or still into a short shot to explore a look before you commit to a longer production. Ray3-class models and credit plans cover text-to-video, image-to-video, and related edits.',
+    watch: 'Higher resolutions and longer clips cost many more credits, so treat early drafts as throwaway concept tests.' },
+  { slug: 'viggle-jst-2', id: 'best-3d-motion', heading: 'Best for 3D scenes and character motion', role: 'Best for 3D scenes and character motion', mode: 'Image and prompt to 3D scene, character, and motion',
+    why: 'Viggle JST-2 generates explorable 3D scenes in about a second, turns a single image into an animation-ready character without a separate rigging step, and creates full-body motion from text or video. Scenes decode to 3D Gaussian splats that play in the browser.',
+    watch: 'It is a different category from flat text-to-video generators; use it when you need 3D worlds, characters, or motion, then composite elsewhere if you need a conventional clip.' },
+  { slug: 'seedance-2-5', id: 'also-seedance', heading: 'Also strong: longer takes with synced audio', role: 'Best for longer takes with audio', mode: 'Text-to-video and image-to-video',
+    why: 'Seedance 2.5 from ByteDance Seed generates audio and video together in clips of up to 30 seconds per pass, supports extension for multi-minute stories, and takes many image, video, and audio references in one pass.',
+    watch: 'Access is through Jimeng AI, Doubao, and BytePlus ModelArk, so the product surface you use depends on region and account.' },
+  { slug: 'pika-h3-flex', id: 'also-pika', heading: 'Also strong: fast drafts with open weights', role: 'Best for fast open-weight drafts', mode: 'Text-to-video, image-to-video, and reference-to-video',
+    why: 'Pika H3 Flex generates video with synchronized stereo audio quickly, accepts up to 12 reference images, videos, and audio files, and ships open weights for self-hosting. The Pika API prices by output second and resolution.',
+    watch: 'The 50% API Club launch discount and 15 free API Club generations a day ended November 5, 2026, so check current API and app plan prices before you budget.' },
+  { slug: 'heygen', id: 'also-heygen', heading: 'Also strong: avatar talking-head videos', role: 'Best for avatar talking-head videos', mode: 'Script to avatar video (plus text/image/reference video on paid plans)',
+    why: 'HeyGen turns scripts into videos with stock or custom AI avatars, translates into 175+ languages and dialects, and includes Video Agent plus an AI Studio editor. Paid plans add HeyGen Video 1 and access to models such as Seedance 2.5 and Veo 3.1.',
+    watch: 'Free exports are watermarked and capped at 3 videos a month; avatar likeness and voice cloning need the right consent and rights.' },
+  { slug: 'synthesia', id: 'also-synthesia', heading: 'Also strong: business training and docs-to-video', role: 'Best for business training videos', mode: 'Script, doc, or deck to avatar video',
+    why: 'Synthesia is built for business training and onboarding: avatars in 140+ languages, one-click translation, and Syren, which builds a video from a description. A ChatGPT plugin (November 3, 2026) works on every plan, including free.',
+    watch: 'Free Basic videos carry a Synthesia watermark, and Syren credit use varies with length and complexity.' },
+  { slug: 'gemini-omni-flash', id: 'also-omni', heading: 'Also strong: conversational video in Google apps', role: 'Best for conversational Google video', mode: 'Mixed references to video, edit by chat',
+    why: 'Gemini Omni Flash lets you create and edit short videos by conversation from mixed text, image, video, and voice references. Omni 1.2 Flash arrived in Google Vids on November 5, 2026, with a small free monthly allotment for any Google account.',
+    watch: 'Clip length and free allotments are limited compared with dedicated credit studios; check Flow, Vids, and Gemini API limits for your account.' },
+]
+const VIDEOGEN_PATH = '/best/ai-video-generator'
+const VIDEOGEN_H1 = 'Best AI Video Generators in 2026, by What You Want to Make'
+
+function videogenData() {
+  const all = tools()
+  const find = (s) => all.find((t) => t.slug === s)
+  const picks = VIDEOGEN_PICKS.map((p) => ({ ...p, t: find(p.slug) })).filter((p) => p.t)
+  const byRank = [...picks].sort((a, b) => a.t.rank - b.t.rank)
+  return { all, find, picks, byRank }
+}
+
+function videogenFaq(d) {
+  const { find } = d
+  const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  return [
+    { q: 'What is the best AI video generator right now?',
+      a: `It depends on what you want to make. ${r('runway')} is the best overall creator studio for text-to-video and image-to-video. Pick ${r('kling')} for short social clips, ${r('veo-3-1')} for cinematic shorts with native sound, ${r('luma-dream-machine')} for fast concept shots, and ${r('viggle-jst-2')} for 3D scenes and character motion. Avatar products such as ${r('heygen')} and ${r('synthesia')} fit scripted talking-head videos.` },
+    { q: 'Is there a free AI video generator?',
+      a: `Several listed tools have free tiers with limits. ${r('runway')} includes 125 one-time free credits, ${r('veo-3-1')} gives Google Flow accounts daily free credits, ${r('gemini-omni-flash')} offers a small monthly free allotment in Google Vids, ${r('heygen')} allows 3 watermarked videos a month, and ${r('synthesia')} Basic includes 500 credits a month with a watermark. ${r('viggle-jst-2')} has free trials in PINOC. Always check the official plan page before you rely on free output for client work.` },
+    { q: 'Sora vs Runway: which is better?',
+      a: `${r('sora')} is no longer available: OpenAI discontinued the Sora web and app experiences on April 26, 2026 and the Sora API on September 24, 2026. For new generative clips, ${r('runway')} is the better active pick on BuildStack for creators who need text-to-video and image-to-video in a credit-based studio. For cinematic shorts with native audio, compare ${r('veo-3-1')} as well.` },
+    { q: 'What is the best image to video AI?',
+      a: `Most top generators on this page do both text-to-video and image-to-video. ${r('runway')}, ${r('kling')}, ${r('veo-3-1')}, ${r('luma-dream-machine')}, ${r('seedance-2-5')}, and ${r('pika-h3-flex')} all support image-to-video. Choose by motion quality needs, audio, and credits rather than by a single winner.` },
+    { q: 'Can I use AI-generated video commercially?',
+      a: `It depends on the tool and plan. Many free tiers watermark output or restrict commercial use, while paid creator plans often allow commercial publishing under their terms. Read each vendor's license for your plan, confirm consent for any likeness or voice clone, and follow platform rules such as YouTube's generative AI disclosure help article when you upload realistic AI content.` },
+  ]
+}
+
+app.get(VIDEOGEN_PATH, (c) => {
+  const d = videogenData()
+  const { find, picks, byRank } = d
+  if (!picks.length) return c.notFound()
+  const faq = videogenFaq(d)
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
+  const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
+  const short = (f) => `The best overall AI video generator for creators is ${f('runway')}. Choose ${f('kling')} for short social clips, ${f('veo-3-1')} for cinematic storytelling with sound, ${f('luma-dream-machine')} for fast concept shots, and ${f('viggle-jst-2')} for 3D scenes and character motion`
+  const shortText = short(rt)
+  const shortHtml = short(rl)
+  const description = `Best AI video generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with text-to-video vs image-to-video notes and verified pricing. Updated ${UPDATED}.`
+  const title = `Best AI Video Generators in 2026 | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
+    <h1>${esc(VIDEOGEN_H1)}</h1>
+    <p><strong>Short answer:</strong> ${shortHtml}.</p>
+    <p class="muted">Last updated: ${UPDATED} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+  </section>
+  <section class="section">
+    <h2>AI video generators at a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>Text-to-video or image-to-video</th><th>Best for</th><th>Pricing</th></tr></thead>
+        <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.mode)}</td><td>${esc(p.role)}</td><td>${esc(p.t.pricingNote)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Prices come from each official pricing page. AI pricing changes often, so check the official site before you buy. OpenAI Sora is listed for context but is discontinued.</p>
+  </section>
+  ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
+    <h2>${esc(p.heading)}</h2>
+    <div class="panel prose">
+      <h3 style="margin-top:0;color:var(--text)">${link(p.t)} (#${p.t.rank} overall)</h3>
+      <p>${esc(p.t.tagline)}. ${esc(p.why)}</p>
+      <p><strong>Inputs:</strong> ${esc(p.mode)}.</p>
+      <p><strong>Best for:</strong> ${esc(listNames(p.t.bestFor || []))}.</p>
+      <p><strong>Pricing:</strong> ${esc(p.t.pricingNote)}.</p>
+      <p class="muted" style="margin-bottom:0"><strong>Watch out:</strong> ${esc(p.watch)}</p>
+    </div>
+  </section>`).join('')}
+  <section class="section" id="generator-vs-editor">
+    <div class="panel prose">
+      <h2 style="margin-top:0">Generator vs editor</h2>
+      <p>Generators make new footage from text, images, or references. Editors cut, caption, and package footage you already have. If you are finishing a YouTube video, start with the <a href="/best/ai-video-editor-for-youtube">best AI video editors for YouTube</a> guide, then come back here when you need generated b-roll or a fully synthetic clip.</p>
+      <h2>How credits and pricing work</h2>
+      <p>Most generators sell monthly credit allotments. Longer clips, higher resolution, audio, and reference-heavy modes cost more credits per second. Free tiers often watermark output or give a one-time credit deposit. Always confirm commercial-use terms on the official plan page for ${rl('runway')}, ${rl('kling')}, ${rl('veo-3-1')}, ${rl('luma-dream-machine')}, ${rl('pika-h3-flex')}, ${rl('heygen')}, and ${rl('synthesia')}.</p>
+      <h2>How we chose</h2>
+      <p>This page covers video generators ranked on ${esc(NAME)}, using the same editorial ranks as the rest of the site. Featured listings do not affect rank, and we do not score clip quality, since results depend on your prompts and taste. ${rl('sora')} remains in the directory for search context but is discontinued. Browse the full <a href="/category/video">video category</a> or read the full <a href="/methodology">methodology</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description,
+    path: VIDEOGEN_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: VIDEOGEN_H1,
+        description,
+        url: `${SITE}${VIDEOGEN_PATH}`,
+        dateModified: UPDATED,
+        author: { '@type': 'Organization', name: NAME, url: SITE },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        abstract: `${shortText}.`,
+      }, {
+        '@type': 'ItemList',
+        name: 'Best AI video generators on BuildStack',
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: byRank.length,
+        itemListElement: byRank.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t.name, url: `${SITE}/tool/${p.t.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Video', '/category/video'], ['AI video generators', VIDEOGEN_PATH]])],
     },
   }))
 })
