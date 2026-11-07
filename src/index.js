@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import toolsData from './tools.json'
+import { rankTools } from './search.js'
 
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
@@ -168,26 +169,7 @@ function bySlug(slug) {
 }
 
 function searchTools(q) {
-  const terms = String(q || '').toLowerCase().split(/\s+/).filter(Boolean)
-  if (!terms.length) return tools()
-  return tools()
-    .map((t) => {
-      const hay = [
-        t.name, t.tagline, t.description, t.category,
-        ...(t.bestFor || []), t.pricingNote || '',
-      ].join(' ').toLowerCase()
-      let score = 0
-      for (const term of terms) {
-        if (t.name.toLowerCase().includes(term)) score += 8
-        if ((t.bestFor || []).some((b) => b.toLowerCase().includes(term))) score += 5
-        if (t.category.includes(term)) score += 4
-        if (hay.includes(term)) score += 2
-      }
-      return { t, score }
-    })
-    .filter((x) => x.score > 0)
-    .sort((a, b) => b.score - a.score || a.t.rank - b.t.rank)
-    .map((x) => x.t)
+  return rankTools(tools(), q)
 }
 
 function layout({ title, description, path, body, jsonLd, robots }) {
