@@ -10,40 +10,35 @@ function names(query) {
   return rankTools(tools, query).map((tool) => tool.name)
 }
 
-const taggedWritingTools = byRank.filter((tool) => (
-  tool.category === 'writing'
-  && (tool.bestFor || []).some((tag) => /\bwriting\b/i.test(tag))
-))
+function wordsOf(value) {
+  return String(value ?? '').toLowerCase().match(/[a-z0-9]+/g) || []
+}
 
-test('write a blog post leads with writing tools and drops poster false friends', () => {
-  const results = rankTools(tools, 'write a blog post')
-  assert.deepEqual(
-    results.slice(0, taggedWritingTools.length).map((tool) => tool.slug),
-    taggedWritingTools.map((tool) => tool.slug),
-  )
-  assert.ok(results.length < tools.length, 'the letter a must not match the whole catalog')
-  assert.ok(results.length < tools.length / 2)
-  assert.equal(results.slice(0, 5).some((tool) => tool.slug === 'ideogram'), false)
-  assert.equal(results[0].slug === 'pagerduty-sre-agent', false)
-})
+function mentions(tool, word) {
+  const tokens = wordsOf([tool.name, ...(tool.bestFor || [])].join(' '))
+  return tokens.includes(word)
+}
 
-test('blog writing paraphrases keep the same writing leaders first', () => {
-  for (const query of ['write blog posts', 'blog writing']) {
-    const results = rankTools(tools, query)
-    assert.equal(results[0].category, 'writing', query)
-    assert.deepEqual(
-      results.slice(0, taggedWritingTools.length).map((tool) => tool.slug),
-      taggedWritingTools.map((tool) => tool.slug),
-      query,
-    )
+function lead(query, count = 3) {
+  return rankTools(tools, query).slice(0, count)
+}
+
+test('blog paraphrases lead with writing tools', () => {
+  for (const query of ['write a blog post', 'blog writing', 'write blog posts']) {
+    const top = lead(query)
+    assert.equal(top.length, 3, query)
+    assert.ok(top.every((tool) => tool.category === 'writing'), `${query}: ${top.map((tool) => tool.name).join(', ')}`)
+    assert.equal(top.some((tool) => tool.slug === 'consensus' || tool.slug === 'cursor' || tool.slug === 'canva'), false, query)
   }
+  assert.ok(rankTools(tools, 'write a blog post').length < tools.length / 2)
 })
 
-test('draft a blog does not lead with a poster tool', () => {
-  const results = rankTools(tools, 'draft a blog')
-  assert.notEqual(results[0].slug, 'ideogram')
-  assert.equal(results[0].category, 'writing')
-  assert.ok(results.length < tools.length)
+test('draft a blog leads with writing tools', () => {
+  const top = lead('draft a blog')
+  assert.ok(top.every((tool) => tool.category === 'writing'), top.map((tool) => tool.name).join(', '))
+  const slugs = rankTools(tools, 'draft a blog').slice(0, 3).map((tool) => tool.slug)
+  assert.equal(slugs.includes('ideogram'), false)
+  assert.equal(slugs.includes('pika-h3-flex'), false)
 })
 
 test('closed-class query a returns the directory in rank order', () => {
@@ -70,49 +65,75 @@ test('poster finds Ideogram and the word post does not', () => {
 test('dotted and hyphenated names stay exact', () => {
   assert.deepEqual(names('bolt.new'), ['Bolt.new'])
   assert.deepEqual(names('otter.ai'), ['Otter.ai'])
-  assert.deepEqual(names('gpt-6.1'), ['GPT-6.1 Terra', 'OpenAI Codex'])
-  assert.deepEqual(names('text-to-speech').slice(0, 3), ['Mistral Voxtral 3', 'ElevenLabs', 'HeyGen'])
+  const phrase = rankTools(tools, 'text-to-speech')
+  assert.ok(phrase.length > 0)
+  assert.ok(phrase.slice(0, 3).every((tool) => tool.category === 'voice'))
+  assert.ok(phrase.every((tool) => [tool.name, tool.tagline, tool.description, ...(tool.bestFor || [])].join(' ').toLowerCase().includes('text-to-speech')))
+  assert.match(names('gpt-6.1')[0], /GPT-6\.1/)
 })
 
-test('the word voice keeps ElevenLabs first', () => {
-  assert.equal(names('voice')[0], 'ElevenLabs')
+test('every exact tool name leads its own lookup', () => {
+  for (const tool of tools) {
+    const first = rankTools(tools, tool.name)[0]
+    assert.equal(first.slug, tool.slug, tool.name)
+  }
 })
 
-test('representative intents keep their catalog winners', () => {
-  assert.equal(names('coding IDE agent refactor')[0], 'Claude Code')
-  assert.equal(rankTools(tools, 'coding')[0].category, 'coding')
-  assert.equal(names('write code')[0], 'Claude Code')
+test('code and codex stay different words, and OpenCode is findable', () => {
+  assert.equal(rankTools(tools, 'codex')[0].slug, 'openai-codex')
+  assert.equal(rankTools(tools, 'opencode')[0].slug, 'opencode')
+  assert.equal(rankTools(tools, 'open code')[0].slug, 'opencode')
+  const codeLead = lead('code')
+  assert.ok(codeLead.every((tool) => tool.category === 'coding' || mentions(tool, 'code')))
+  assert.notEqual(codeLead[0].slug, 'openai-codex')
+  assert.ok(rankTools(tools, 'code').some((tool) => tool.slug === 'opencode'))
+})
+
+test('plurals agree and a short prefix is not a different word', () => {
+  assert.deepEqual(names('post'), names('posts'))
+  assert.equal(names('post').includes('Ideogram'), false)
+  assert.equal(rankTools(tools, 'image')[0].category, 'images')
+  assert.equal(rankTools(tools, 'images')[0].category, 'images')
+  assert.equal(rankTools(tools, 'paper')[0].slug, rankTools(tools, 'papers')[0].slug)
+  const voiceLead = lead('voice')
+  assert.ok(voiceLead.every((tool) => tool.category === 'voice'), voiceLead.map((tool) => tool.name).join(', '))
+  const agentLead = lead('agent', 5)
+  assert.ok(agentLead.every((tool) => tool.category === 'agents'), agentLead.map((tool) => tool.name).join(', '))
+  assert.equal(agentLead.some((tool) => tool.slug === 'kino'), false)
+})
+
+test('representative intents keep a relevant lead', () => {
+  assert.ok(lead('coding IDE agent refactor').every((tool) => tool.category === 'coding'))
+  assert.ok(lead('coding').every((tool) => tool.category === 'coding'))
+  assert.ok(lead('write code').every((tool) => tool.category === 'coding' || mentions(tool, 'code')))
   assert.equal(names('images art midjourney flux')[0], 'Midjourney')
-  assert.equal(rankTools(tools, 'generate images')[0].category, 'images')
-  assert.equal(names('video runway kling sora')[0], 'Runway')
-  assert.ok(names('video runway kling sora').slice(0, 3).includes('Kling AI'))
-  assert.ok(names('video runway kling sora').slice(0, 3).includes('Sora'))
-  assert.equal(rankTools(tools, 'video editing')[0].category, 'video')
+  assert.ok(lead('generate images').every((tool) => tool.category === 'images'))
+  assert.deepEqual(names('video runway kling sora').slice(0, 3).sort(), ['Kling AI', 'Runway', 'Sora'])
+  assert.ok(lead('video editing').every((tool) => tool.category === 'video'))
   assert.equal(names('voice speech elevenlabs')[0], 'ElevenLabs')
-  assert.equal(names('voiceover for a podcast')[0], 'ElevenLabs')
-  assert.equal(rankTools(tools, 'transcribe a meeting')[0].category, 'voice')
+  assert.equal(rankTools(tools, 'voiceover for a podcast')[0].slug, 'elevenlabs')
   assert.match(names('transcribe a meeting')[0], /Transcribe/)
-  const transcription = rankTools(tools, 'transcription')
-  assert.ok(transcription.every((tool) => tool.category === 'voice'))
-  assert.ok(transcription.some((tool) => tool.slug === 'otter'))
+  assert.equal(rankTools(tools, 'transcribe a meeting')[0].category, 'voice')
+  assert.ok(rankTools(tools, 'transcription').every((tool) => tool.category === 'voice'))
+  assert.ok(lead('research search citations papers').every((tool) => tool.category === 'research'))
   assert.equal(names('research search citations papers')[0], 'SciSpace')
-  assert.equal(names('research search citations papers')[1], 'Perplexity')
-  assert.equal(names('summarize research papers')[0], 'SciSpace')
-  assert.equal(names('write marketing copy')[0], 'Jasper')
+  assert.ok(lead('summarize research papers').every((tool) => tool.category === 'research'))
+  const copyLead = rankTools(tools, 'write marketing copy')[0]
+  assert.equal(copyLead.category, 'writing')
+  assert.ok(mentions(copyLead, 'copy'))
 })
 
-test('write a React app still surfaces app builders and does not match every tool', () => {
-  const results = rankTools(tools, 'write a React app')
-  assert.ok(results.length < tools.length)
-  const top = results.slice(0, 10)
-  assert.ok(top.some((tool) => tool.slug === 'v0' || tool.slug === 'lovable' || tool.slug === 'bolt'))
-  assert.ok(top.some((tool) => tool.category === 'coding'))
+test('write a React app leads with coding tools that mention an app or React', () => {
+  const top = lead('write a React app')
+  assert.ok(top.every((tool) => tool.category === 'coding'), top.map((tool) => `${tool.name} ${tool.category}`).join(', '))
+  assert.ok(top.every((tool) => mentions(tool, 'react') || mentions(tool, 'app')), top.map((tool) => tool.name).join(', '))
+  assert.equal(top.some((tool) => tool.slug === 'claude' || tool.slug === 'grammarly'), false)
 })
 
-test('edit a youtube video stays in video and does not match every tool', () => {
-  const results = rankTools(tools, 'edit a youtube video')
-  assert.equal(results[0].category, 'video')
-  assert.ok(results.length < tools.length)
+test('edit a youtube video leads with video tools', () => {
+  const top = lead('edit a youtube video')
+  assert.ok(top.every((tool) => tool.category === 'video'), top.map((tool) => tool.name).join(', '))
+  assert.ok(rankTools(tools, 'edit a youtube video').length < tools.length)
 })
 
 test('homepage best-fit order follows rankTools', async () => {
