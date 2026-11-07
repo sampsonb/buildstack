@@ -4,7 +4,7 @@ import toolsData from './tools.json'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-06'
+const UPDATED = '2026-11-07'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -71,6 +71,23 @@ function toolMetaDescription(t) {
   const cut = full.slice(0, 152)
   const space = cut.lastIndexOf(' ')
   return `${(space > 100 ? cut.slice(0, space) : cut).replace(/[\s,;:.]+$/, '')}...`
+}
+
+// Tool page FAQ. Plain text answers built only from tools.json fields, used
+// for both the visible FAQ and the FAQPage schema so the two never drift.
+function toolFaq(t) {
+  const label = CATEGORIES[t.category]?.label || t.category
+  const inCat = tools().filter((x) => x.category === t.category)
+  const catRank = inCat.findIndex((x) => x.slug === t.slug) + 1
+  const alts = inCat.filter((x) => x.slug !== t.slug).slice(0, 3)
+  const best = (t.bestFor || []).slice(0, 3)
+  const faq = [
+    { q: `What is ${t.name}?`, a: t.description },
+  ]
+  if (best.length) faq.push({ q: `What is ${t.name} best for?`, a: `${NAME} lists ${t.name} as best for ${listNames(best)}. It ranks #${t.rank} overall and #${catRank} of ${inCat.length} in ${label}.` })
+  if (t.pricingNote) faq.push({ q: `How much does ${t.name} cost?`, a: `${t.pricingNote.replace(/[\s.]+$/, '')}. Prices change often, so confirm the current plans on the official site before you buy.` })
+  if (alts.length) faq.push({ q: `What are the best alternatives to ${t.name}?`, a: `The top ranked ${label} tools on ${NAME} besides ${t.name} are ${listNames(alts.map((x) => `${x.name} (#${x.rank})`))}. See the full ${label} category for every option in rank order.` })
+  return { faq, alts, label }
 }
 
 // Homepage quick answers: the top ranked tools for each job, read from
@@ -789,6 +806,16 @@ app.get('/tool/:slug', (c) => {
   const t = bySlug(c.req.param('slug'))
   if (!t) return c.notFound()
   const related = tools().filter((x) => x.category === t.category && x.slug !== t.slug).slice(0, 4)
+  const tf = toolFaq(t)
+  const altLinks = tf.alts.map((x) => `<a href="/tool/${esc(x.slug)}">${esc(x.name)}</a> (#${x.rank})`)
+  const faqHtml = `
+  <section class="section" id="faq">
+    <h2>${esc(t.name)} FAQ</h2>
+    <div class="panel prose">
+      ${tf.faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${f.q.startsWith('What are the best alternatives') ? `The top ranked ${esc(tf.label)} tools on ${NAME} besides ${esc(t.name)} are ${listNames(altLinks)}. See the full <a href="/category/${esc(t.category)}">${esc(tf.label)} category</a> for every option in rank order.` : esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
   const body = `
   <section class="hero">
     <div class="meta"><span class="rank">#${t.rank}</span><a class="tag" href="/category/${esc(t.category)}">${esc(CATEGORIES[t.category]?.label || t.category)}</a>${t.newRelease ? '<span class="tag new">New</span>' : ''}</div>
@@ -808,6 +835,7 @@ app.get('/tool/:slug', (c) => {
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
     ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
+  ${faqHtml}
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
     title: `${t.name}: ${t.tagline} | ${NAME}`,
@@ -823,6 +851,11 @@ app.get('/tool/:slug', (c) => {
         applicationCategory: CATEGORIES[t.category]?.label || t.category,
         description: t.description,
         operatingSystem: 'Web',
+      }, {
+        '@type': 'FAQPage',
+        '@id': `${SITE}/tool/${t.slug}#faq`,
+        dateModified: UPDATED,
+        mainEntity: tf.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([
         ['Home', '/'],
         [CATEGORIES[t.category]?.label || t.category, `/category/${t.category}`],
