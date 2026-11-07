@@ -10,10 +10,7 @@ function names(query) {
   return rankTools(tools, query).map((tool) => tool.name)
 }
 
-// Writing tools whose own best-for tags say "writing", best editorial rank first.
-// "write a blog post" should lead with these, because the catalog calls them
-// writing tools and the query's verb is "write". "blog" is not in any listing.
-const writingLeaders = byRank.filter((tool) => (
+const taggedWritingTools = byRank.filter((tool) => (
   tool.category === 'writing'
   && (tool.bestFor || []).some((tag) => /\bwriting\b/i.test(tag))
 ))
@@ -21,8 +18,8 @@ const writingLeaders = byRank.filter((tool) => (
 test('write a blog post leads with writing tools and drops poster false friends', () => {
   const results = rankTools(tools, 'write a blog post')
   assert.deepEqual(
-    results.slice(0, writingLeaders.length).map((tool) => tool.slug),
-    writingLeaders.map((tool) => tool.slug),
+    results.slice(0, taggedWritingTools.length).map((tool) => tool.slug),
+    taggedWritingTools.map((tool) => tool.slug),
   )
   assert.ok(results.length < tools.length, 'the letter a must not match the whole catalog')
   assert.ok(results.length < tools.length / 2)
@@ -35,8 +32,8 @@ test('blog writing paraphrases keep the same writing leaders first', () => {
     const results = rankTools(tools, query)
     assert.equal(results[0].category, 'writing', query)
     assert.deepEqual(
-      results.slice(0, writingLeaders.length).map((tool) => tool.slug),
-      writingLeaders.map((tool) => tool.slug),
+      results.slice(0, taggedWritingTools.length).map((tool) => tool.slug),
+      taggedWritingTools.map((tool) => tool.slug),
       query,
     )
   }
@@ -62,12 +59,25 @@ test('empty query returns the directory in rank order', () => {
 })
 
 test('a query that matches nothing returns no tools', () => {
-  assert.deepEqual(names('zzzz-no-such-tool-qqq'), [])
+  assert.deepEqual(names('zzzzqqq'), [])
 })
 
 test('poster finds Ideogram and the word post does not', () => {
   assert.deepEqual(names('poster'), ['Ideogram'])
   assert.equal(names('post').includes('Ideogram'), false)
+})
+
+test('dotted and hyphenated names still find the tool', () => {
+  assert.equal(names('bolt.new')[0], 'Bolt.new')
+  assert.equal(names('otter.ai')[0], 'Otter.ai')
+  assert.equal(names('gpt-6.1')[0], 'GPT-6.1 Terra')
+  const speech = rankTools(tools, 'text-to-speech')
+  assert.ok(speech.length > 0)
+  assert.ok(speech.slice(0, 5).some((tool) => tool.category === 'voice'))
+})
+
+test('the word voice keeps ElevenLabs first', () => {
+  assert.equal(names('voice')[0], 'ElevenLabs')
 })
 
 test('representative intents keep their catalog winners', () => {
@@ -105,4 +115,23 @@ test('edit a youtube video stays in video and does not match every tool', () => 
   const results = rankTools(tools, 'edit a youtube video')
   assert.equal(results[0].category, 'video')
   assert.ok(results.length < tools.length)
+})
+
+test('homepage best-fit order follows rankTools', async () => {
+  const app = (await import('../src/index.js')).default
+  const html = await (await app.request('http://local/?q=write%20a%20blog%20post')).text()
+  const grid = html.match(/Best fit for[\s\S]*?<div class="grid">([\s\S]*?)<\/div>\s*<\/section>/)
+  const slugs = [...grid[1].matchAll(/href="\/tool\/([^"]+)"/g)].map((match) => match[1])
+  assert.deepEqual(slugs, rankTools(tools, 'write a blog post').map((tool) => tool.slug))
+  assert.equal(html.includes('async function subscribe'), true)
+})
+
+test('homepage top ranked section stays in editorial rank order', async () => {
+  const app = (await import('../src/index.js')).default
+  const html = await (await app.request('http://local/')).text()
+  const start = html.indexOf('<h2>Top ranked</h2>')
+  const end = html.indexOf('Browse all categories', start)
+  const slugs = [...html.slice(start, end).matchAll(/href="\/tool\/([^"]+)"/g)].map((match) => match[1])
+  assert.deepEqual(slugs, byRank.slice(0, 12).map((tool) => tool.slug))
+  assert.equal(html.includes('FAQPage'), true)
 })

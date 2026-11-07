@@ -1,23 +1,64 @@
+const CLOSED_CLASS = new Set([
+  'a', 'an', 'the', 'of', 'for', 'to', 'and', 'or', 'in', 'on', 'with', 'at', 'by', 'from',
+])
+
+function fieldWords(value) {
+  return String(value ?? '').toLowerCase().match(/[a-z0-9]+/g) || []
+}
+
+function queryTerms(query) {
+  return String(query ?? '')
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((term) => term && !CLOSED_CLASS.has(term))
+}
+
+function wordForms(term) {
+  const forms = new Set([term])
+  if (term.length < 3) return forms
+  forms.add(`${term}s`)
+  forms.add(`${term}es`)
+  if (term.endsWith('e')) {
+    const stem = term.slice(0, -1)
+    forms.add(`${stem}ing`)
+    forms.add(`${stem}ed`)
+  } else {
+    forms.add(`${term}ing`)
+    forms.add(`${term}ed`)
+  }
+  if (term.endsWith('y') && term.length > 3) forms.add(`${term.slice(0, -1)}ies`)
+  return forms
+}
+
+function hasWordForm(term, value) {
+  const forms = wordForms(term)
+  return fieldWords(value).some((word) => {
+    if (forms.has(word)) return true
+    return term.length >= 5 && word.length > term.length && word.startsWith(term)
+  })
+}
+
 export function rankTools(list, query) {
   const ranked = [...list].sort((a, b) => a.rank - b.rank)
-  const terms = String(query || '').toLowerCase().split(/\s+/).filter(Boolean)
+  const terms = queryTerms(query)
   if (!terms.length) return ranked
   return ranked
-    .map((t) => {
+    .map((tool) => {
+      const best = (tool.bestFor || []).join(' ')
       const hay = [
-        t.name, t.tagline, t.description, t.category,
-        ...(t.bestFor || []), t.pricingNote || '',
-      ].join(' ').toLowerCase()
+        tool.name, tool.tagline, tool.description, tool.category,
+        best, tool.pricingNote || '',
+      ].join(' ')
       let score = 0
       for (const term of terms) {
-        if (t.name.toLowerCase().includes(term)) score += 8
-        if ((t.bestFor || []).some((b) => b.toLowerCase().includes(term))) score += 5
-        if (t.category.includes(term)) score += 4
-        if (hay.includes(term)) score += 2
+        if (hasWordForm(term, tool.name)) score += 8
+        if (hasWordForm(term, best)) score += 5
+        if (hasWordForm(term, tool.category)) score += 4
+        if (hasWordForm(term, hay)) score += 2
       }
-      return { t, score }
+      return { tool, score }
     })
-    .filter((x) => x.score > 0)
-    .sort((a, b) => b.score - a.score || a.t.rank - b.t.rank)
-    .map((x) => x.t)
+    .filter((row) => row.score > 0)
+    .sort((a, b) => b.score - a.score || a.tool.rank - b.tool.rank)
+    .map((row) => row.tool)
 }
