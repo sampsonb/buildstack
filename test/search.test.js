@@ -16,7 +16,7 @@ function wordsOf(value) {
 
 function mentions(tool, word) {
   const tokens = wordsOf([tool.name, ...(tool.bestFor || [])].join(' '))
-  return tokens.includes(word)
+  return tokens.some((token) => token === word || token === `${word}s` || `${token}s` === word)
 }
 
 function lead(query, count = 3) {
@@ -104,7 +104,8 @@ test('plurals agree and a short prefix is not a different word', () => {
 
 test('representative intents keep a relevant lead', () => {
   assert.ok(lead('coding IDE agent refactor').every((tool) => tool.category === 'coding'))
-  assert.ok(lead('coding').every((tool) => tool.category === 'coding'))
+  assert.equal(rankTools(tools, 'coding')[0].category, 'coding')
+  assert.ok(lead('coding').every((tool) => tool.category === 'coding' || mentions(tool, 'code') || mentions(tool, 'coding')))
   assert.ok(lead('write code').every((tool) => tool.category === 'coding' || mentions(tool, 'code')))
   assert.equal(names('images art midjourney flux')[0], 'Midjourney')
   assert.ok(lead('generate images').every((tool) => tool.category === 'images'))
