@@ -131,6 +131,14 @@ test('write a React app leads with coding tools that mention an app or React', (
   assert.equal(top.some((tool) => tool.slug === 'claude' || tool.slug === 'grammarly'), false)
 })
 
+test('a short word does not steal the category from the job', () => {
+  assert.ok(lead('ai writing tool').every((tool) => tool.category === 'writing'))
+  assert.ok(lead('best ai for coding').every((tool) => tool.category === 'coding'))
+  assert.ok(lead('ai image generator').every((tool) => tool.category === 'images'))
+  assert.deepEqual(names('news'), [])
+  assert.equal(rankTools(tools, 'debug python')[0].category, 'coding')
+})
+
 test('edit a youtube video leads with video tools', () => {
   const top = lead('edit a youtube video')
   assert.ok(top.every((tool) => tool.category === 'video'), top.map((tool) => tool.name).join(', '))

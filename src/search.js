@@ -4,27 +4,23 @@ const CLOSED_CLASS = new Set([
 
 const CATEGORY_SLUGS = ['coding', 'writing', 'images', 'video', 'agents', 'research', 'voice']
 
-function wordForms(term) {
-  const forms = new Set([term])
-  if (term.length < 3) return forms
-  forms.add(`${term}s`)
-  forms.add(`${term}es`)
-  if (term.endsWith('e')) {
-    const stem = term.slice(0, -1)
-    forms.add(`${stem}ing`)
-    forms.add(`${stem}ed`)
-  } else {
-    forms.add(`${term}ing`)
-    forms.add(`${term}ed`)
+function isInflection(stem, word) {
+  if (word === stem) return true
+  if (stem.length < 3) return false
+  if (!stem.endsWith('w') && word === `${stem}s`) return true
+  if (/(?:s|x|z|ch|sh)$/.test(stem) && word === `${stem}es`) return true
+  if (stem.endsWith('y') && stem.length > 3 && word === `${stem.slice(0, -1)}ies`) return true
+  if (stem.endsWith('e')) {
+    const root = stem.slice(0, -1)
+    if (word === `${root}ing` || word === `${root}ed`) return true
   }
-  if (term.endsWith('y') && term.length > 3) forms.add(`${term.slice(0, -1)}ies`)
-  return forms
+  if (word === `${stem}ing` || word === `${stem}ed`) return true
+  if (word === `${stem}${stem.slice(-1)}ing`) return true
+  return false
 }
 
 function formsMatch(left, right) {
-  if (left === right) return true
-  if (left.length < 3 || right.length < 3) return false
-  return wordForms(left).has(right) || wordForms(right).has(left)
+  return isInflection(left, right) || isInflection(right, left)
 }
 
 function rawWords(value) {
@@ -66,36 +62,55 @@ function categorySlug(term) {
   return CATEGORY_SLUGS.find((slug) => formsMatch(term, slug)) || null
 }
 
+function namesCategory(term, slug) {
+  return term === slug || `${term}s` === slug || term === `${slug}s`
+}
+
 function categoryLeader(categories) {
   const counts = new Map()
   for (const category of categories) counts.set(category, (counts.get(category) || 0) + 1)
-  const ordered = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+  const ordered = [...counts.entries()].sort((a, b) => b[1] - a[1])
   if (!ordered.length) return null
-  if (ordered.length === 1 || ordered[0][1] > ordered[1][1]) return ordered[0][0]
+  const [leader, count] = ordered[0]
+  const second = ordered[1]?.[1] || 0
+  if (second === 0) return leader
+  if (count >= 3 && count > second) return leader
   return null
 }
 
 function queryIntent(list, terms) {
   const noted = terms.map((term) => {
+    if (term.length < 3 && !/[^a-z0-9]/.test(term)) {
+      return { term, count: 0, lead: null, slug: null, specific: false, unanimous: false }
+    }
     const distinctive = list.filter((tool) => (
-      textHit(term, tool.name, true) || textHit(term, (tool.bestFor || []).join(' '))
+      textHit(term, tool.name) || textHit(term, (tool.bestFor || []).join(' '))
     ))
     const lead = categoryLeader(distinctive.map((tool) => tool.category))
     const slug = categorySlug(term)
+    const unanimous = Boolean(lead) && distinctive.every((tool) => tool.category === lead)
     return {
       term,
       count: distinctive.length,
       lead,
       slug,
+      unanimous,
       specific: Boolean(lead) && (!slug || lead === slug),
     }
   })
-  const specific = noted.filter((item) => item.specific)
-  const pool = specific.length ? specific : noted.filter((item) => item.slug)
+  const family = noted.filter((item) => item.slug)
+  const exactFamily = family.filter((item) => namesCategory(item.term, item.slug))
+  const pointed = noted.filter((item) => item.specific && !item.slug && item.unanimous)
+  const pointedAgrees = pointed.filter((item) => exactFamily.some((entry) => entry.slug === item.lead))
+  const usablePointed = exactFamily.length ? pointedAgrees : pointed
+  const familySpecific = noted.filter((item) => item.specific && item.slug)
+  const fallback = noted.filter((item) => item.specific)
+  const pool = usablePointed.length ? usablePointed : (familySpecific.length ? familySpecific : (family.length ? family : fallback))
   if (!pool.length) return null
   pool.sort((a, b) => a.count - b.count || a.term.localeCompare(b.term))
   const chosen = pool[0]
-  return specific.length ? (chosen.lead || chosen.slug) : chosen.slug
+  if (chosen.slug && chosen.lead !== chosen.slug) return chosen.slug
+  return chosen.lead || chosen.slug
 }
 
 function compact(value) {
@@ -114,7 +129,6 @@ export function rankTools(list, query) {
     const hay = [tool.name, tool.tagline, tool.description, tool.category, best, tool.pricingNote || ''].join(' ')
     let score = 0
     let specific = 0
-    let named = false
     for (const term of terms) {
       const name = textHit(term, tool.name, true)
       const bestHit = textHit(term, best)
@@ -124,12 +138,11 @@ export function rankTools(list, query) {
       if (bestHit) score += 5
       if (category) score += 4
       if (anywhere) score += 2
-      if (name) named = true
       if (!categorySlug(term) && (name || bestHit)) specific += 1
     }
     if (!score) continue
     const exact = Boolean(full) && full === compact(tool.name)
-    const band = exact ? 0 : (intent && (tool.category === intent || named) ? 1 : 2)
+    const band = exact ? 0 : (intent && tool.category === intent ? 1 : 2)
     rows.push({ tool, score, specific, band })
   }
   rows.sort((a, b) => a.band - b.band || b.specific - a.specific || b.score - a.score || a.tool.rank - b.tool.rank)
