@@ -9,7 +9,7 @@ function fieldWords(value) {
 function queryTerms(query) {
   return String(query ?? '')
     .toLowerCase()
-    .split(/[^a-z0-9]+/)
+    .split(/\s+/)
     .filter((term) => term && !CLOSED_CLASS.has(term))
 }
 
@@ -31,6 +31,7 @@ function wordForms(term) {
 }
 
 function hasWordForm(term, value) {
+  if (/[^a-z0-9]/.test(term)) return String(value ?? '').toLowerCase().includes(term)
   const forms = wordForms(term)
   return fieldWords(value).some((word) => {
     if (forms.has(word)) return true

@@ -898,7 +898,7 @@ app.get('/methodology', (c) => {
     <ul class="clean">${catCounts.map((x) => `<li><a href="/category/${x.k}">${esc(x.label)}</a>: ${x.n} tools</li>`).join('')}</ul>
 
     <h2>How search works</h2>
-    <p>When you type a job into the search box, BuildStack splits your words into terms and scores each tool. Dots and hyphens break words apart. It skips a, an, the, of, for, to, and, or, in, on, with, at, by, and from. If every word is skipped, the full directory is shown in rank order.</p>
+    <p>When you type a job into the search box, BuildStack splits your words on spaces and scores each tool. A dotted or hyphenated word is matched whole, so bolt.new finds Bolt.new. It skips a, an, the, of, for, to, and, or, in, on, with, at, by, and from. If every word is skipped, the full directory is shown in rank order.</p>
     <p>A term matches a whole word. Terms shorter than 3 letters match only that exact word. Plurals count, and so do -ing and -ed endings, including the form that drops a trailing e, so write matches writing and code matches coding. A term of 5 or more letters also matches a longer word that starts with it, so voice matches voiceovers. A shorter term does not, so post does not match poster.</p>
     <p>For each remaining term:</p>
     <ul class="clean">

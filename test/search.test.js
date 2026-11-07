@@ -59,7 +59,7 @@ test('empty query returns the directory in rank order', () => {
 })
 
 test('a query that matches nothing returns no tools', () => {
-  assert.deepEqual(names('zzzzqqq'), [])
+  assert.deepEqual(names('zzzz-no-such-tool-qqq'), [])
 })
 
 test('poster finds Ideogram and the word post does not', () => {
@@ -67,13 +67,11 @@ test('poster finds Ideogram and the word post does not', () => {
   assert.equal(names('post').includes('Ideogram'), false)
 })
 
-test('dotted and hyphenated names still find the tool', () => {
-  assert.equal(names('bolt.new')[0], 'Bolt.new')
-  assert.equal(names('otter.ai')[0], 'Otter.ai')
-  assert.equal(names('gpt-6.1')[0], 'GPT-6.1 Terra')
-  const speech = rankTools(tools, 'text-to-speech')
-  assert.ok(speech.length > 0)
-  assert.ok(speech.slice(0, 5).some((tool) => tool.category === 'voice'))
+test('dotted and hyphenated names stay exact', () => {
+  assert.deepEqual(names('bolt.new'), ['Bolt.new'])
+  assert.deepEqual(names('otter.ai'), ['Otter.ai'])
+  assert.deepEqual(names('gpt-6.1'), ['GPT-6.1 Terra', 'OpenAI Codex'])
+  assert.deepEqual(names('text-to-speech').slice(0, 3), ['Mistral Voxtral 3', 'ElevenLabs', 'HeyGen'])
 })
 
 test('the word voice keeps ElevenLabs first', () => {
