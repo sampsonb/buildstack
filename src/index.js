@@ -5,7 +5,7 @@ import { rankTools } from './search.js'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-07'
+const UPDATED = '2026-11-09'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -2763,6 +2763,9 @@ const IMAGE_PICKS = [
   { slug: 'krea-3', id: 'best-consistent', heading: 'Best for consistent products and characters', role: 'Best for keeping products and characters consistent',
     why: 'Krea 3 is built for editing as much as generating. It takes up to 6 reference images per edit and keeps products, labels, logos, characters, and text intact while changing the rest of the scene, and most edits finish in under 8 seconds at native 2K. That makes it a strong choice for product photos and campaign variants.',
     watch: 'Krea 3 is new (released October 15, 2026), so expect its features and pricing to keep changing.' },
+  { slug: 'seedream-5-5', id: 'best-multi-round-editing', heading: 'Best for many rounds of edits and transparent assets', role: 'Best for repeated edits and transparent-background assets',
+    why: 'Seedream 5.5 from ByteDance is built to keep editing the same image: it preserves the parts you did not ask to change at the pixel level, and ByteDance demonstrates 100 successive edits without color shifts or detail loss. It can also output native RGBA images with transparent backgrounds, so product cutouts, stickers, and logo-style assets are ready for a layout without a separate background removal step.',
+    watch: 'Seedream 5.5 is brand new (introduced November 9, 2026). At launch it is in the Doubao, Doubao Work, and Jimeng apps, and its API on Volcano Engine Ark is announced but not yet live, so pricing and access outside those apps may change.' },
   { slug: 'leonardo', id: 'best-game-assets', heading: 'Best for game assets and custom styles', role: 'Best for game assets and trained custom styles',
     why: 'Leonardo AI gives you 80+ models in one place on paid plans, including third-party models, and lets you train personal models on a small set of your own images to lock in a style, theme, or character. That suits game assets, item sets, and any project that needs many images in one look.',
     watch: 'Free creations are public and Leonardo keeps rights to use them, and unlimited relaxed generation only covers selected models.' },
@@ -2797,6 +2800,8 @@ function imageFaq(d) {
       a: `Midjourney has no free plan. ${r('krea-3')} has a free plan with a daily compute allowance, ${r('ideogram')} gives free accounts weekly credits, ${r('leonardo')} gives 150 fast tokens a day (free creations are public), and ${r('adobe-firefly')} allows limited daily generations for free. ${r('canva')} also has a free plan.` },
     { q: 'Which AI image generator is best at text?',
       a: `${r('ideogram')} is the pick for readable text in images, such as posters, logos, and thumbnails. Always proofread the result before you publish it.` },
+    { q: 'Which AI image generator can make transparent backgrounds?',
+      a: `${r('seedream-5-5')}, introduced November 9, 2026, generates native RGBA images with full and partial transparency, so assets come out ready for a layout. It also keeps unedited areas unchanged across many rounds of edits. At launch it is in the Doubao, Doubao Work, and Jimeng apps, with its API announced but not yet live.` },
     { q: 'Which AI image generator is safe for commercial use?',
       a: `No tool removes all risk, so read the terms for your plan. ${r('adobe-firefly')} is the commercially safer pick: Adobe says outputs from non-beta features can be used commercially. ${r('midjourney')} lets subscribers use their images in just about any way, but companies with more than $1M in yearly revenue need the Pro or Mega plan. On ${r('leonardo')}, paid subscribers own the images they generate.` },
     { q: 'What is the best Midjourney API alternative?',
@@ -2812,7 +2817,7 @@ app.get(IMAGE_PATH, (c) => {
   const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
   const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
   const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
-  const short = (f) => `The best AI image generator for artistic images is ${f('midjourney')}. Choose ${f('ideogram')} for readable text, ${f('flux')} for photorealism and API use, ${f('krea-3')} for consistent products and characters, ${f('leonardo')} for game assets and custom styles, and ${f('adobe-firefly')} if you want the commercially safer option inside Adobe apps`
+  const short = (f) => `The best AI image generator for artistic images is ${f('midjourney')}. Choose ${f('ideogram')} for readable text, ${f('flux')} for photorealism and API use, ${f('krea-3')} for consistent products and characters, ${f('seedream-5-5')} for many rounds of edits and transparent assets, ${f('leonardo')} for game assets and custom styles, and ${f('adobe-firefly')} if you want the commercially safer option inside Adobe apps`
   const shortText = short(rt)
   const shortHtml = short(rl)
   const description = `Best AI image generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus the best Midjourney alternatives and verified pricing. Updated ${UPDATED}.`
@@ -2852,6 +2857,7 @@ app.get(IMAGE_PATH, (c) => {
         <li><strong>Free:</strong> ${rl('krea-3')} has a free plan with a daily compute allowance, ${rl('ideogram')} gives free accounts weekly credits, ${rl('leonardo')} gives 150 fast tokens a day, and ${rl('adobe-firefly')} and ${rl('canva')} can be used for free with limits. See more in the <a href="/best/free-ai-tools#images">best free AI tools for images</a>.</li>
         <li><strong>Text rendering:</strong> ${rl('ideogram')} is the pick when an image needs readable words, such as a poster, logo draft, or thumbnail.</li>
         <li><strong>API:</strong> ${rl('flux')} sells pay per image API access with no subscription, and ${rl('krea-3')}, ${rl('ideogram')}, and ${rl('leonardo')} also offer APIs.</li>
+        <li><strong>Transparent backgrounds:</strong> ${rl('seedream-5-5')} generates native RGBA images with full and partial transparency, so cutouts skip the background removal step.</li>
         <li><strong>Inside Adobe:</strong> ${rl('adobe-firefly')} runs in Photoshop and other Adobe apps, and paid Firefly plans include unlimited standard image generations.</li>
         <li><strong>Already paying for an assistant:</strong> ${rl('chatgpt')} also generates images, which is enough for many quick jobs before you add a dedicated tool.</li>
       </ul>
