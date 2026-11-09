@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
-import toolsData from './tools.json'
+import toolsData from './tools.json' with { type: 'json' }
+import { rankTools } from './search.js'
 
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
@@ -168,26 +169,7 @@ function bySlug(slug) {
 }
 
 function searchTools(q) {
-  const terms = String(q || '').toLowerCase().split(/\s+/).filter(Boolean)
-  if (!terms.length) return tools()
-  return tools()
-    .map((t) => {
-      const hay = [
-        t.name, t.tagline, t.description, t.category,
-        ...(t.bestFor || []), t.pricingNote || '',
-      ].join(' ').toLowerCase()
-      let score = 0
-      for (const term of terms) {
-        if (t.name.toLowerCase().includes(term)) score += 8
-        if ((t.bestFor || []).some((b) => b.toLowerCase().includes(term))) score += 5
-        if (t.category.includes(term)) score += 4
-        if (hay.includes(term)) score += 2
-      }
-      return { t, score }
-    })
-    .filter((x) => x.score > 0)
-    .sort((a, b) => b.score - a.score || a.t.rank - b.t.rank)
-    .map((x) => x.t)
+  return rankTools(tools(), q)
 }
 
 function layout({ title, description, path, body, jsonLd, robots }) {
@@ -916,14 +898,16 @@ app.get('/methodology', (c) => {
     <ul class="clean">${catCounts.map((x) => `<li><a href="/category/${x.k}">${esc(x.label)}</a>: ${x.n} tools</li>`).join('')}</ul>
 
     <h2>How search works</h2>
-    <p>When you type a job into the search box, BuildStack splits your words into terms and scores each tool. For each term:</p>
+    <p>When you type a job into the search box, BuildStack splits your words on spaces and scores each tool. A dotted or hyphenated word is matched whole, so bolt.new finds Bolt.new. A name made of two longer words run together, such as OpenCode, also matches either word. It skips a, an, the, of, for, to, and, or, in, on, with, at, by, and from. If every word is skipped, the full directory is shown in rank order.</p>
+    <p>A term matches a whole word. Terms shorter than 3 letters match only that exact word. Plurals count in either direction, and so do -ing and -ed endings, including the form that drops a trailing e, so write matches writing and code matches coding. A term does not match inside a different longer word, so post does not match poster and code does not match codex.</p>
+    <p>Words of one or two letters still match, but they do not choose the category. BuildStack sees which category the other matches support. The word with the fewest such matches wins when it points at one category, so a narrower word beats a broader one. An exact match for the whole name comes first. Other tools in that category come next. Inside the group, a tool that matches a narrower word in its name or best-for tags comes before one that only matches a broad word. For each remaining term:</p>
     <ul class="clean">
       <li>A match in the tool name adds 8 points.</li>
       <li>A match in one of the tool's best-for tags adds 5 points.</li>
       <li>A match in the category adds 4 points.</li>
       <li>A match anywhere in the listing (name, tagline, description, category, best-for tags, or pricing note) adds 2 points.</li>
     </ul>
-    <p>Tools with no matches are left out. The rest are sorted by score, highest first. When two tools score the same, the higher ranked tool comes first. Search result pages are marked noindex so search engines index the real category and tool pages instead.</p>
+    <p>Tools with no matches are left out. After the category group and the narrower-word order above, a higher score comes first. When two tools are still tied, the higher ranked tool comes first. Search result pages are marked noindex so search engines index the real category and tool pages instead.</p>
 
     <h2>What each listing contains</h2>
     <p>Every tool page shows the rank, category, a tagline, a description, best-for tags, a short pricing note, and a link to the official site. Pricing notes are short summaries. Always check the official site for current prices.</p>
