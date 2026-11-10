@@ -5,7 +5,7 @@ import { rankTools } from './search.js'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-09'
+const UPDATED = '2026-11-10'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -487,6 +487,7 @@ app.get('/llms-full.txt', (c) => {
     ...cursorAltData().groups.map((g) => `  - ${g.title}: ${g.tools.map((t) => `${t.name} (#${t.rank})`).join(', ')}`),
     `- Best AI coding agents for beginners (no setup required): ${SITE}/best/ai-coding-agent-for-beginners`,
     ...beginnerData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.build}. Runs where: ${p.where}. Pricing: ${p.t.pricingNote}`),
+    ...beginnerData().publish.map((t) => `  - Publish from ChatGPT or Claude: ${t.name} (#${t.rank}): ${t.tagline}. Pricing: ${t.pricingNote}`),
     `- Best AI research assistants (including tools to summarize papers): ${SITE}/best/ai-research-assistant`,
     ...researchData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.best}. Sources: ${p.sources}. Pricing: ${p.t.pricingNote}`),
     `- Best free AI tools in 2026, by what you need to do: ${SITE}/best/free-ai-tools`,
@@ -815,7 +816,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
   ${faqHtml}
   ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
@@ -1129,6 +1130,8 @@ app.get('/alternatives/cursor', (c) => {
 // Beginner coding agents guide (brief 3). Names, ranks, categories, best-for
 // tags, and pricing notes come from tools.json. The "what you can build" and
 // "runs where" lines summarize each official site as checked on 2026-10-26.
+// Refreshed 2026-11-10: pricing pages re-checked, plus a "publish from the AI
+// chat you already use" path (Spacefast, launched 2026-11-09).
 const BEGINNER_PICKS = [
   { slug: 'lovable', build: 'Full-stack web apps and websites from a chat', where: 'Browser; hosting on Lovable Cloud', verdict: 'the most direct path from an idea to a working full-stack app when you have never written code' },
   { slug: 'bolt', build: 'Websites and web apps with a database', where: 'Browser; hosting included, even on the free plan', verdict: 'a fast way to try ideas in the browser, with hosting and databases on the free plan' },
@@ -1136,6 +1139,7 @@ const BEGINNER_PICKS = [
   { slug: 'v0', build: 'Web app screens and React or Next.js starter apps', where: 'Browser; deploys to Vercel and syncs with GitHub', verdict: 'the best start when the look of your app matters most and you may hand the code to a developer later' },
 ]
 const BEGINNER_GROW = ['cursor', 'github-copilot']
+const BEGINNER_PUBLISH = ['spacefast']
 const BEGINNER_PATH = '/best/ai-coding-agent-for-beginners'
 const BEGINNER_H1 = 'Best AI Coding Agents for Beginners (No Setup Required)'
 
@@ -1145,7 +1149,8 @@ function beginnerData() {
   const picks = BEGINNER_PICKS.map((p) => ({ ...p, t: find(p.slug) })).filter((p) => p.t)
   const byRank = [...picks].sort((a, b) => a.t.rank - b.t.rank)
   const grow = BEGINNER_GROW.map(find).filter(Boolean)
-  return { all, find, picks, byRank, grow }
+  const publish = BEGINNER_PUBLISH.map(find).filter(Boolean)
+  return { all, find, picks, byRank, grow, publish }
 }
 
 const BEGINNER_STEPS = [
@@ -1181,6 +1186,10 @@ function beginnerFaq(d) {
     q: 'What is vibe coding?',
     a: 'Vibe coding means building software by describing what you want in plain language and letting an AI agent write the code. You judge the result by running the app and asking for changes, instead of writing or reading every line yourself.',
   })
+  if (find('spacefast')) faq.push({
+    q: 'Can I publish an app I made in ChatGPT or Claude?',
+    a: `Yes. ${r('spacefast')}, launched by Automattic on November 9, 2026, connects to ChatGPT, Claude, and coding agents such as Cursor and Codex. Ask your AI to publish with Spacefast and it replies with a live link in the chat. New Spaces are private until you share them, every change saves a version you can roll back to, and you can publish before you create an account. Spacefast is free to start; paid plans begin at $5 a month.`,
+  })
   if (grow.length) faq.push({
     q: 'Which AI coding tool should a beginner move to after an app builder?',
     a: `When you want to work on the code itself, move to an AI code editor. BuildStack ranks ${grow.map((t) => `${t.name} #${t.rank}`).join(' and ')} overall. ${r('cursor')} is a full AI editor, and ${r('github-copilot')} adds AI to editors you may already use. See the Cursor alternatives guide for more options.`,
@@ -1190,7 +1199,7 @@ function beginnerFaq(d) {
 
 app.get(BEGINNER_PATH, (c) => {
   const d = beginnerData()
-  const { find, picks, byRank, grow } = d
+  const { find, picks, byRank, grow, publish } = d
   if (!picks.length) return c.notFound()
   const faq = beginnerFaq(d)
   const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
@@ -1225,6 +1234,11 @@ app.get(BEGINNER_PATH, (c) => {
       <p>${link(p.t)} is ${esc(p.verdict)}. ${esc(p.t.tagline)}. BuildStack lists it as best for ${esc(listNames(p.t.bestFor || []))}.</p>
       <p class="muted" style="margin-bottom:0">Runs where: ${esc(p.where)}. Pricing note: ${esc(p.t.pricingNote || 'See official site')}.</p>
     </div>`).join('')}
+    ${publish.length ? `<div class="panel prose" style="margin-bottom:1rem" id="publish-from-chat">
+      <h3 style="margin-top:0;color:var(--text)">Already building in ChatGPT or Claude? Publish from the chat</h3>
+      <p>If you already ask ChatGPT, Claude, or another AI to write a page or a small app, you may not need a separate app builder. ${publish.map((t) => `${link(t)} (#${t.rank}, ${catLink(t)})`).join(', ')} is not an app builder itself: it gives the AI you already use building instructions, a database, and hosting, then sends a live link back into the chat. New Spaces are private until you share them, each change saves a version you can roll back to, and teammates can leave comments on the page that your AI can turn into fixes.</p>
+      <p class="muted" style="margin-bottom:0">Launched November 9, 2026, so it is brand new. Pricing note: ${esc(publish[0].pricingNote || 'See official site')}.</p>
+    </div>` : ''}
     <p class="muted" style="font-size:.88rem">${rl('replit-agent')} is filed under ${catLink(find('replit-agent') || { category: 'agents' })} on ${NAME}; the other picks are under ${catLink({ category: 'coding' })}.</p>
   </section>
   <section class="section">
@@ -1238,7 +1252,7 @@ app.get(BEGINNER_PATH, (c) => {
       <h2>How to pick</h2>
       <p>Answer these before you choose:</p>
       <ul class="clean">
-        <li><strong>Hosting:</strong> do you want the tool to put your app online for you? All four picks can publish your app.</li>
+        <li><strong>Hosting:</strong> do you want the tool to put your app online for you? All four picks can publish your app.${find('spacefast') ? ` If you build in ChatGPT or Claude instead, ${rl('spacefast')} can put the result online from the chat.` : ''}</li>
         <li><strong>A database:</strong> will your app save data, such as users or orders? Bolt.new lists unlimited databases even on its free plan, Lovable stores your app's data for you, and Replit's Pro plan adds database rollback.</li>
         <li><strong>A custom domain:</strong> do you need your own web address? On Bolt.new that starts on the paid Pro plan.</li>
         <li><strong>Code you can export:</strong> do you want to own and move the code? v0 syncs with GitHub, and Lovable says you own the code you build.</li>
