@@ -5,7 +5,7 @@ import { rankTools } from './search.js'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-10'
+const UPDATED = '2026-11-11'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -2060,9 +2060,11 @@ app.get(CODING_PATH, (c) => {
 // Brief 8: best AI agent builders and automation tools. Lists every tool in the
 // agents category from live data, so ranks and pricing notes track tools.json.
 // Pricing for the tools in AGENT_PRICE_CHECKED was checked against official pages.
+// Refreshed 2026-11-11: Nod by n8n Labs (open-source personal agent, research
+// preview released 2026-11-10) added to the personal-agent section, tasks, and FAQ.
 const AGENT_PATH = '/best/ai-agent-builder'
 const AGENT_H1 = 'Best AI Agent Builders and Automation Tools in 2026'
-const AGENT_PRICE_CHECKED = ['lindy', 'manus', 'n8n', 'firecrawl', 'local-code', 'copilot-studio', 'relevance-ai']
+const AGENT_PRICE_CHECKED = ['lindy', 'manus', 'n8n', 'nod', 'firecrawl', 'local-code', 'copilot-studio', 'relevance-ai']
 const AGENT_TYPES = {
   'replit-agent': 'App-building agent (no code)',
   'claude-duet': 'Proactive personal agent (no code)',
@@ -2074,6 +2076,7 @@ const AGENT_TYPES = {
   'liquid-lfm3': 'Small open-weight model (technical)',
   'local-code': 'Private agent app for Mac (no code)',
   n8n: 'Workflow automation (technical, self-host)',
+  nod: 'Open-source personal agent (bring your own AI)',
   make: 'Visual automation (no code)',
   'copilot-studio': 'No-code agent builder (Microsoft)',
   gumloop: 'No-code agent builder',
@@ -2099,9 +2102,10 @@ const AGENT_SECTIONS = [
   { id: 'autonomous', heading: 'Best autonomous agent for multi-step work: Manus', items: [
     { slug: 'manus', text: 'Manus takes a goal and works through the steps on its own, such as researching a topic and delivering a report, a slide deck, or a website.' },
   ], watch: 'Manus uses credits based on how complex a task is, so a big task can use a lot of them. Clear, specific instructions and checking results along the way keep costs down.' },
-  { id: 'personal-agent', heading: 'Best proactive personal agent: Claude Duet', items: [
+  { id: 'personal-agent', heading: 'Best personal agents: Claude Duet and Nod', items: [
     { slug: 'claude-duet', text: 'Claude Duet is Anthropic\'s proactive agent. It briefs you across email and calendar, works on tasks in the background, and asks before it takes an action.' },
-  ], watch: 'Claude Duet is a research preview with a waitlist for US Pro and Max subscribers, so most people cannot use it yet.' },
+    { slug: 'nod', text: 'Nod, released by n8n Labs on November 10, 2026, is a free, open-source personal agent you can download today for Mac or Windows. It works inside its own sandboxed computer and browser, so it can handle errands on websites with no integration, like cancelling a subscription or downloading invoices from a supplier portal, and you can message it on Telegram or WhatsApp. It is a separate app from n8n and does not need an n8n account.' },
+  ], watch: 'Both are research previews. Claude Duet has a waitlist for US Pro and Max subscribers, so most people cannot use it yet. Nod needs your own AI provider through an API key or a ChatGPT plan, so you pay that provider for every task; set a monthly spending limit, and note that it stops when your laptop sleeps.' },
   { id: 'teams', heading: 'Best for teams running many agents: Relevance AI, Copilot Studio, AgentSpot, and Velozity', items: [
     { slug: 'relevance-ai', text: 'Relevance AI builds multi-agent workforces for sales, support, and ops. Its Invent 2.0 agent interviews you about a process, builds the agents, and sets tests before anything goes live.' },
     { slug: 'copilot-studio', text: 'Copilot Studio is the natural pick for companies on Microsoft 365. Agents publish to Teams, SharePoint, and Microsoft 365 Copilot, under the security and audit controls IT already uses.' },
@@ -2129,6 +2133,7 @@ const AGENT_TASKS = [
   { task: 'Connecting SaaS apps', first: 'zapier', also: ['make', 'n8n'] },
   { task: 'Agents inside Microsoft 365 and Teams', first: 'copilot-studio', also: [] },
   { task: 'Private work on files on your own computer', first: 'local-code', also: ['liquid-lfm3'] },
+  { task: 'Personal errands on websites with no integration', first: 'nod', also: ['manus'] },
 ]
 
 function agentData() {
@@ -2154,6 +2159,8 @@ function agentFaq(d) {
       a: `Yes. ${r('lindy')}, ${r('gumloop')}, ${r('make')}, ${r('copilot-studio')}, and ${r('agentspot')} all let you build agents without writing code. ${r('relevance-ai')} goes a step further: its Invent agent builds agents for you after asking about your process. Nothing on that list needs a developer to get started.` },
     { q: 'Is n8n free?',
       a: `The self-hosted Community Edition of ${r('n8n')} is free to use; you pay only for your own server. n8n Cloud is paid, starting at 20 euros a month billed annually, with a free trial that needs no card. The Community Edition uses a fair-code license, so read the terms if you plan to build a commercial service on top of it.` },
+    ...(find('nod') ? [{ q: 'Is there a free, open-source personal AI agent?',
+      a: `Yes. ${r('nod')} from n8n Labs is free and open source under Apache 2.0, released as a research preview on November 10, 2026. It runs on your Mac, Windows PC, or your own server inside a private sandbox with its own browser, and a separate check confirms you asked for an action before it sends, pays, posts, or deletes anything. The app is free, but you pay your own AI provider for usage, or you can connect an open-source model running on your computer.` }] : []),
     { q: 'What is the difference between an AI agent and an automation?',
       a: 'An automation follows fixed steps you define: when a form is submitted, add a row and send an email. An AI agent gets a goal and decides the steps itself, using tools and judgment along the way. Many tools now mix both, running fixed workflows with AI steps or agents inside them.' },
   ]
@@ -2213,7 +2220,7 @@ app.get(AGENT_PATH, (c) => {
       <h2 style="margin-top:0">Agent builder, automation tool, or autonomous agent?</h2>
       <p>An <strong>automation tool</strong> runs fixed steps you define: when something happens in one app, do these things in others. ${rl('zapier')}, ${rl('make')}, and ${rl('n8n')} started here, and all now add AI steps or agents inside workflows.</p>
       <p>An <strong>agent builder</strong> lets you set up an AI agent with instructions, tools, and limits, then let it decide the steps for each case. ${rl('lindy')}, ${rl('gumloop')}, ${rl('relevance-ai')}, and ${rl('copilot-studio')} work this way, with no code or low code.</p>
-      <p>An <strong>autonomous agent</strong> is ready to use: you give it a goal and it plans and does the work. ${rl('manus')} and ${rl('claude-duet')} are examples, and ${rl('local-code')} does the same on your own Mac.</p>
+      <p>An <strong>autonomous agent</strong> is ready to use: you give it a goal and it plans and does the work. ${rl('manus')} and ${rl('claude-duet')} are examples, and ${rl('local-code')} does the same on your own Mac. ${rl('nod')} is an open-source personal agent that runs in its own sandbox on your Mac or Windows PC with the AI provider you choose.</p>
       <p>Want an agent that builds a whole app? ${rl('replit-agent')} builds and deploys apps in Replit, and the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a> compares it with other app builders.</p>
       <h2 id="how-we-rank">How we rank</h2>
       <p>This page lists every tool in the ${esc(NAME)} <a href="/category/agents">agents category</a>, using the same editorial ranks as the rest of the site. Featured listings do not affect rank. We do not run lab tests or publish benchmark scores; the ranking is a maintained editorial list that we update as tools ship. On a budget? See the <a href="/best/free-ai-tools#automation">best free AI tools for automation</a>. Read the full <a href="/methodology">methodology</a>.</p>
