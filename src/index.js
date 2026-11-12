@@ -373,6 +373,7 @@ app.use('*', async (c, next) => {
 })
 
 app.get('/robots.txt', (c) => c.text(`User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 
 Sitemap: ${SITE}/sitemap.xml
