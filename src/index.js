@@ -405,6 +405,7 @@ app.get('/tools.json', (c) => c.json({
     category: t.category,
     rank: t.rank,
     featured: !!t.featured,
+    affiliate: !!t.affiliate,
     newRelease: !!t.newRelease,
     tagline: t.tagline,
     description: t.description,
@@ -816,6 +817,7 @@ app.get('/tool/:slug', (c) => {
     <ul class="clean">${(t.bestFor || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
+    ${t.affiliate ? '<p class="muted">Affiliate link: we may earn a commission if you use the link on this page.</p>' : ''}
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
     ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
   </section>
@@ -2366,6 +2368,7 @@ app.get(SMB_PATH, (c) => {
     <h1>${esc(SMB_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${UPDATED} · ${list.length} tools picked by job · <a href="/methodology">How we rank</a></p>
+    <p>BuildStack is run by tier11. If you want help picking tools and rolling them out safely, email <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>.</p>
   </section>
   <section class="section" id="starter-stack">
     <h2>The starter stack</h2>
