@@ -5,7 +5,7 @@ import { rankTools } from './search.js'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-11'
+const UPDATED = '2026-11-12'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -1722,6 +1722,9 @@ app.get(FREE_PATH, (c) => {
 // AI voice generator guide (brief 6). Names, ranks, taglines, and best-for tags
 // come from tools.json, so the page tracks the live ranks. The "price" lines
 // restate each official pricing page or launch post as checked on 2026-10-29;
+// refreshed 2026-11-12: Fish Audio extended the Drama 3 API launch price to
+// November 30, 2026 (docs.fish.audio), creator plan prices added, Suno prices
+// added; ElevenLabs, Mistral, and AssemblyAI prices re-checked unchanged.
 // where a price could not be verified, the page says so instead of guessing.
 const VOICE_TYPES = {
   app: 'Creator app and API',
@@ -1736,9 +1739,9 @@ const VOICE_PICKS = [
     why: 'ElevenLabs is the easiest place to start if you want a voiceover that sounds like a person. You type or paste a script, pick a voice from the library or clone your own, and download the audio. The same voices are available through an API, and the dubbing tools translate a video into other languages while keeping the speaker\'s voice.',
     watch: 'The free plan is for personal use. For YouTube, ads, or client work you need at least the Starter plan.' },
   { slug: 'fish-audio-drama-3', type: 'open', id: 'expressive-narration', heading: 'Best for directed, expressive narration', role: 'Best for audiobooks, audio drama, and game dialogue where you direct the delivery',
-    price: 'API launch price $10 per 1M characters through November 12, 2026, then $50 list; creator plans on fish.audio; open weights free for commercial use under US$500K annual revenue',
+    price: 'API $10 per 1M UTF-8 bytes of text (about 180,000 English words) at the launch price, extended through November 30, 2026, then $50 list; creator plans from free to Plus at $15 a month ($11 billed yearly); open weights free for commercial use under US$500K annual revenue',
     why: 'Fish Audio Drama 3 is built for performance rather than plain reading. It suits audiobooks, audio drama, and character dialogue where you want to direct how each line is delivered. You can use it in the Fish Audio app, call the API, or download the open weights and run it yourself.',
-    watch: 'The $10 launch price ends November 12, 2026. The open-weight license bans cloning a real person\'s voice without their consent.' },
+    watch: 'Fish Audio extended the $10 API launch price, which was due to end on November 12, through November 30, 2026; after that it is $50 per 1M UTF-8 bytes, so budget for the list price. Drama 3 is billed per byte, and non-Latin scripts use more bytes per character. The open-weight license bans cloning a real person\'s voice without their consent.' },
   { slug: 'mistral-voxtral-3', type: 'api', id: 'multilingual-api', heading: 'Best for multilingual text to speech and voice agents', role: 'Best for developers who want speech in, speech out, and voice agents from one vendor',
     price: 'Voxtral Mini TTS 3 is $13 per 1M characters on the Mistral API; transcription from $0.0035 a minute; voice agent API from $0.04 a minute',
     why: 'Voxtral 3 covers the whole voice loop in one family: transcription, text to speech, and a voice agent API. That makes it a good fit if you are building a multilingual assistant and want fewer vendors to manage.',
@@ -1756,9 +1759,9 @@ const VOICE_PICKS = [
     why: 'Hume builds voice AI that pays attention to how something is said, not only what is said. Its Octave text to speech model and its empathic voice interface are aimed at conversational apps, coaching, and characters where tone matters.',
     watch: 'Hume\'s site now leads with tools for evaluating voice AI, so check what is on offer before you commit.' },
   { slug: 'suno', type: 'music', id: 'music-and-vocals', heading: 'Bonus: music and sung vocals', role: 'Bonus pick for songs, jingles, and vocal demos rather than spoken voiceovers',
-    price: 'Free plan with the v6-mini model; paid Pro and Premier plans add the v6 and v6-wild models',
+    price: 'Free plan with the v6-mini model and no commercial rights; Pro $10 a month ($8 billed yearly) and Premier $30 a month ($24 billed yearly) add commercial use and the v6 and v6-wild models',
     why: 'Suno is not a text to speech tool, but if what you need is a sung vocal, a jingle, or a song draft, it is the faster route. You describe the song or paste lyrics and it generates the track with vocals.',
-    watch: 'Check which plan includes commercial rights before you publish a track.' },
+    watch: 'Songs made on the free plan have no commercial rights, so use Pro or Premier for anything you publish or sell.' },
 ]
 const VOICE_PATH = '/best/ai-voice-generator'
 const VOICE_H1 = 'Best AI Voice Generators and Text to Speech Tools in 2026'
@@ -1782,7 +1785,7 @@ function voiceFaq(d) {
     { q: 'Is ElevenLabs worth paying for?',
       a: 'If you publish audio, usually yes. The free plan is for personal use only, and the Starter plan at $6 a month adds a commercial license and instant voice cloning. Creator at $22 a month adds professional voice cloning and more credits, which suits regular YouTube or podcast work.' },
     { q: 'What is the cheapest text to speech API?',
-      a: `Among the APIs on this page with published per-character prices, ${r('fish-audio-drama-3')} is $10 per 1M characters through November 12, 2026 ($50 list after that), ${r('mistral-voxtral-3')} is $13 per 1M characters for Voxtral Mini TTS 3, and ${r('assemblyai-tts-1')} is $15 per 1M characters with every voice and cloning included. Running ${r('gradium-phonon')} on your own device has no per-character fee at all.` },
+      a: `Among the APIs on this page with published per-character prices, ${r('fish-audio-drama-3')} is $10 per 1M UTF-8 bytes (roughly 1M characters of English text) through November 30, 2026 ($50 list after that), ${r('mistral-voxtral-3')} is $13 per 1M characters for Voxtral Mini TTS 3, and ${r('assemblyai-tts-1')} is $15 per 1M characters with every voice and cloning included. Running ${r('gradium-phonon')} on your own device has no per-character fee at all.` },
     { q: 'Can I use AI voices commercially on YouTube?',
       a: 'Often, but it depends on your plan and license. On ElevenLabs the free plan has no commercial license, so you need a paid plan. Open-weight models come with their own licenses, such as the US$500K revenue limit on Fish Audio Drama 3. Read the license for the plan you use, and follow YouTube\'s own rules on disclosing synthetic content.' },
     { q: 'Is it legal to clone a voice with AI?',
