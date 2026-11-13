@@ -66,9 +66,9 @@ test('deepfake explainer is published with metadata, FAQ, sources, and listings'
   assert.match(html, /<meta property="og:image:height" content="630"\/>/)
   assert.match(html, /<meta name="twitter:card" content="summary_large_image"\/>/)
   assert.match(html, /<meta name="twitter:image" content="https:\/\/buildstack\.tier11\.com\/guides\/deepfake-og\.jpg"\/>/)
-  assert.equal(article.image.url, 'https://buildstack.tier11.com/guides/deepfake-og.jpg')
-  assert.equal(article.image.width, 1200)
-  assert.equal(article.image.height, 630)
+  assert.equal(article.image[0].url, 'https://buildstack.tier11.com/guides/deepfake-og.jpg')
+  assert.equal(article.image[0].width, 1200)
+  assert.equal(article.image[0].height, 630)
 
   const { statSync } = await import('node:fs')
   const { fileURLToPath } = await import('node:url')

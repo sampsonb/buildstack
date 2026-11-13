@@ -428,6 +428,9 @@ ul.clean { padding-left: 1.1rem; }
 .checks h2 { margin: 0 0 .5rem; font-size: 1.1rem; }
 .checks ol { margin: 0; padding-left: 1.3rem; }
 .checks li { margin: .3rem 0; }
+.tells { margin: 1.2rem 0; }
+.tells img { display: block; width: 100%; max-width: 100%; height: auto; border-radius: var(--radius); background: var(--panel); }
+.tells figcaption { margin: .45rem 0 0; color: var(--muted); font-size: .82rem; }
 .strip { margin: 1.2rem 0; }
 .strip h3 { color: var(--text); font-size: 1.05rem; margin: 0 0 .6rem; }
 .strip .note { font-size: .85rem; margin: .55rem 0 0; color: var(--muted); }
@@ -3586,6 +3589,14 @@ app.get(DEEPFAKE_PATH, (c) => {
         </ol>
       </div>
 
+      <figure class="tells" id="tells">
+        <picture>
+          <source type="image/webp" srcset="/guides/deepfake-tells.webp"/>
+          <img src="/guides/deepfake-tells.jpg" width="1600" height="900" loading="lazy" decoding="async" alt="Explainer graphic titled 5 places deepfakes slip up, with five callouts on an invented face: Hairline, blurry or melting edges. Blinking, too rare or unnatural. Lighting, shadows that don't match the scene. Teeth, smeared or too uniform. Edges, jaw and neck seams that flicker."/>
+        </picture>
+        <figcaption>Five common tells. Illustration of an invented person, not a real individual.</figcaption>
+      </figure>
+
       <h2>Four common routes, in plain terms</h2>
       <p>Most viral celebrity fakes follow one of four paths, or a mix of them.</p>
       <p><strong>Face-swap is the classic method.</strong> Software takes a face from photos or video of one person and pastes it onto existing footage of someone else. Tools in this category include DeepFaceLab and FaceFusion. Because the body and background already exist, the result can look like a real event even when the face is not.</p>
@@ -3669,7 +3680,10 @@ app.get(DEEPFAKE_PATH, (c) => {
         dateModified: PD,
         author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
-        image: { '@type': 'ImageObject', url: `${SITE}/guides/deepfake-og.jpg`, width: 1200, height: 630 },
+        image: [
+          { '@type': 'ImageObject', url: `${SITE}/guides/deepfake-og.jpg`, width: 1200, height: 630 },
+          { '@type': 'ImageObject', url: `${SITE}/guides/deepfake-tells.jpg`, width: 1600, height: 900, caption: 'Five common tells. Illustration of an invented person, not a real individual.' },
+        ],
         timeRequired: 'PT6M',
       }, {
         '@type': 'FAQPage',
