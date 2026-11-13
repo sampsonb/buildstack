@@ -153,9 +153,7 @@ test('edit a youtube video leads with video tools', () => {
 test('homepage best-fit order follows rankTools', async () => {
   const app = (await import('../src/index.js')).default
   const html = await (await app.request('http://local/?q=write%20a%20blog%20post')).text()
-  const grid = html.match(/Best fit for[\s\S]*?<div class="grid">([\s\S]*?)<\/div>\s*<\/section>/)
-  const slugs = [...grid[1].matchAll(/href="\/tool\/([^"]+)"/g)].map((match) => match[1])
-  assert.deepEqual(slugs, rankTools(tools, 'write a blog post').map((tool) => tool.slug))
+  assert.deepEqual(bestFitSlugs(html), rankTools(tools, 'write a blog post').map((tool) => tool.slug))
   assert.equal(html.includes('async function subscribe'), true)
 })
 
@@ -168,6 +166,22 @@ test('homepage top ranked section stays in editorial rank order', async () => {
   assert.deepEqual(slugs, byRank.slice(0, 12).map((tool) => tool.slug))
   assert.equal(html.includes('FAQPage'), true)
 })
+
+// Every tool slug in the search results section, including results behind "Show all N".
+function bestFitSlugs(html) {
+  const start = html.indexOf('Best fit for')
+  assert.ok(start >= 0)
+  const end = html.indexOf('</section>', start)
+  return [...html.slice(start, end).matchAll(/href="\/tool\/([^"]+)"/g)].map((match) => match[1])
+}
+
+function catLabel(tool) {
+  return { coding: 'Coding', writing: 'Writing', images: 'Images', video: 'Video', agents: 'Agents', research: 'Research', voice: 'Voice' }[tool.category]
+}
+
+function catRankOf(tool) {
+  return byRank.filter((item) => item.category === tool.category).findIndex((item) => item.slug === tool.slug) + 1
+}
 
 function visible(html) {
   return html
@@ -203,7 +217,7 @@ function assertDecisionBlock(html, slug) {
   assert.equal(card.includes(tool.strength), true, slug)
   assert.equal(card.includes(tool.watchOut), true, slug)
   assert.match(card, /Free tier: (yes|no)/)
-  assert.equal(card.includes('#' + tool.rank), true, slug)
+  assert.equal(card.includes(`#${catRankOf(tool)} in ${catLabel(tool)}`), true, slug)
 }
 
 test('search, category, and guide cards show a decision block and ranking is unchanged', async () => {
@@ -234,9 +248,7 @@ test('search, category, and guide cards show a decision block and ranking is unc
 
   const app = (await import('../src/index.js')).default
   const searchHtml = await (await app.request('http://local/?q=blog%20post')).text()
-  const grid = searchHtml.match(/Best fit for[\s\S]*?<div class="grid">([\s\S]*?)<\/div>\s*<\/section>/)
-  assert.ok(grid)
-  const searchSlugs = [...grid[1].matchAll(/href="\/tool\/([^"]+)"/g)].map((match) => match[1])
+  const searchSlugs = bestFitSlugs(searchHtml)
   assert.deepEqual(searchSlugs, rankTools(tools, blog).map((tool) => tool.slug))
   for (const slug of searchSlugs.slice(0, 8)) assertDecisionBlock(searchHtml, slug)
 

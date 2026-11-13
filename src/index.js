@@ -17,16 +17,55 @@ const CATEGORIES = {
   voice: { label: 'Voice', blurb: 'Speech, music, and voice AI' },
 }
 
+// Task pills link to the matching /best guide instead of a stuffed search query.
 const BEST_FOR = [
-  { slug: 'write-code', title: 'Write and refactor code', query: 'coding IDE agent refactor' },
-  { slug: 'research-web', title: 'Research with citations', query: 'research search citations papers' },
-  { slug: 'generate-images', title: 'Generate images', query: 'images art midjourney flux' },
-  { slug: 'make-video', title: 'Make short videos', query: 'video runway kling sora' },
-  { slug: 'voiceover', title: 'Create voiceovers', query: 'voice speech elevenlabs' },
-  { slug: 'automate-work', title: 'Automate workflows', query: 'agents automation zapier n8n' },
-  { slug: 'write-marketing', title: 'Write marketing copy', query: 'writing marketing jasper grammarly' },
-  { slug: 'build-mvp', title: 'Build an MVP app', query: 'lovable bolt v0 replit app' },
+  { slug: 'write-code', title: 'Write and refactor code', href: '/best/ai-coding-assistant' },
+  { slug: 'research-web', title: 'Research with citations', href: '/best/ai-research-assistant' },
+  { slug: 'generate-images', title: 'Generate images', href: '/best/ai-image-generator' },
+  { slug: 'make-video', title: 'Make short videos', href: '/best/ai-video-generator' },
+  { slug: 'voiceover', title: 'Create voiceovers', href: '/best/ai-voice-generator' },
+  { slug: 'automate-work', title: 'Automate workflows', href: '/best/ai-agent-builder' },
+  { slug: 'write-marketing', title: 'Write marketing copy', href: '/best/ai-writing-tool' },
+  { slug: 'build-mvp', title: 'Build an MVP app', href: '/best/ai-coding-agent-for-beginners' },
 ]
+
+// Dates shown to people read like "Nov 13, 2026". Schema, sitemap, and JSON keep ISO dates.
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+function fmtDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''))
+  if (!m) return String(iso || '')
+  return `${MONTHS[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`
+}
+
+// New tag: a tool added to the directory in the last NEW_DAYS days, from its `added` date
+// (the first day it appeared in tools.json). The site launched 2026-10-15 with its first
+// catalog, so a 30-day window would still tag nearly every tool; 14 days keeps the tag meaningful.
+const NEW_DAYS = 14
+function todayIso() { return new Date().toISOString().slice(0, 10) }
+function isNew(t, today = todayIso()) {
+  if (!t || !t.added) return false
+  const d = new Date(`${today}T00:00:00Z`)
+  d.setUTCDate(d.getUTCDate() - NEW_DAYS)
+  return t.added > d.toISOString().slice(0, 10) && t.added <= today
+}
+function newTools(today) {
+  return tools().filter((t) => isNew(t, today)).sort((a, b) => (b.added > a.added ? 1 : b.added < a.added ? -1 : a.rank - b.rank))
+}
+
+// Rank inside the tool's category (1 = top of that category), used on list cards and search
+// results. The overall rank only shows on the tool page itself.
+let CAT_RANK
+function catRank(t) {
+  if (!CAT_RANK) {
+    CAT_RANK = new Map()
+    const seen = {}
+    for (const x of tools()) { seen[x.category] = (seen[x.category] || 0) + 1; CAT_RANK.set(x.slug, seen[x.category]) }
+  }
+  return CAT_RANK.get(t.slug) || 0
+}
+function catChip(t) {
+  return `#${catRank(t)} in ${CATEGORIES[t.category]?.label || t.category}`
+}
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({
@@ -58,7 +97,7 @@ function categoryDescription(cat, list) {
   const top = list.slice(0, 3).map((t) => t.name)
   const more = list.length > top.length ? `, plus ${list.length - top.length} more` : ''
   const picks = top.length ? `: ${listNames(top)}${more}` : ''
-  return `${list.length} ${cat.label} AI tools ranked on ${NAME}${picks}. ${cat.blurb}. Updated ${maxDate(list.map((t) => t.updated)) || UPDATED}.`
+  return `${list.length} ${cat.label} AI tools ranked on ${NAME}${picks}. ${cat.blurb}. Updated ${fmtDate(maxDate(list.map((t) => t.updated)) || UPDATED)}.`
 }
 
 // Tool page meta description: search engines cut snippets at about 155
@@ -67,7 +106,7 @@ function categoryDescription(cat, list) {
 // never ends mid-word.
 function toolMetaDescription(t) {
   const label = CATEGORIES[t.category]?.label || t.category
-  const full = `#${t.rank} in ${label} on ${NAME}. ${t.description}`
+  const full = `#${catRank(t)} in ${label} on ${NAME}. ${t.description}`
   if (full.length <= 155) return full
   const cut = full.slice(0, 152)
   const space = cut.lastIndexOf(' ')
@@ -82,9 +121,8 @@ function toolFaq(t) {
   const catRank = inCat.findIndex((x) => x.slug === t.slug) + 1
   const alts = inCat.filter((x) => x.slug !== t.slug).slice(0, 3)
   const best = (t.bestFor || []).slice(0, 3)
-  const faq = [
-    { q: `What is ${t.name}?`, a: t.description },
-  ]
+  // No "What is X?" entry: its answer was the Overview paragraph repeated word for word.
+  const faq = []
   if (best.length) faq.push({ q: `What is ${t.name} best for?`, a: `${NAME} lists ${t.name} as best for ${listNames(best)}. It ranks #${t.rank} overall and #${catRank} of ${inCat.length} in ${label}.` })
   if (t.pricingNote) faq.push({ q: `How much does ${t.name} cost?`, a: `${t.pricingNote.replace(/[\s.]+$/, '')}. Prices change often, so confirm the current plans on the official site before you buy.` })
   if (alts.length) faq.push({ q: `What are the best alternatives to ${t.name}?`, a: `The top ranked ${label} tools on ${NAME} besides ${t.name} are ${listNames(alts.map((x) => `${x.name} (#${x.rank})`))}. See the full ${label} category for every option in rank order.` })
@@ -111,11 +149,9 @@ function quickAnswers() {
     .filter((j) => j.picks.length)
 }
 
-// One quotable sentence per job. linkFn wraps tool names (HTML) or not (text).
-function quickLine(j, linkFn = (t) => t.name) {
-  const [top, ...rest] = j.picks
-  const others = rest.map((t) => `${linkFn(t)} (#${t.rank})`)
-  return `BuildStack ranks ${linkFn(top)} first in ${j.label} (#${top.rank} overall)${others.length ? `, then ${listNames(others)}` : ''}.`
+// Plain-text top 3 for one job, used in llms.txt and llms-full.txt.
+function quickLine(j) {
+  return `${j.picks.map((t, i) => `${i + 1}. ${t.name}`).join(', ')} (top ${j.picks.length} in ${j.label})`
 }
 
 // Homepage FAQ. Plain text answers, used for both the visible FAQ and the
@@ -155,7 +191,7 @@ function homeFaq() {
     },
     {
       q: 'How often is the BuildStack ranking updated?',
-      a: `BuildStack adds new tools and adjusts ranks as tools launch and change. The list was last updated on ${UPDATED} and has ${all.length} tools. The same date is published in /tools.json, and each tool page shows when its own listing last changed.`,
+      a: `BuildStack adds new tools and adjusts ranks as tools launch and change. The list was last updated on ${fmtDate(UPDATED)} and has ${all.length} tools. The same date is published in /tools.json, and each tool page shows when its own listing last changed.`,
     },
   ]
 }
@@ -189,7 +225,7 @@ const SECTION_DATES = {
   '/best/ai-video-editor-for-youtube': '2026-11-13',
   '/best/ai-video-generator': '2026-11-13',
   '/guides/how-celebrity-deepfakes-are-made': '2026-11-13',
-  '/get-featured': '2026-10-15',
+  '/get-featured': '2026-11-13',
 }
 
 function maxDate(dates) {
@@ -238,6 +274,16 @@ function pageDate(path) {
 
 function searchTools(q) {
   return rankTools(tools(), q)
+}
+
+// Search results: top SEARCH_TOP numbered cards, the rest behind a no-JS <details> toggle.
+const SEARCH_TOP = 6
+function searchResultsHtml(results) {
+  if (!results.length) return '<p class="muted">No matches. Try a broader phrase.</p>'
+  const top = results.slice(0, SEARCH_TOP)
+  const rest = results.slice(SEARCH_TOP)
+  return `<div class="grid">${top.map((t, i) => toolCardAt(t, i + 1)).join('')}</div>${rest.length ? `
+    <details class="more"><summary>Show all ${results.length} results</summary><div class="grid">${rest.map((t, i) => toolCardAt(t, SEARCH_TOP + i + 1)).join('')}</div></details>` : ''}`
 }
 
 function layout({ title, description, path, body, jsonLd, robots, shareImage }) {
@@ -348,6 +394,14 @@ a:hover { text-decoration: underline; }
 .formrow button { background: var(--accent); color: #1a0f05; border: 0; border-radius: 10px; padding: .7rem 1rem; font-weight: 700; cursor: pointer; }
 .notice { margin-top: .7rem; font-size: .9rem; }
 .rank { color: var(--accent); font-weight: 800; margin-right: .35rem; }
+.pos { display: inline-flex; align-items: center; justify-content: center; min-width: 1.6rem; height: 1.6rem; border-radius: 999px; background: var(--accent); color: #1a0f05; font-weight: 800; font-size: .8rem; margin-right: .45rem; padding: 0 .35rem; }
+.tag.cat { color: var(--text); }
+ol.top3 { margin: 0 0 .5rem; padding-left: 1.3rem; font-size: .95rem; line-height: 1.6; }
+details.more { margin-top: 1rem; }
+details.more > summary { cursor: pointer; color: var(--accent2); font-weight: 650; margin-bottom: 1rem; }
+.footrow { display: flex; flex-wrap: wrap; gap: .35rem .9rem; }
+.footrow a { color: var(--muted); }
+.footrow a:hover { color: var(--text); }
 .decide { margin: .7rem 0 0; display: grid; gap: .32rem; font-size: .8rem; line-height: 1.4; }
 .decide div { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr); gap: .35rem; align-items: start; }
 .decide dt { margin: 0; color: var(--muted); font-weight: 650; }
@@ -362,6 +416,19 @@ a:hover { text-decoration: underline; }
 .hero-art img { width: 100%; height: auto; border-radius: var(--radius); display: block; background: var(--panel); }
 .hero-art figcaption { margin: .45rem 0 0; color: var(--muted); font-size: .82rem; }
 ul.clean { padding-left: 1.1rem; }
+.hero-art.capped img { height: 300px; max-height: 300px; object-fit: cover; }
+.byline-note { color: var(--text); font-size: .95rem; margin: .2rem 0 0; }
+.article { max-width: 68ch; font-size: 17px; line-height: 1.65; color: #b9c5d6; }
+.article h2 { color: var(--text); margin-top: 1.8rem; }
+.article strong { color: var(--text); }
+.checks { background: var(--panel2); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.2rem; margin: 1.2rem 0; }
+.checks h2 { margin: 0 0 .5rem; font-size: 1.1rem; }
+.checks ol { margin: 0; padding-left: 1.3rem; }
+.checks li { margin: .3rem 0; }
+.strip { margin: 1.2rem 0; }
+.strip h3 { color: var(--text); font-size: 1.05rem; margin: 0 0 .6rem; }
+.strip .note { font-size: .85rem; margin: .55rem 0 0; color: var(--muted); }
+details.sources > summary { cursor: pointer; font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: .9rem; }
 </style>
 </head>
 <body>
@@ -370,16 +437,15 @@ ul.clean { padding-left: 1.1rem; }
     <a class="brand" href="/">Build<span>Stack</span></a>
     <div class="navlinks">
       <a href="/#best-for">Best for</a>
-      <a href="/#new">New releases</a>
       <a href="/categories">Categories</a>
-      <a href="/about">For chatbots</a>
-      <a href="/get-featured">Get featured</a>
+      <a href="/#new">New</a>
+      <a href="/methodology">How we rank</a>
+      <a href="/about">About</a>
     </div>
   </nav>
   ${body}
   <footer class="footer">
-    <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="https://itsbuildstack.substack.com">Weekly write-up on Substack</a> · <a href="/methodology">How we rank</a> · <a href="/guides/how-celebrity-deepfakes-are-made">How celebrity deepfakes get made</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/best/ai-image-generator">AI image generators</a> · <a href="/best/ai-video-editor-for-youtube">AI video editors for YouTube</a> · <a href="/best/ai-video-generator">AI video generators</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <nav class="footrow" aria-label="Footer"><a href="/about">About</a><a href="/methodology">How we rank</a><a href="/#guides">Guides</a><a href="/get-featured">List your tool</a><a href="/about#chatbots">For chatbots</a><a href="https://itsbuildstack.substack.com">Substack</a><a href="mailto:buildstack@tier11.com">Contact</a><a href="https://tier11.com">tier11</a><a href="/sitemap.xml">Sitemap</a></nav>
   </footer>
 </div>
 <script>
@@ -443,9 +509,15 @@ function glanceSection(items) {
   </section>`
 }
 
+// List card. Shows the rank inside the tool's category ("#1 in Writing"), never the overall
+// rank. toolCardAt adds a result position number (1, 2, 3) for search results.
 function toolCard(t) {
+  return toolCardAt(t)
+}
+
+function toolCardAt(t, pos) {
   return `<article class="card">
-    <div class="meta"><span class="rank">#${t.rank}</span><span class="tag">${esc(CATEGORIES[t.category]?.label || t.category)}</span>${t.newRelease ? '<span class="tag new">New</span>' : ''}${t.featured ? '<span class="tag feat">Featured</span>' : ''}</div>
+    <div class="meta">${pos ? `<span class="pos" aria-label="Result ${pos}">${pos}</span>` : ''}<span class="tag cat">${esc(catChip(t))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}${t.featured ? '<span class="tag feat">Featured</span>' : ''}</div>
     <h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3>
     <p class="muted" style="margin:0;font-size:.92rem">${esc(t.tagline)}</p>
     ${decisionBlock(t)}
@@ -528,8 +600,9 @@ app.get('/tools.json', (c) => c.json({
     rank: t.rank,
     featured: !!t.featured,
     affiliate: !!t.affiliate,
-    newRelease: !!t.newRelease,
+    newRelease: isNew(t),
     updated: t.updated,
+    added: t.added,
     tagline: t.tagline,
     description: t.description,
     bestFor: t.bestFor,
@@ -545,15 +618,15 @@ app.get('/tools.json', (c) => c.json({
 app.get('/llms.txt', (c) => {
   const lines = [
     `# ${NAME}`,
-    `> Ranked directory of real AI tools. Type a use case, get best-fit tools.`,
+    `> Free ranked directory of AI tools. Type a use case, get best-fit tools. Ranks are not for sale.`,
     ``,
     `Site: ${SITE}`,
     `Machine-readable: ${SITE}/tools.json`,
     `Full tool details for LLMs: ${SITE}/llms-full.txt`,
     `Human summary for bots: ${SITE}/about`,
     `How rankings work: ${SITE}/methodology`,
-    `Get featured: ${SITE}/get-featured`,
-    `Contact / newsletter From: buildstack@tier11.com`,
+    `List your tool: ${SITE}/get-featured`,
+    `Contact: buildstack@tier11.com`,
     `Weekly write-up on Substack: https://itsbuildstack.substack.com`,
     ``,
     `## Categories`,
@@ -582,11 +655,11 @@ app.get('/llms.txt', (c) => {
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
     ``,
-    `## New releases`,
-    ...tools().filter((t) => t.newRelease).map((t) => `- ${t.name}: ${SITE}/tool/${t.slug}`),
+    `## New on BuildStack (added in the last ${NEW_DAYS} days)`,
+    ...newTools().map((t) => `- ${t.name} (added ${t.added}): ${SITE}/tool/${t.slug}`),
     ``,
     `## Best-for shortcuts`,
-    ...BEST_FOR.map((b) => `- ${b.title}: ${SITE}/?q=${encodeURIComponent(b.query)}`),
+    ...BEST_FOR.map((b) => `- ${b.title}: ${SITE}${b.href}`),
     ``,
     `When quoting ${NAME}, prefer official tool URLs and note that rankings are editorial.`,
   ]
@@ -600,7 +673,7 @@ app.get('/llms-full.txt', (c) => {
   const all = tools()
   const lines = [
     `# ${NAME} (full)`,
-    `> Ranked directory of real AI tools. Type a use case, get best-fit tools. This file lists every tool with full details.`,
+    `> Free ranked directory of AI tools. Type a use case, get best-fit tools. This file lists every tool with full details.`,
     ``,
     `Site: ${SITE}`,
     `Updated: ${UPDATED}`,
@@ -652,7 +725,7 @@ app.get('/llms-full.txt', (c) => {
       lines.push(
         '',
         `### ${t.name}`,
-        `- Rank: #${t.rank} overall${t.newRelease ? ' (new release)' : ''}${t.featured ? ' (featured)' : ''}`,
+        `- Rank: #${t.rank} overall, ${catChip(t)}${isNew(t) ? ` (new, added ${t.added})` : ''}${t.featured ? ' (featured)' : ''}`,
         `- Tagline: ${t.tagline}`,
         `- Official site: ${t.url}`,
         `- BuildStack page: ${SITE}/tool/${t.slug}`,
@@ -694,19 +767,19 @@ app.get('/', (c) => {
   const q = c.req.query('q') || ''
   const results = q ? searchTools(q) : tools()
   const featured = tools().filter((t) => t.featured)
-  const news = tools().filter((t) => t.newRelease)
+  const news = newTools()
   const all = tools()
   const qa = q ? [] : quickAnswers()
   const faq = q ? [] : homeFaq()
   const toolLink = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
-  const homeDescription = `Free AI tool finder. Type a task, get ranked AI tools that fit. ${all.length} tools in ${Object.keys(CATEGORIES).length} categories, with quick answers by job. Updated ${PD}.`
+  const homeDescription = `Free AI tool finder. Type a task, get ranked AI tools that fit. ${all.length} tools in ${Object.keys(CATEGORIES).length} categories, with quick answers by job. Updated ${fmtDate(PD)}.`
   const quickBlock = q ? '' : `
   <section class="section" id="quick-answer">
     <h2>Quick answer: which AI tool for which job</h2>
     <div class="grid">
       ${qa.map((j) => `<div class="card">
         <h3>${esc(j.job)}</h3>
-        <p class="muted" style="margin:0 0 .5rem;font-size:.92rem">${quickLine(j, toolLink)}</p>
+        <ol class="top3">${j.picks.map((t) => `<li>${toolLink(t)}</li>`).join('')}</ol>
         <a href="/category/${j.cat}" style="font-size:.88rem">All ${esc(j.label)} tools</a>
       </div>`).join('')}
     </div>
@@ -717,7 +790,7 @@ app.get('/', (c) => {
       <ul class="clean">
         <li>Every tool gets one editorial rank, from #1 to #${all.length}, and no two tools share a rank.</li>
         <li>Category pages list tools in rank order. Search sorts tools by how well they match your words and uses rank only to break ties.</li>
-        <li>Featured listings are paid placements and never change a tool's rank.</li>
+        <li>Ranks are never for sale. BuildStack does not sell placements.</li>
       </ul>
       <p style="margin-bottom:0"><a href="/methodology">Read the full methodology</a></p>
     </div>
@@ -758,37 +831,38 @@ app.get('/', (c) => {
   </section>`
   const body = `
   <section class="hero">
-    <h1>Which AI tool should you use?</h1>
-    <p>Free AI tool finder: type a task, get ranked tools that fit. BuildStack ranks real AI tools by use case, so you can also browse categories or skim new releases. Built for humans and chatbots.</p>
+    <h1>Type the job. Get the best AI tool for it.</h1>
+    <p>${all.length} AI tools, ranked. Every pick shows who it's for, what it costs, and the catch. Free, and ranks can't be bought.</p>
     <form class="searchbox" action="/" method="get" role="search">
-      <input name="q" value="${esc(q)}" placeholder="e.g. write a React app, research papers, voiceover for a podcast" aria-label="Search use cases"/>
+      <input name="q" value="${esc(q)}" placeholder="e.g. edit a podcast, write a blog post, build an app" aria-label="Search use cases"/>
       <button type="submit">Find tools</button>
     </form>
   </section>
-  ${q ? `<section class="section"><h2>Best fit for “${esc(q)}”</h2><div class="grid">${results.map(toolCard).join('') || '<p class="muted">No matches. Try a broader phrase.</p>'}</div></section>` : ''}
-  ${q ? '' : `<p class="muted" style="margin:.9rem 0 0;font-size:.88rem">Last updated: ${PD} · ${all.length} ranked tools · <a href="/methodology">How we rank</a></p>`}
+  ${q ? `<section class="section"><h2>Best fit for “${esc(q)}”</h2>${searchResultsHtml(results)}</section>` : ''}
+  ${q ? '' : `<p class="muted" style="margin:.9rem 0 0;font-size:.88rem">Last updated: ${fmtDate(PD)} · ${all.length} ranked tools · <a href="/methodology">How we rank</a></p>`}
   <section class="section" id="best-for">
     <h2>Find an AI tool by task</h2>
     <div class="pills">
-      ${BEST_FOR.map((b) => `<a class="pill" href="/?q=${encodeURIComponent(b.query)}">${esc(b.title)}</a>`).join('')}
+      ${BEST_FOR.map((b) => `<a class="pill" href="${b.href}">${esc(b.title)}</a>`).join('')}
     </div>
   </section>
   ${quickBlock}
   ${featured.length ? `<section class="section"><h2>Featured</h2><div class="grid">${featured.map(toolCard).join('')}</div></section>` : ''}
   <section class="section" id="new">
-    <h2>New releases</h2>
-    <div class="grid">${news.map(toolCard).join('')}</div>
+    <h2>New on BuildStack</h2>
+    <p class="muted" style="margin:-.4rem 0 .9rem;font-size:.88rem">Tools added in the last ${NEW_DAYS} days, newest first.</p>
+    ${news.length ? `<div class="grid">${news.map(toolCard).join('')}</div>` : '<p class="muted">Nothing new in the last two weeks.</p>'}
   </section>
   <section class="section">
     <h2>Top ranked</h2>
-    <div class="grid">${tools().slice(0, 12).map(toolCard).join('')}</div>
+    <div class="grid">${tools().slice(0, 12).map((t, i) => toolCardAt(t, i + 1)).join('')}</div>
     <p style="margin-top:1rem"><a href="/categories">Browse all categories →</a></p>
   </section>
   ${lowerBlock}
   <section class="section">
     <div class="panel">
       <h2 style="margin-top:0">Newsletter</h2>
-      <p class="muted" style="margin:0">Occasional new-tool roundups. We store your email and do not sell it. No sends until the list is ready.</p>
+      <p class="muted" style="margin:0">Leave your email to hear about new tools by email. We store your email and do not sell it. The weekly write-up lives on Substack for now.</p>
       <form class="formrow" data-source="home" onsubmit="subscribe(event)">
         <input type="email" name="email" required placeholder="you@company.com" aria-label="Email"/>
         <button type="submit">Subscribe</button>
@@ -943,12 +1017,11 @@ app.get('/tool/:slug', (c) => {
   </section>`
   const body = `
   <section class="hero">
-    <div class="meta"><span class="rank">#${t.rank}</span><a class="tag" href="/category/${esc(t.category)}">${esc(CATEGORIES[t.category]?.label || t.category)}</a>${t.newRelease ? '<span class="tag new">New</span>' : ''}</div>
+    <div class="meta"><span class="rank">#${t.rank} overall</span><a class="tag cat" href="/category/${esc(t.category)}">${esc(catChip(t))}</a>${isNew(t) ? '<span class="tag new">New</span>' : ''}</div>
     <h1>${esc(t.name)}</h1>
     <p>${esc(t.tagline)}</p>
     <p>
       <a class="btn" href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">Visit ${esc(t.name)}</a>
-      <a class="btn secondary" href="/get-featured" style="margin-left:.5rem">Get featured</a>
     </p>
   </section>
   <section class="section panel prose">
@@ -959,7 +1032,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Price.</strong> ${esc(priceLine(t))}</p>
     ${t.strength ? `<p><strong>Strength.</strong> ${esc(t.strength)}</p>` : ''}
     ${t.watchOut ? `<p><strong>Watch-out.</strong> ${esc(t.watchOut)}</p>` : ''}
-    <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a> · Listing last changed: ${esc(t.updated || UPDATED)}</p>
+    <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a> · Listing last changed: ${esc(fmtDate(t.updated || UPDATED))}${t.added ? ` · Added to ${NAME}: ${esc(fmtDate(t.added))}` : ''}</p>
     ${t.affiliate ? '<p class="muted">Affiliate link: we may earn a commission if you use the link on this page.</p>' : ''}
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
     ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
@@ -995,28 +1068,19 @@ app.get('/tool/:slug', (c) => {
 })
 
 app.get('/get-featured', (c) => {
-  const link = c.env.STRIPE_PAYMENT_LINK || 'https://buy.stripe.com/test_6oU00k5JhdKycn7aEC8so00'
-  const mode = c.env.STRIPE_MODE || 'test'
   const body = `
   <section class="hero">
-    <h1>Get featured on BuildStack</h1>
-    <p>Put your AI tool at the top of the directory for 30 days. Includes homepage featured placement, category highlight, and a newsletter mention when sends begin.</p>
+    <h1>List your tool on BuildStack</h1>
+    <p>Listings are free and editorial. Paid placements are not offered yet, and ranks are never for sale.</p>
   </section>
-  <section class="panel">
-    <h2 style="margin-top:0">Featured listing · $99</h2>
-    <ul class="clean muted">
-      <li>Homepage featured slot</li>
-      <li>Highlight on your category page</li>
-      <li>Listing review for accuracy (real product required)</li>
-      <li>Newsletter mention when the list launches</li>
-    </ul>
-    <p style="margin:1.2rem 0"><a class="btn" href="${esc(link)}" rel="noopener noreferrer" target="_blank">Pay with Stripe (${esc(mode)} mode)</a></p>
-    <p class="muted">Currently using Stripe <strong>${esc(mode)}</strong> mode so you can try the checkout with test cards. Live charges stay off until Sampson approves.</p>
-    <p class="muted">After payment, reply to the receipt or email <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> with your logo, URL, and short description.</p>
+  <section class="panel prose">
+    <p>Built an AI tool that does a real job well? Tell us what it does, who it is for, and where its pricing lives. If it fits a category, we review it like every other listing and place it on its merits.</p>
+    <p>To suggest a tool, or to tell us you would be interested in a clearly labeled sponsorship later, email <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> with the name, URL, and a one-line description.</p>
+    <p class="muted">See <a href="/methodology">how we rank</a>.</p>
   </section>`
   return c.html(layout({
-    title: `Get featured | ${NAME}`,
-    description: 'Feature your AI tool on BuildStack for 30 days via Stripe.',
+    title: `List your tool | ${NAME}`,
+    description: 'Suggest an AI tool for the BuildStack directory. Listings are free and editorial, and ranks are never for sale.',
     path: '/get-featured',
     body,
   }))
@@ -1028,13 +1092,13 @@ app.get('/methodology', (c) => {
   const catCounts = Object.entries(CATEGORIES)
     .map(([k, v]) => ({ k, label: v.label, n: all.filter((t) => t.category === k).length }))
   const featuredCount = all.filter((t) => t.featured).length
-  const newCount = all.filter((t) => t.newRelease).length
-  const description = `How ${NAME} ranks AI tools: one editorial rank per tool, category pages in rank order, use-case search scoring, and featured listings kept separate from rank. ${all.length} tools, updated ${PD}.`
+  const newCount = newTools().length
+  const description = `How ${NAME} ranks AI tools: one editorial rank per tool, category pages in rank order, use-case search scoring, and ranks that are never for sale. ${all.length} tools, updated ${fmtDate(PD)}.`
   const body = `
   <section class="hero">
     <h1>How BuildStack ranks AI tools</h1>
-    <p>Short answer: every tool gets one editorial rank, from #1 to #${all.length}. Category pages and the full list show tools in that order. Search reorders tools by how well they match your words, and uses rank only to break ties. Paying for a featured listing does not change a tool's rank.</p>
-    <p class="muted">Last updated: ${PD} · ${all.length} tools</p>
+    <p>Short answer: every tool gets one editorial rank, from #1 to #${all.length}. Category pages and the full list show tools in that order. Search reorders tools by how well they match your words, and uses rank only to break ties. Ranks are never for sale.</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${all.length} tools</p>
   </section>
   <section class="panel prose">
     <h2 style="margin-top:0">One rank per tool</h2>
@@ -1058,17 +1122,17 @@ app.get('/methodology', (c) => {
     <p>Tools with no matches are left out. After the category group and the narrower-word order above, a higher score comes first. When two tools are still tied, the higher ranked tool comes first. Search result pages are marked noindex so search engines index the real category and tool pages instead.</p>
 
     <h2>What each listing contains</h2>
-    <p>Every tool page shows the rank, category, a tagline, a description, best-for tags, a short pricing note, and a link to the official site. List cards on search results, category pages, and /best guides also show a compact decision block: a one-line best-for summary, a starting price with whether there is a free tier, one strength, and one honest watch-out. Those lines are written from the facts already in the listing. Pricing notes and starting prices are short summaries. Always check the official site for current prices.</p>
+    <p>Every tool page shows the overall rank, the rank inside its category, a tagline, a description, best-for tags, a short pricing note, and a link to the official site. List cards on search results, category pages, and /best guides show the rank inside the category (for example #1 in Writing) instead of the overall rank, and a compact decision block: a one-line best-for summary, a starting price with whether there is a free tier, one strength, and one honest watch-out. Those lines are written from the facts already in the listing. Pricing notes and starting prices are short summaries. Always check the official site for current prices.</p>
     <p>The decision block is for browsing only. It does not change a tool's rank. Search scoring does not read the strength, watch-out, starting price, or free-tier fields, and it does not read the affiliate flag.</p>
 
     <h2>Dates on this site</h2>
     <p>Each tool page shows when its listing last changed, meaning its name, link, category, tagline, description, best-for tags, or pricing note. A tool moving down one place because another tool was added above it does not count as a change. A guide shows the later of its own last edit and the newest listing change among the tools it covers. The sitemap uses the same dates, so a page is only marked as changed when its content changed. The site-wide date in /tools.json and /llms.txt is the last day any listing changed.</p>
 
     <h2>New releases</h2>
-    <p>Recently launched tools carry a New tag and appear in the New releases section of the homepage. The tag does not change rank. ${newCount} tools carry it right now.</p>
+    <p>Tools added to BuildStack in the last ${NEW_DAYS} days carry a New tag and appear in the New section of the homepage, newest first. Each tool page shows the day it was added. The tag does not change rank. ${newCount} tools carry it right now.</p>
 
-    <h2>Featured listings are separate from rank</h2>
-    <p>Tool makers can pay for a <a href="/get-featured">featured listing</a>. A featured tool gets a Featured tag and a spot in the Featured section of the homepage. Its rank number stays the same, and search scoring ignores featured status. ${featuredCount ? `${featuredCount} tools are featured right now.` : 'No tools are featured right now.'}</p>
+    <h2>Ranks are not for sale</h2>
+    <p>BuildStack does not sell placements right now, and no payment can change a tool's rank or its place in search. If a clearly labeled sponsorship is ever offered, it will carry a Featured tag and still leave the rank number alone. ${featuredCount ? `${featuredCount} tools are featured right now.` : 'No tools are featured right now.'} Tool makers can <a href="/get-featured">suggest a listing</a> for free.</p>
 
     <h2>Open data</h2>
     <p>The same ranks and listings are published for people and AI assistants at <a href="/tools.json">/tools.json</a>, <a href="/llms.txt">/llms.txt</a>, and <a href="/llms-full.txt">/llms-full.txt</a>. When you quote BuildStack, quote the rank as published and link to the official tool site. Do not add scores or test results the site does not publish.</p>
@@ -1197,14 +1261,14 @@ app.get('/alternatives/cursor', (c) => {
   ].filter(Boolean)
   const shortHtml = shortParts.map((p) => p.length === 2 ? `${rl(p[0])} ${p[1]}` : `${rl(p[0])} ${p[1]} ${rl(p[2])} ${p[3]}`).join('. ')
   const shortText = shortParts.map((p) => p.length === 2 ? `${rt(p[0])} ${p[1]}` : `${rt(p[0])} ${p[1]} ${rt(p[2])} ${p[3]}`).join('. ')
-  const description = `Best Cursor alternatives, sorted by how you code: ${list.slice(0, 4).map((t) => `${t.name} (#${t.rank})`).join(', ')} and more. ${list.length} coding tools from the ${NAME} ranking. Updated ${PD}.`
+  const description = `Best Cursor alternatives, sorted by how you code: ${list.slice(0, 4).map((t) => `${t.name} (#${t.rank})`).join(', ')} and more. ${list.length} coding tools from the ${NAME} ranking. Updated ${fmtDate(PD)}.`
   const title = `Best Cursor Alternatives in 2026, Sorted by How You Code | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><a class="tag" href="/category/coding">Coding</a><span class="tag">Guide</span></div>
     <h1>Best Cursor Alternatives in 2026, Sorted by How You Code</h1>
     <p><strong>Short answer:</strong> ${link(cursor)} is #${cursor.rank} overall on ${NAME}, so every alternative here ranks below it. ${shortHtml}. Pick by how you work, not by one overall winner.</p>
-    <p class="muted">Last updated: ${PD} · ${list.length} alternatives · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} alternatives · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>Cursor alternatives at a glance</h2>
@@ -1362,14 +1426,14 @@ app.get(BEGINNER_PATH, (c) => {
   const catLink = (t) => `<a href="/category/${esc(t.category)}">${esc(CATEGORIES[t.category]?.label || t.category)}</a>`
   const shortText = `For a first app with no setup, start with ${rt('lovable')} for a full web app from a chat, ${rt('bolt')} for quick builds with free hosting, ${rt('replit-agent')} to learn by building in one place, or ${rt('v0')} for polished screens you can deploy to Vercel. All four run in your browser, so there is nothing to install`
   const shortHtml = `For a first app with no setup, start with ${rl('lovable')} for a full web app from a chat, ${rl('bolt')} for quick builds with free hosting, ${rl('replit-agent')} to learn by building in one place, or ${rl('v0')} for polished screens you can deploy to Vercel. All four run in your browser, so there is nothing to install`
-  const description = `Best AI coding agents for beginners, no setup required: ${byRank.map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')}. Where each runs, what you can build, and how to start free. Updated ${PD}.`
+  const description = `Best AI coding agents for beginners, no setup required: ${byRank.map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')}. Where each runs, what you can build, and how to start free. Updated ${fmtDate(PD)}.`
   const title = `${BEGINNER_H1} | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><a class="tag" href="/category/coding">Coding</a><a class="tag" href="/category/agents">Agents</a><span class="tag">Guide</span></div>
     <h1>${esc(BEGINNER_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}. When you outgrow them, move to ${grow.map((t) => `${link(t)} (#${t.rank})`).join(' or ')}.</p>
-    <p class="muted">Last updated: ${PD} · ${picks.length} beginner picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${picks.length} beginner picks · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -1380,7 +1444,7 @@ app.get(BEGINNER_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.build)}</td><td>${esc(p.where)}</td><td>${esc(p.t.pricingNote || 'See official site')}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${SD}. Prices and limits change, so check the official site before you pay.</p>
+    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${fmtDate(SD)}. Prices and limits change, so check the official site before you pay.</p>
   </section>
   <section class="section">
     <h2>One-line verdict for each pick</h2>
@@ -1560,7 +1624,7 @@ app.get(RESEARCH_PATH, (c) => {
   const pick = (s) => picks.find((p) => p.slug === s)
   const shortText = `For web research with citations, start with ${rt('gemini')} or ${rt('perplexity')}. For your own documents, use ${rt('notebooklm')}. To summarize research papers, use ${rt('elicit')} for literature reviews, ${rt('consensus')} for evidence summaries, or ${rt('scispace')} to compare many papers. Always open the sources before you cite an AI summary`
   const shortHtml = `For web research with citations, start with ${rl('gemini')} or ${rl('perplexity')}. For your own documents, use ${rl('notebooklm')}. To summarize research papers, use ${rl('elicit')} for literature reviews, ${rl('consensus')} for evidence summaries, or ${rl('scispace')} to compare many papers. Always open the sources before you cite an AI summary`
-  const description = `Best AI research assistants in 2026, including tools to summarize papers: ${byRank.slice(0, 6).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more. Sources each uses, pricing, and how to check a summary. Updated ${PD}.`
+  const description = `Best AI research assistants in 2026, including tools to summarize papers: ${byRank.slice(0, 6).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more. Sources each uses, pricing, and how to check a summary. Updated ${fmtDate(PD)}.`
   const title = `Best AI Research Assistants in 2026 | ${NAME}`
   const panel = (s) => { const p = pick(s); if (!p) return ''; return `<div class="panel prose" style="margin-bottom:1rem" id="${esc(p.slug)}">
       <h3 style="margin-top:0;color:var(--text)">${esc(p.t.name)} (#${p.t.rank}, ${catLink(p.t)})</h3>
@@ -1572,7 +1636,7 @@ app.get(RESEARCH_PATH, (c) => {
     <div class="meta"><a class="tag" href="/category/research">Research</a><span class="tag">Guide</span></div>
     <h1>${esc(RESEARCH_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · ${picks.length} research picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${picks.length} research picks · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -1583,7 +1647,7 @@ app.get(RESEARCH_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.best)}</td><td>${esc(p.sources)}</td><td>${esc(p.t.pricingNote || 'See official site')}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${SD}. Prices and limits change, so check the official site before you pay.</p>
+    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${fmtDate(SD)}. Prices and limits change, so check the official site before you pay.</p>
   </section>
   <section class="section">
     <h2>Best for web research with citations</h2>
@@ -1790,7 +1854,7 @@ app.get(FREE_PATH, (c) => {
   const short = (f) => `For writing and everyday questions, start with ${f('claude')} or ${f('chatgpt')} on their free plans. For research, use ${f('gemini')} or ${f('perplexity')}. For coding, ${f('google-antigravity')} is free for individuals and ${f('cline')} is open source. For video, ${f('veo-3-1')} gives you 50 free Google Flow credits a day. For automation, ${f('make')} includes 1,000 free credits a month. To avoid vendor limits entirely, run an open-weight model such as ${f('liquid-lfm3')} on your own hardware`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const description = `Best free AI tools in 2026 by task: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with what each free plan includes and the limits to watch. Updated ${PD}.`
+  const description = `Best free AI tools in 2026 by task: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with what each free plan includes and the limits to watch. Updated ${fmtDate(PD)}.`
   const title = `Best Free AI Tools in 2026, by Task | ${NAME}`
   const kindLabel = (p) => FREE_KINDS[p.kind]?.label || 'Free'
   const groupHtml = (g) => {
@@ -1813,7 +1877,7 @@ app.get(FREE_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Free</span></div>
     <h1>${esc(FREE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · Free plans checked on ${SD} · ${picks.length} free picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Free plans checked on ${fmtDate(SD)} · ${picks.length} free picks · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -1967,14 +2031,14 @@ app.get(VOICE_PATH, (c) => {
   const short = (f) => `For realistic voiceovers, start with ${f('elevenlabs')}. For directed, expressive narration, use ${f('fish-audio-drama-3')}. Developers building multilingual voice apps should look at ${f('mistral-voxtral-3')}, and ${f('assemblyai-tts-1')} is built for low-latency voice agents. To keep speech on the device, run ${f('gradium-phonon')}`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const description = `Best AI voice generators and text to speech tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with verified pricing and what each is best for. Updated ${PD}.`
+  const description = `Best AI voice generators and text to speech tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with verified pricing and what each is best for. Updated ${fmtDate(PD)}.`
   const title = `Best AI Voice Generators and Text to Speech in 2026 | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Voice</span></div>
     <h1>${esc(VOICE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · Pricing checked on ${SD} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing checked on ${fmtDate(SD)} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -2137,14 +2201,14 @@ app.get(CODING_PATH, (c) => {
   const shortText = short(rt)
   const shortHtml = short(rl)
   const checked = CODING_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
-  const description = `Best AI coding assistants in 2026, ranked: ${list.slice(0, 5).map((t) => `${t.name} (#${t.rank})`).join(', ')} and ${list.length - 5} more, with what each is best for and pricing notes. Updated ${PD}.`
+  const description = `Best AI coding assistants in 2026, ranked: ${list.slice(0, 5).map((t) => `${t.name} (#${t.rank})`).join(', ')} and ${list.length - 5} more, with what each is best for and pricing notes. Updated ${fmtDate(PD)}.`
   const title = `Best AI Coding Assistants in 2026, Ranked | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Coding</span></div>
     <h1>${esc(CODING_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · ${list.length} coding tools ranked · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} coding tools ranked · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(list)}
   <section class="section" id="ranking">
@@ -2155,7 +2219,7 @@ app.get(CODING_PATH, (c) => {
         <tbody>${list.map((t) => `<tr><td>${link(t)}</td><td>#${t.rank}</td><td>${esc(CODING_TYPES[t.slug] || 'Coding tool')}</td><td>${esc(listNames(t.bestFor || []))}</td><td>${esc(t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/coding">coding category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${SD}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/coding">coding category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${fmtDate(SD)}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
   </section>
   ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
     <h2>${esc(g.heading)}</h2>
@@ -2350,14 +2414,14 @@ app.get(AGENT_PATH, (c) => {
   const shortText = short(rt)
   const shortHtml = short(rl)
   const checked = AGENT_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
-  const description = `Best AI agent builders and automation tools in 2026: Lindy, Zapier, Make, n8n, Manus, Copilot Studio and ${list.length - 6} more, compared by no-code or technical, best use, and pricing. Updated ${PD}.`
+  const description = `Best AI agent builders and automation tools in 2026: Lindy, Zapier, Make, n8n, Manus, Copilot Studio and ${list.length - 6} more, compared by no-code or technical, best use, and pricing. Updated ${fmtDate(PD)}.`
   const title = `Best AI Agent Builders and Automation Tools in 2026 | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Agents</span></div>
     <h1>${esc(AGENT_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · ${list.length} agent and automation tools ranked · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} agent and automation tools ranked · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(list)}
   <section class="section" id="at-a-glance">
@@ -2368,7 +2432,7 @@ app.get(AGENT_PATH, (c) => {
         <tbody>${list.map((t) => `<tr><td>${link(t)}</td><td>#${t.rank}</td><td>${esc(AGENT_TYPES[t.slug] || 'Agent tool')}</td><td>${esc(listNames(t.bestFor || []))}</td><td>${esc(t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/agents">agents category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${SD}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/agents">agents category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${fmtDate(SD)}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
   </section>
   ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
     <h2>${esc(g.heading)}</h2>
@@ -2529,14 +2593,14 @@ app.get(SMB_PATH, (c) => {
   const shortText = short(rt)
   const shortHtml = short(rl)
   const checked = SMB_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
-  const description = `Best AI tools for small business in 2026: a starter stack of ChatGPT, Canva, Notion AI, Zapier and Perplexity, plus ${list.length - 5} more picks by job, with pricing notes. Updated ${PD}.`
+  const description = `Best AI tools for small business in 2026: a starter stack of ChatGPT, Canva, Notion AI, Zapier and Perplexity, plus ${list.length - 5} more picks by job, with pricing notes. Updated ${fmtDate(PD)}.`
   const title = `Best AI Tools for Small Business: A Starter Stack by Job | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Small business</span></div>
     <h1>${esc(SMB_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · ${list.length} tools picked by job · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} tools picked by job · <a href="/methodology">How we rank</a></p>
     <p>BuildStack is run by tier11. If you want help picking tools and rolling them out safely, email <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>.</p>
   </section>
   ${glanceSection(list)}
@@ -2548,7 +2612,7 @@ app.get(SMB_PATH, (c) => {
         <tbody>${stack.map((x) => `<tr><td>${esc(x.job)}</td><td>${link(x.t)}</td><td>#${x.t.rank}</td><td>${esc(x.t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category. Pricing for ${esc(listNames(checked))} was checked against official pricing pages on ${SD}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category. Pricing for ${esc(listNames(checked))} was checked against official pricing pages on ${fmtDate(SD)}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
   </section>
   ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
     <h2>${esc(g.heading)}</h2>
@@ -2698,7 +2762,7 @@ app.get(TRANS_PATH, (c) => {
   const short = (f) => `To edit podcasts and video by transcript, start with ${f('descript')}. For meeting transcripts and summaries, use ${f('otter')} or ${f('fireflies')}. Developers adding speech to text to an app should look at ${f('deepgram')} or the lower-cost ${f('mistral-voxtral-3')}, and to keep audio private on your own hardware, run ${f('nvidia-nemotron-transcribe')} or ${f('ibm-granite-speech-5')}`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const description = `Best AI transcription tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with verified pricing for meetings, podcasts, and developer APIs. Updated ${PD}.`
+  const description = `Best AI transcription tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with verified pricing for meetings, podcasts, and developer APIs. Updated ${fmtDate(PD)}.`
   const title = `Best AI Transcription Tools in 2026 | ${NAME}`
   const useCases = [
     ['Meetings', `${rl('otter')} and ${rl('fireflies')} join your calls and send notes afterward. If your team lives in Notion, ${rl('notion-ai')} keeps meeting notes next to your docs.`],
@@ -2712,7 +2776,7 @@ app.get(TRANS_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Voice</span></div>
     <h1>${esc(TRANS_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · Pricing from official pages, most rechecked on ${SD} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages, most rechecked on ${fmtDate(SD)} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -2863,14 +2927,14 @@ app.get(WRITE_PATH, (c) => {
   const shortText = short(rt)
   const shortHtml = short(rl)
   const steps = WRITE_WORKFLOW.map((s) => ({ ...s, t: s.slug ? find(s.slug) : null }))
-  const description = `Best AI writing tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus a blog post workflow and verified pricing. Updated ${PD}.`
+  const description = `Best AI writing tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus a blog post workflow and verified pricing. Updated ${fmtDate(PD)}.`
   const title = `Best AI Writing Tools in 2026 (and for Blog Posts) | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Writing</span></div>
     <h1>${esc(WRITE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -3024,14 +3088,14 @@ app.get(IMAGE_PATH, (c) => {
   const short = (f) => `The best AI image generator for artistic images is ${f('midjourney')}. Choose ${f('ideogram')} for readable text, ${f('flux')} for photorealism and API use, ${f('krea-3')} for consistent products and characters, ${f('seedream-5-5')} for many rounds of edits and transparent assets, ${f('leonardo')} for game assets and custom styles, and ${f('adobe-firefly')} if you want the commercially safer option inside Adobe apps`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const description = `Best AI image generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus the best Midjourney alternatives and verified pricing. Updated ${PD}.`
+  const description = `Best AI image generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus the best Midjourney alternatives and verified pricing. Updated ${fmtDate(PD)}.`
   const title = `Best AI Image Generators in 2026 (Midjourney Alternatives) | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Images</span></div>
     <h1>${esc(IMAGE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -3177,14 +3241,14 @@ app.get(VIDEO_PATH, (c) => {
   const shortText = short(rt)
   const shortHtml = short(rl)
   const steps = VIDEO_WORKFLOW.map((s) => ({ ...s, t: s.slug ? find(s.slug) : null }))
-  const description = `Best AI video editors for YouTube in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with a Shorts workflow and verified pricing. Updated ${PD}.`
+  const description = `Best AI video editors for YouTube in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with a Shorts workflow and verified pricing. Updated ${fmtDate(PD)}.`
   const title = `Best AI Video Editors for YouTube in 2026 | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
     <h1>${esc(VIDEO_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -3332,14 +3396,14 @@ app.get(VIDEOGEN_PATH, (c) => {
   const short = (f) => `The best overall AI video generator for creators is ${f('runway')}. Choose ${f('kling')} for short social clips, ${f('veo-3-1')} for cinematic storytelling with sound, ${f('luma-dream-machine')} for fast concept shots, and ${f('viggle-jst-2')} for 3D scenes and character motion`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const description = `Best AI video generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with text-to-video vs image-to-video notes and verified pricing. Updated ${PD}.`
+  const description = `Best AI video generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with text-to-video vs image-to-video notes and verified pricing. Updated ${fmtDate(PD)}.`
   const title = `Best AI Video Generators in 2026 | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
     <h1>${esc(VIDEOGEN_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -3416,13 +3480,10 @@ const DEEPFAKE_PATH = '/guides/how-celebrity-deepfakes-are-made'
 const DEEPFAKE_H1 = 'How viral celebrity deepfakes get made, and how to spot one'
 const DEEPFAKE_DESC = 'A plain-language look at how viral celebrity deepfakes are usually assembled, how to spot one, and where BuildStack draws the line. Not a how-to.'
 const DEEPFAKE_PUBLISHED = '2026-11-13'
+const DEEPFAKE_READ = '6 min read'
 
 function deepfakeFaq() {
   return [
-    {
-      q: 'Is ComfyUI a deepfake tool?',
-      a: 'No. ComfyUI is a general workbench for image and video workflows, used for art, effects, and animation, not a deepfake product.',
-    },
     {
       q: 'If the big video apps block celebrities, why do these clips still spread?',
       a: 'Many are made with face-swap tools, local image-to-video workflows, or smaller sites without the same restrictions, and labels are often stripped.',
@@ -3438,16 +3499,54 @@ function deepfakeFaq() {
   ]
 }
 
+// Mainstream video tools whose official policies restrict real-person likeness. Each note is
+// limited to what the cited policy says (see Sources).
+const DEEPFAKE_LIKENESS = [
+  { slug: 'veo-3-1', note: 'Google says Veo is built to reject photorealistic depictions of prominent people.', src: 'https://cloud.google.com/vertex-ai/generative-ai/docs/video/responsible-ai-and-usage-guidelines', srcName: 'Responsible AI for Veo' },
+  { slug: 'runway', note: "Runway's usage policy bans using another person's image, video, or audio without permission, and bans impersonation.", src: 'https://runway.com/safety/usage-policy', srcName: 'Runway usage policy' },
+  { slug: 'kling', note: "Kling's community guidelines require respect for likeness rights and prohibit impersonation.", src: 'https://kling.ai/docs/community-policy', srcName: 'Kling community guidelines' },
+]
+
+const DEEPFAKE_SOURCES = [
+  'U.S. Department of Homeland Security, "<a href="https://www.dhs.gov/sites/default/files/publications/increasing_threats_of_deepfake_identities_0.pdf">Increasing Threat of Deepfake Identities</a>" (signs that can help identify fake images, video, and audio).',
+  'U.S. Department of Homeland Security, Science and Technology Directorate, "<a href="https://www.dhs.gov/sites/default/files/2025-01/25_0110_st_impacts_of_adversarial_generative_ai_on_homeland_security_0.pdf">Impacts of Adversarial Use of Generative AI on Homeland Security</a>," January 2025, Appendix C (heuristics for identifying deepfakes).',
+  'National Security Agency, Federal Bureau of Investigation, and Cybersecurity and Infrastructure Security Agency, "<a href="https://media.defense.gov/2023/Sep/12/2003298925/-1/-1/0/CSI-DEEPFAKE-THREATS.PDF">Contextualizing Deepfake Threats to Organizations</a>," September 12, 2023. See also the <a href="https://www.cisa.gov/news-events/alerts/2023/09/12/nsa-fbi-and-cisa-release-cybersecurity-information-sheet-deepfake-threats">CISA announcement</a>.',
+  'Coalition for Content Provenance and Authenticity, "<a href="https://c2pa.org/faqs/">FAQs</a>."',
+  'Content Authenticity Initiative, "<a href="https://www.contentauthenticity.org/how-it-works">How it works</a>," and the <a href="https://verify.contentauthenticity.org">Content Credentials verification tool</a>.',
+  'OpenAI, "<a href="https://openai.com/index/creating-with-sora-safely/">Creating with Sora safely</a>," March 23, 2026 (public-figure blocks and C2PA metadata on Sora videos).',
+  'OpenAI Help Center, "<a href="https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation">What to know about the Sora discontinuation</a>" (app discontinued April 26, 2026; API discontinued September 24, 2026).',
+  'Google Cloud, "<a href="https://cloud.google.com/vertex-ai/generative-ai/docs/video/responsible-ai-and-usage-guidelines">Responsible AI for Veo</a>" (rejects photorealistic representations of prominent people).',
+  'Runway, "<a href="https://runway.com/safety/usage-policy">Usage Policy</a>," updated March 6, 2026 (no use of another person\'s image, video, or audio without permission; no impersonation).',
+  'Kling AI, "<a href="https://kling.ai/docs/community-policy">Community Guidelines</a>," effective September 8, 2026 (likeness rights and a ban on impersonation).',
+  'YouTube, "<a href="https://www.youtube.com/howyoutubeworks/ai/">How Creators Use AI for Content Creation</a>" (disclosure and labels for realistic or meaningfully altered AI content).',
+  'Meta Transparency Center, "<a href="https://transparency.meta.com/en-us/governance/tracking-impact/labeling-ai-content">Labeling AI Content</a>," updated February 19, 2025 ("AI Info" labels).',
+  'TikTok Newsroom, "<a href="https://newsroom.tiktok.com/en-us/more-ways-to-spot-shape-and-understand-ai-generated-content">More ways to spot, shape and understand AI-generated content</a>," November 24, 2025 (creator labels, detection, and C2PA).',
+  'TAKE IT DOWN Act, <a href="https://www.govinfo.gov/content/pkg/PLAW-119publ12/html/PLAW-119publ12.htm">Public Law 119-12</a>, signed May 19, 2025. See also <a href="https://www.congress.gov/bill/119th-congress/senate-bill/146">Congress.gov</a> and the Congressional Research Service legal sidebar, "<a href="https://www.congress.gov/crs-product/LSB11314">The TAKE IT DOWN Act: A Federal Law Prohibiting the Nonconsensual Publication of Intimate Images</a>," May 20, 2025.',
+  'Federal Trade Commission, "<a href="https://takeitdown.ftc.gov/">TakeItDown.ftc.gov</a>" (platform notice-and-removal and 48-hour duty).',
+  'Federal Trade Commission, "<a href="https://www.federalregister.gov/documents/2024/03/01/2024-04335/trade-regulation-rule-on-impersonation-of-government-and-businesses">Trade Regulation Rule on Impersonation of Government and Businesses</a>," <em>Federal Register</em>, March 1, 2024.',
+  'Rahman, Hasan, and Mohammed, "<a href="https://doi.org/10.1145/3595353.3595882">Why Do Facial Deepfake Detectors Fail?</a>," Association for Computing Machinery, 2023.',
+  '"<a href="https://doi.org/10.30574/wjarr.2026.30.2.1387">Beyond benchmark accuracy: Evaluating deepfake detection tools for digital forensic admissibility through a systematic review</a>," <em>World Journal of Advanced Research and Reviews</em>, 2026 (reported accuracy falling to about 54% to 75% on out-of-distribution data).',
+]
+
+const DEEPFAKE_PILLS = [
+  { label: 'For AI video', href: '/best/ai-video-generator' },
+  { label: 'Video', href: '/category/video' },
+  { label: 'Voice', href: '/best/ai-voice-generator' },
+]
+
 app.get(DEEPFAKE_PATH, (c) => {
   const PD = pageDate(DEEPFAKE_PATH)
   const faq = deepfakeFaq()
   const title = `${DEEPFAKE_H1} | ${NAME}`
+  const likeness = DEEPFAKE_LIKENESS.map((x) => ({ ...x, t: bySlug(x.slug) })).filter((x) => x.t)
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
     <h1>${esc(DEEPFAKE_H1)}</h1>
-    <p class="muted">Published ${DEEPFAKE_PUBLISHED} · Sampson Brueher, editor</p>
-    <figure class="hero-art">
+    <p class="muted" style="margin:0">By Sampson Brueher, editor</p>
+    <p class="muted" style="margin:.2rem 0 0">${fmtDate(DEEPFAKE_PUBLISHED)} · ${DEEPFAKE_READ}</p>
+    <p class="byline-note">BuildStack is a free ranked directory of AI tools. Ranks aren't for sale.</p>
+    <figure class="hero-art capped">
       <picture>
         <source type="image/webp" srcset="/guides/deepfake-hero.webp"/>
         <img src="/guides/deepfake-hero.jpg" width="1280" height="720" alt="Illustration: an invented face, half photographic and half digital wireframe" fetchpriority="high" decoding="async"/>
@@ -3456,33 +3555,62 @@ app.get(DEEPFAKE_PATH, (c) => {
     </figure>
   </section>
   <section class="section">
-    <div class="panel prose">
-      <p>When a clip of a famous person saying or doing something shocking starts flying around, the first question is often the right one: is this real? Many viral celebrity videos are not footage of that person at all. This article explains, at a high level, how those clips usually get made, and how to look more carefully before you share one. It is not a how-to, and we will not walk through tools, settings, or filter workarounds.</p>
+    <div class="article">
+      <p><strong>Deepfake detectors that score near-perfect in the lab can fall to between the mid-50s and mid-70s percent accuracy on realistic video,</strong> a 2026 systematic review found. At the low end, that is close to a coin flip. So when a clip of a famous person saying or doing something shocking starts flying around, an app cannot answer "is this real?" for you. This guide explains, at a high level, how those clips usually get made and what to check before you share one.</p>
 
-      <h2 style="color:var(--text)">Four common routes, in plain terms</h2>
+      <div class="checks" id="checks">
+        <h2>6 checks before you share</h2>
+        <ol>
+          <li><strong>Face edges and hairline.</strong> Skin tone that shifts at the edge of the face, double edges, blur, or flicker when the head turns.</li>
+          <li><strong>Teeth and the inner mouth.</strong> Teeth that blur together, and lips that never close on p, b, and m.</li>
+          <li><strong>Blinking, lighting, and hands.</strong> Odd blinking, light that does not match the neck or background, smeared fingers.</li>
+          <li><strong>Audio sync.</strong> Choppy speech, odd pauses, or a voice with no breath and no room sound.</li>
+          <li><strong>Context.</strong> Is it from an official account or a verified newsroom? Do the event, date, and place line up? Reverse-search a still.</li>
+          <li><strong>Provenance and labels.</strong> Look for Content Credentials and platform AI labels. Treat any detector result as one clue, not a verdict.</li>
+        </ol>
+      </div>
+
+      <h2>Four common routes, in plain terms</h2>
       <p>Most viral celebrity fakes follow one of four paths, or a mix of them.</p>
       <p><strong>Face-swap is the classic method.</strong> Software takes a face from photos or video of one person and pastes it onto existing footage of someone else. Tools in this category include DeepFaceLab and FaceFusion. Because the body and background already exist, the result can look like a real event even when the face is not.</p>
       <p><strong>Image-to-video starts with a still photo.</strong> A model is asked to animate that picture, as if the person had been filmed. People often run models like this inside a power-user workbench such as ComfyUI, a general creative workbench for images and video, not a deepfake product. What matters is the choice to animate a real person's likeness, not the workbench.</p>
-      <p><strong>Hosted video apps do the work in a browser.</strong> Google's <a href="/tool/veo-3-1">Veo</a> is built to reject photorealistic depictions of prominent people. While it was available, OpenAI's Sora also blocked depictions of public figures, except through a consent-based character feature. OpenAI discontinued the Sora app on April 26, 2026, and the Sora API on September 24, 2026. <a href="/tool/kling">Kling</a> requires users to respect likeness rights and prohibits impersonation. The biggest apps generally try to block videos of real celebrities. Some smaller sites do not, and we will not name those sites here.</p>
+      <p><strong>Hosted video apps do the work in a browser.</strong> Google's <a href="/tool/veo-3-1">Veo</a> is built to reject photorealistic depictions of prominent people. While it was available, OpenAI's Sora also blocked depictions of public figures, except through a consent-based character feature. OpenAI discontinued the Sora app on April 26, 2026, and the Sora API on September 24, 2026. <a href="/tool/kling">Kling</a> requires users to respect likeness rights and prohibits impersonation. The biggest apps generally try to block videos of real celebrities. Some smaller sites do not.</p>
+    </div>
+    ${likeness.length ? `<div class="strip" id="likeness-rules">
+      <h3>Mainstream video tools with likeness rules</h3>
+      <div class="grid">${likeness.map((x) => toolCard(x.t).replace('</article>', `<p class="note">${esc(x.note)} <a href="${esc(x.src)}" rel="noopener noreferrer">${esc(x.srcName)}</a></p></article>`)).join('')}</div>
+    </div>` : ''}
+    <div class="article">
       <p><strong>Voice cloning and lip-sync handle the soundtrack.</strong> A voice model can imitate how someone sounds, and a lip-sync or talking-head tool can match a mouth to that audio. Used with consent, they power dubbing and avatars. Used without consent, they can put words in a real person's mouth. For legitimate tools we already rank, see <a href="/best/ai-voice-generator">AI voice generators</a> and <a href="/best/ai-video-generator">AI video generators</a>.</p>
 
-      <h2 style="color:var(--text)">How to spot one</h2>
+      <h2>How to spot one, in more detail</h2>
       <p>Newer fakes are getting harder to catch by eye, and no single tell is proof.</p>
       <p><strong>Face edges and hairline.</strong> Homeland Security guidance includes watching for a change in skin tone near the edge of the face, double edges, and blurring on the face that does not match the rest of the frame. The hairline may fail to blend, and the face may flicker when the head turns.</p>
       <p><strong>Teeth and the inner mouth.</strong> Teeth may blur into a single block or change shape between frames, and the tongue or inner mouth may be missing or smeared. Watch sounds that need a clear mouth shape, such as p, b, and m, and see whether the lips actually close.</p>
       <p><strong>Blinking, lighting, and hands.</strong> Irregular blinking, a fixed gaze, and lighting that does not match the neck or background are long-standing signs. In fully generated video, extra fingers or smeared hands are also common, though less useful on a simple face-swap.</p>
       <p><strong>Audio sync and a voice that is too perfect.</strong> Official guidance flags choppy speech, odd pauses, and sound that is out of sync with the mouth. A cloned voice can also sound too clean, with no breath, no room echo, or background noise that cuts out when the person speaks.</p>
       <p><strong>Context checks.</strong> CISA, working with the NSA and FBI, advises checking the source and whether the event, date, and location actually line up. Check whether the clip came from an official account or a verified newsroom, and reverse-search a still with <a href="https://images.google.com">Google Images</a> or <a href="https://lens.google.com">Google Lens</a>.</p>
-      <p><strong>Provenance, labels, and detectors.</strong> <a href="https://www.contentauthenticity.org/how-it-works">Content Credentials</a>, the C2PA standard, can record how a file was made and whether it was flagged as AI-generated. Inspect a file at the Content Authenticity Initiative's <a href="https://verify.contentauthenticity.org">verification site</a>. Credentials can be stripped when a clip is screenshotted or re-uploaded, and a missing label is not proof that a clip is real. YouTube, Meta, and TikTok also add AI labels for realistic generated or altered media. Automated detectors can miss new fakes, raise false alarms, and lose accuracy after compression. A 2026 review found very high lab scores can drop into the mid-50s to mid-70s on more realistic data. Treat a detector result as one clue, not a verdict. If you are still unsure, do not share the clip as fact.</p>
+      <p><strong>Provenance, labels, and detectors.</strong> <a href="https://www.contentauthenticity.org/how-it-works">Content Credentials</a>, the C2PA standard, can record how a file was made and whether it was flagged as AI-generated. Inspect a file at the Content Authenticity Initiative's <a href="https://verify.contentauthenticity.org">verification site</a>. Credentials can be stripped when a clip is screenshotted or re-uploaded, and a missing label is not proof that a clip is real. YouTube, Meta, and TikTok also add AI labels for realistic generated or altered media. Automated detectors can miss new fakes, raise false alarms, and lose accuracy after compression, as the review above found. If you are still unsure, do not share the clip as fact.</p>
 
-      <h2 style="color:var(--text)">Consent and the law</h2>
+      <h2>Consent and the law</h2>
       <p>This is not legal advice, and the rules vary by place. In the United States, the TAKE IT DOWN Act (Public Law 119-12), signed on May 19, 2025, makes it a federal crime to publish nonconsensual intimate images, including AI-generated "digital forgeries," of an identifiable person in specified circumstances. Many states and other countries have similar laws.</p>
       <p>Covered platforms must offer a way to request removal and, after a valid notice, take the material and known identical copies down as soon as possible, and no later than 48 hours. That duty has been in effect since May 19, 2026, and the FTC enforces it. If a platform fails, or has no way to request removal, report it at <a href="https://takeitdown.ftc.gov/">TakeItDown.ftc.gov</a>.</p>
       <p>Impersonation can also be illegal. The FTC's Impersonation Rule prohibits impersonating the government or a business, including with AI voice cloning. Not every clip that uses a public figure's likeness is automatically a crime, especially in parody, but nonconsensual intimate deepfakes and deceptive impersonation are treated seriously.</p>
 
-      <h2 style="color:var(--text)">Where BuildStack draws the line</h2>
-      <p>BuildStack is a ranked directory of real AI tools, edited by Sampson Brueher. We rank creative <a href="/category/video">video</a>, <a href="/category/voice">voice</a>, and <a href="/category/images">image</a> tools for legitimate uses: filmmaking, dubbing, avatars people have agreed to, and everyday production work. See our current picks for <a href="/best/ai-video-generator">AI video generators</a>, <a href="/best/ai-voice-generator">AI voice generators</a>, and <a href="/best/ai-image-generator">AI image generators</a>. Featured listings do not change those ranks. See <a href="/methodology">how we rank</a>.</p>
+      <h2>Where BuildStack draws the line</h2>
+      <p>BuildStack is a free ranked directory of AI tools, edited by Sampson Brueher. We rank creative <a href="/category/video">video</a>, <a href="/category/voice">voice</a>, and <a href="/category/images">image</a> tools for legitimate uses: filmmaking, dubbing, avatars people have agreed to, and everyday production work. See our current picks for <a href="/best/ai-video-generator">AI video generators</a>, <a href="/best/ai-voice-generator">AI voice generators</a>, and <a href="/best/ai-image-generator">AI image generators</a>. Ranks are not for sale. See <a href="/methodology">how we rank</a>.</p>
       <p>We do not list tools whose main purpose is face-swapping real people. A general workbench or a hosted video model may show up when it has ordinary creative uses. A product whose main draw is putting someone else's face onto footage does not.</p>
+      <p>This guide is not a how-to. We leave out tools, settings, and filter workarounds on purpose.</p>
+    </div>
+  </section>
+  <section class="section" id="find">
+    <div class="panel">
+      <h2 style="margin-top:0">What are you trying to make? Type the job.</h2>
+      <form class="searchbox" action="/" method="get" role="search">
+        <input name="q" placeholder="e.g. dub a video, make a product demo, add captions" aria-label="Search AI tools by job"/>
+        <button type="submit">Find tools</button>
+      </form>
+      <div class="pills" style="margin-top:.9rem">${DEEPFAKE_PILLS.map((p) => `<a class="pill" href="${p.href}">${esc(p.label)}</a>`).join('')}</div>
     </div>
   </section>
   <section class="section" id="faq">
@@ -3493,28 +3621,14 @@ app.get(DEEPFAKE_PATH, (c) => {
     </div>
   </section>
   <section class="section" id="sources">
-    <h2>Sources</h2>
-    <div class="panel prose">
-      <ol class="clean">
-        <li>U.S. Department of Homeland Security, "<a href="https://www.dhs.gov/sites/default/files/publications/increasing_threats_of_deepfake_identities_0.pdf">Increasing Threat of Deepfake Identities</a>" (signs that can help identify fake images, video, and audio).</li>
-        <li>U.S. Department of Homeland Security, Science and Technology Directorate, "<a href="https://www.dhs.gov/sites/default/files/2025-01/25_0110_st_impacts_of_adversarial_generative_ai_on_homeland_security_0.pdf">Impacts of Adversarial Use of Generative AI on Homeland Security</a>," January 2025, Appendix C (heuristics for identifying deepfakes).</li>
-        <li>National Security Agency, Federal Bureau of Investigation, and Cybersecurity and Infrastructure Security Agency, "<a href="https://media.defense.gov/2023/Sep/12/2003298925/-1/-1/0/CSI-DEEPFAKE-THREATS.PDF">Contextualizing Deepfake Threats to Organizations</a>," September 12, 2023. See also the <a href="https://www.cisa.gov/news-events/alerts/2023/09/12/nsa-fbi-and-cisa-release-cybersecurity-information-sheet-deepfake-threats">CISA announcement</a>.</li>
-        <li>Coalition for Content Provenance and Authenticity, "<a href="https://c2pa.org/faqs/">FAQs</a>."</li>
-        <li>Content Authenticity Initiative, "<a href="https://www.contentauthenticity.org/how-it-works">How it works</a>," and the <a href="https://verify.contentauthenticity.org">Content Credentials verification tool</a>.</li>
-        <li>OpenAI, "<a href="https://openai.com/index/creating-with-sora-safely/">Creating with Sora safely</a>," March 23, 2026 (public-figure blocks and C2PA metadata on Sora videos).</li>
-        <li>OpenAI Help Center, "<a href="https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation">What to know about the Sora discontinuation</a>" (app discontinued April 26, 2026; API discontinued September 24, 2026).</li>
-        <li>Google Cloud, "<a href="https://cloud.google.com/vertex-ai/generative-ai/docs/video/responsible-ai-and-usage-guidelines">Responsible AI for Veo</a>" (rejects photorealistic representations of prominent people).</li>
-        <li>Kling AI, "<a href="https://kling.ai/docs/community-policy">Community Guidelines</a>," effective September 8, 2026 (likeness rights and a ban on impersonation).</li>
-        <li>YouTube, "<a href="https://www.youtube.com/howyoutubeworks/ai/">How Creators Use AI for Content Creation</a>" (disclosure and labels for realistic or meaningfully altered AI content).</li>
-        <li>Meta Transparency Center, "<a href="https://transparency.meta.com/en-us/governance/tracking-impact/labeling-ai-content">Labeling AI Content</a>," updated February 19, 2025 ("AI Info" labels).</li>
-        <li>TikTok Newsroom, "<a href="https://newsroom.tiktok.com/en-us/more-ways-to-spot-shape-and-understand-ai-generated-content">More ways to spot, shape and understand AI-generated content</a>," November 24, 2025 (creator labels, detection, and C2PA).</li>
-        <li>TAKE IT DOWN Act, <a href="https://www.govinfo.gov/content/pkg/PLAW-119publ12/html/PLAW-119publ12.htm">Public Law 119-12</a>, signed May 19, 2025. See also <a href="https://www.congress.gov/bill/119th-congress/senate-bill/146">Congress.gov</a> and the Congressional Research Service legal sidebar, "<a href="https://www.congress.gov/crs-product/LSB11314">The TAKE IT DOWN Act: A Federal Law Prohibiting the Nonconsensual Publication of Intimate Images</a>," May 20, 2025.</li>
-        <li>Federal Trade Commission, "<a href="https://takeitdown.ftc.gov/">TakeItDown.ftc.gov</a>" (platform notice-and-removal and 48-hour duty).</li>
-        <li>Federal Trade Commission, "<a href="https://www.federalregister.gov/documents/2024/03/01/2024-04335/trade-regulation-rule-on-impersonation-of-government-and-businesses">Trade Regulation Rule on Impersonation of Government and Businesses</a>," <em>Federal Register</em>, March 1, 2024.</li>
-        <li>Rahman, Hasan, and Mohammed, "<a href="https://doi.org/10.1145/3595353.3595882">Why Do Facial Deepfake Detectors Fail?</a>," Association for Computing Machinery, 2023.</li>
-        <li>"<a href="https://doi.org/10.30574/wjarr.2026.30.2.1387">Beyond benchmark accuracy: Evaluating deepfake detection tools for digital forensic admissibility through a systematic review</a>," <em>World Journal of Advanced Research and Reviews</em>, 2026 (reported accuracy falling to about 54% to 75% on out-of-distribution data).</li>
-      </ol>
-    </div>
+    <details class="sources">
+      <summary>Sources (${DEEPFAKE_SOURCES.length})</summary>
+      <div class="panel prose">
+        <ol class="clean">
+          ${DEEPFAKE_SOURCES.map((x) => `<li>${x}</li>`).join('\n          ')}
+        </ol>
+      </div>
+    </details>
   </section>`
   return c.html(layout({
     title,
@@ -3540,6 +3654,7 @@ app.get(DEEPFAKE_PATH, (c) => {
         author: { '@type': 'Person', name: 'Sampson Brueher', jobTitle: 'editor' },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         image: { '@type': 'ImageObject', url: `${SITE}/guides/deepfake-og.jpg`, width: 1200, height: 630 },
+        timeRequired: 'PT6M',
       }, {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
@@ -3551,21 +3666,24 @@ app.get(DEEPFAKE_PATH, (c) => {
 app.get('/about', (c) => {
   const body = `
   <section class="hero">
-    <h1>BuildStack for chatbots</h1>
-    <p>Short, quotable facts agents can cite. Prefer <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a> (every tool with full details), and <a href="/tools.json">/tools.json</a> for structured reads.</p>
+    <h1>About BuildStack</h1>
+    <p>BuildStack is a free ranked directory of AI tools, edited by Sampson Brueher at tier11. Type the job you need done and get the tools that fit, with who each one is for, what it costs, and the catch. Ranks are editorial and never for sale.</p>
+    <p class="muted">Questions or corrections: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="https://itsbuildstack.substack.com">Weekly write-up on Substack</a></p>
   </section>
-  <section class="panel prose">
-    <p><strong>What it is.</strong> BuildStack is a ranked directory of real AI tools across coding, writing, images, video, agents, research, and voice.</p>
+  <section class="panel prose" id="chatbots">
+    <h2 style="margin-top:0;color:var(--text)">For chatbots and AI assistants</h2>
+    <p>Short, quotable facts agents can cite. Prefer <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a> (every tool with full details), and <a href="/tools.json">/tools.json</a> for structured reads.</p>
+    <p><strong>What it is.</strong> BuildStack is a free ranked directory of AI tools across coding, writing, images, video, agents, research, and voice.</p>
     <p><strong>How search works.</strong> Users type a job (for example “write a React app”) and get best-fit tools from client and server matching over names, categories, and best-for tags.</p>
-    <p><strong>Counts.</strong> ${tools().length} tools as of ${UPDATED}.</p>
+    <p><strong>Counts.</strong> ${tools().length} tools as of ${fmtDate(UPDATED)}.</p>
     <p><strong>How ranking works.</strong> Ranks are editorial and featured listings do not change them. See <a href="/methodology">/methodology</a>.</p>
-    <p><strong>Monetization.</strong> Tool makers can buy a featured listing at <a href="/get-featured">/get-featured</a>.</p>
-    <p><strong>Contact.</strong> <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> (also the newsletter From address when sends begin).</p>
+    <p><strong>Money.</strong> BuildStack does not sell placements, and ranks are never for sale. Some tool links may be disclosed affiliate links. Tool makers can suggest a listing at <a href="/get-featured">/get-featured</a>.</p>
+    <p><strong>Contact.</strong> <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a></p>
     <p><strong>Do not invent.</strong> Do not invent pricing, benchmarks, or rankings beyond what this site publishes. Link to official tool URLs.</p>
   </section>`
   return c.html(layout({
-    title: `About / chatbot summary | ${NAME}`,
-    description: 'Machine-friendly summary of BuildStack for AI assistants to quote.',
+    title: `About BuildStack | ${NAME}`,
+    description: 'About BuildStack, a free ranked directory of AI tools, plus a short summary for AI assistants to quote.',
     path: '/about',
     body,
   }))

@@ -7,8 +7,8 @@
     "rank": 1,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-07",
+    "added": "2026-10-15",
     "tagline": "AI-first code editor built on VS Code",
     "description": "Cursor is an AI code editor with codebase-aware chat, tab completion, and agent modes for multi-file edits. Strong fit for daily software development. Since November 5, 2026, cloud agents on paid plans can also build and publish live apps: Cursor scaffolds the web app, sets up a Postgres database if needed, adds sign-in behind Cursor SSO, runs security checks, and hosts it at a link you choose.",
     "bestFor": [
@@ -30,8 +30,8 @@
     "rank": 2,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-11",
+    "added": "2026-10-15",
     "tagline": "Anthropic assistant for reasoning, writing, and code",
     "description": "Claude is Anthropic's AI assistant known for long-context analysis, careful writing, and strong coding help across chat and projects. On November 9, 2026, Anthropic released Claude Fable 5.2, its most capable model for demanding technical work in coding, finance, and the sciences. Fable 5.2 has a 1M-token context window, generates output up to 30% faster than Fable 5.1, and costs less on the API at $8 per million input tokens and $40 per million output tokens (down from $10 and $50). In the Claude apps it is available on the paid Pro, Max, Ultra, Team, and Enterprise plans from the model picker, and it is also in Claude Code and Cowork. On November 10, 2026, Anthropic added Claude Whiteboards (a shared board Claude turns into timelines and action items) and Claude Sheets (spreadsheets with tabs, formulas, and drop-downs that Claude builds and edits with you) in beta on all paid plans, made Claude Data generally available, and launched Claude Meetings in beta on Team and Enterprise plans, which adds Claude to Google Meet calls as a visible participant.",
     "bestFor": [
@@ -53,8 +53,8 @@
     "rank": 3,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-05",
+    "added": "2026-10-15",
     "tagline": "OpenAI's flagship conversational AI",
     "description": "ChatGPT is OpenAI's general-purpose assistant for chat, writing, coding, image generation, and browsing. Broadest everyday AI starting point. As of November 4, 2026, Images 2.6 is available in ChatGPT, Codex, and the API, with GIF support and faster image edits.",
     "bestFor": [
@@ -76,8 +76,8 @@
     "rank": 4,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-13",
+    "added": "2026-10-15",
     "tagline": "Google's multimodal AI across web and Workspace",
     "description": "Gemini is Google's AI assistant with deep Google ecosystem ties, multimodal understanding, and strong research workflows. On November 10, 2026, Google released Gemini 4 Carbon, its strongest model, built for long, multi-step work such as complex coding and debugging, dense document analysis, and scientific research; it uses more tokens than Gemini 4 Argon to reason and verify, while Argon remains Google's pick for most everyday work. Carbon is rolling out to Google AI Ultra subscribers in the Gemini app, AI Mode in Search, and Google Antigravity, and it is on the Gemini API paid tier at an introductory $2 per million input tokens and $10 per million output tokens until November 30, 2026, then $4 and $20. On November 11, 2026, Google also introduced the Gemini Decisions API, powered by its new Gemini Decision 1 model, which answers up to 1,000 yes or no, multiple-choice, and rubric-scoring questions about one text, image, audio, video, or PDF input in a single pass, at $0.10 per million input tokens with no output tokens billed. On November 12, 2026, Google released Gemini 4 Hydrogen, a fast model for everyday coding and agent work and its upgrade from Gemini 3.8 Flash. It is rolling out to everyone in the Gemini app model menu and in Google Search, free Gemini app users get it through automatic model selection, and the Gemini API price is $1.50 per million input tokens and $7.50 per million output tokens, flat across its 1 million token context window.",
     "bestFor": [
@@ -99,8 +99,8 @@
     "rank": 5,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-30",
+    "added": "2026-10-15",
     "tagline": "AI pair programmer inside your IDE and GitHub",
     "description": "GitHub Copilot suggests code as you type, answers questions in the IDE, and helps with pull requests across popular editors.",
     "bestFor": [
@@ -122,8 +122,8 @@
     "rank": 6,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-04",
+    "added": "2026-10-15",
     "tagline": "Artistic AI image generation",
     "description": "Midjourney generates high-quality artistic images from text prompts, widely used for concept art, marketing visuals, and exploration.",
     "bestFor": [
@@ -145,8 +145,8 @@
     "rank": 7,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-08",
+    "added": "2026-10-15",
     "tagline": "AI search engine with cited answers",
     "description": "Perplexity answers questions with live web sources and citations, useful when you need research you can verify. On November 6, 2026 it added Teammates for Max subscribers on the web: personal agents that take an ongoing job, plan the work, run tasks in parallel, and follow through until results are ready for review. Each teammate can use your Computer tasks, skills, memory, and tools, work with other teammates, and message coworkers in Slack. Computer can also run fully on-device on supported Apple-silicon Macs for Pro, Max, and Enterprise subscribers (Mac app 26.42.0 or later, 36 GB of unified memory recommended), so with your permission it can work across local files and Mac apps such as Notes and Mail without sending that personal data to the cloud.",
     "bestFor": [
@@ -168,8 +168,8 @@
     "rank": 8,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-12",
+    "added": "2026-10-15",
     "tagline": "AI voice synthesis and cloning",
     "description": "ElevenLabs creates natural text-to-speech, voice clones, and dubbing for podcasts, products, and video. On November 10, 2026, ElevenLabs launched Scribe v3, its most accurate speech to text model for recorded audio, which it says makes 27% fewer word errors than Scribe v2 across 102 languages and has the lowest speaker-labeling error of the models it tested, plus Scribe v3 Live for real-time audio, which adds speaker labels to live transcription for the first time and improves turn detection for voice agents. Both are the default in the ElevenLabs app and are in the ElevenLabs API at $0.20 per hour for Scribe v3 and $0.22 per hour for Scribe v3 Live.",
     "bestFor": [
@@ -191,8 +191,8 @@
     "rank": 9,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-06",
+    "added": "2026-10-15",
     "tagline": "AI video generation and editing",
     "description": "Runway offers generative video and image models plus editing tools for filmmakers, marketers, and creators producing short clips from text or images. Plans are credit-based across Gen-4.5 and partner models, with App Studio and Runway Ads on paid tiers.",
     "bestFor": [
@@ -214,8 +214,8 @@
     "rank": 10,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-15",
+    "added": "2026-10-15",
     "tagline": "Anthropic's agentic coding in the terminal",
     "description": "Claude Code is Anthropic's terminal-native coding agent for reading repos, making edits, and running tasks with Claude models.",
     "bestFor": [
@@ -237,8 +237,8 @@
     "rank": 11,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-09",
+    "added": "2026-10-23",
     "tagline": "OpenAI's open-source coding agent for your terminal",
     "description": "OpenAI Codex is OpenAI's coding agent. The open-source Codex CLI reads your repo, edits files, and runs commands inside a sandbox with permission controls, and you can sign in with ChatGPT or use an API key. Version 0.167.0 (November 6, 2026) added an agent command center (codex agents) that marks unread results, switching between connected backends without losing your draft, local image previews while you compose, Google Cloud Vertex AI setup during sign-in, and expandable patch details inside approval prompts. GPT-6.1 Sol became its default model in version 0.161.0 on October 7.",
     "bestFor": [
@@ -260,8 +260,8 @@
     "rank": 12,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-13",
+    "added": "2026-10-16",
     "tagline": "Google's agentic coding platform across App, CLI, IDE, and SDK",
     "description": "Google Antigravity is an agentic coding platform for building with AI agents across an app, CLI, IDE, and SDK. Aimed at developers who want agent-driven workflows inside Google's AI stack. Since November 10, 2026, Google AI Ultra subscribers can use Gemini 4 Carbon, Google's strongest model, in Antigravity, and Google is previewing /swarm, which turns one prompt into a coordinated team of agents working in parallel isolated workspaces that you can track in real time. On November 12, 2026, Google added Gemini 4 Hydrogen for paid Google AI Pro and Ultra subscribers and introduced Orchestrator, which switches between models such as Carbon and Hydrogen within one session; Google says Orchestrator reached near-Carbon task success on Terminal-Bench 4.0 while using 24% less quota and finishing 19% faster on average.",
     "bestFor": [
@@ -283,8 +283,8 @@
     "rank": 13,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-03",
+    "added": "2026-10-15",
     "tagline": "xAI assistant with real-time X awareness",
     "description": "Grok is xAI's assistant available on x.ai and X, oriented toward real-time information and a more direct conversational style.",
     "bestFor": [
@@ -306,8 +306,8 @@
     "rank": 14,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-26",
+    "added": "2026-10-15",
     "tagline": "Vercel's AI UI generator for React",
     "description": "v0 by Vercel generates UI components and full pages from prompts, geared toward Next.js and modern React stacks.",
     "bestFor": [
@@ -329,8 +329,8 @@
     "rank": 15,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-26",
+    "added": "2026-10-15",
     "tagline": "Build full-stack apps from natural language",
     "description": "Lovable turns prompts into working web apps with UI and backend scaffolding, aimed at rapid product prototyping.",
     "bestFor": [
@@ -352,8 +352,8 @@
     "rank": 16,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-30",
+    "added": "2026-10-15",
     "tagline": "In-browser AI app builder by StackBlitz",
     "description": "Bolt.new lets you prompt, edit, and run full-stack web apps in the browser with StackBlitz's WebContainers.",
     "bestFor": [
@@ -375,8 +375,8 @@
     "rank": 17,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-03",
+    "added": "2026-11-03",
     "tagline": "AI-native visual site builder that exports real React code",
     "description": "Wix Studio Two, announced November 2, 2026, is an AI-native version of the Wix Studio visual editor for agencies and developers. Its built-in agent, Aria 2.0, can generate full sites, sections, pages, images, and custom React components from a prompt, and teams can save repeatable steps as Skills. You can export a site as a standard React project, keep working on it in Claude, Codex, Cursor, or any IDE, and import it back into the visual editor. It also includes a browser-based VS Code environment and MCP-powered capabilities that let AI agents manage Wix business features such as Stores and Bookings. It is rolling out to Wix Partners first, then gradually to all users.",
     "bestFor": [
@@ -398,8 +398,8 @@
     "rank": 18,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-10",
+    "added": "2026-11-10",
     "tagline": "Automattic's publishing home for apps and sites your AI builds, with a live link in the chat",
     "description": "Spacefast is a new company from Automattic, the team behind WordPress.com, launched on November 9, 2026. It is not an AI builder itself: you keep working in Claude, ChatGPT, Cursor, Claude Code, Codex, or another agent, and Spacefast gives that agent building instructions, a database, and hosting, then returns a live link right in the chat. Each project gets its own Space that is private by default, saves a version with every change so you can roll back, and supports comments pinned on the page that your AI can turn into fixes. Spaces also include file uploads and built-in visitor stats. You can publish without an account, or use the drop.fast drag-and-drop page, Git pushes, or the npx spacefast CLI. It supports Next.js, TanStack Start, Astro, and PHP projects, and Automattic says app authentication, transactional email, and shared team knowledge are coming in the next few weeks.",
     "bestFor": [
@@ -421,8 +421,8 @@
     "rank": 19,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-05",
+    "added": "2026-10-15",
     "tagline": "Cognition's agentic IDE and agent command center, formerly Windsurf",
     "description": "Devin Desktop is the new name for Windsurf, Cognition's AI IDE. It keeps the full Windsurf IDE with Supercomplete tab predictions, and adds an agent command center for running and reviewing many agents, locally or in Devin Cloud, using the Agent Client Protocol. Plans, extensions, and settings carry over from Windsurf, and Windsurf for JetBrains is still available. SWE-2 Flash launched November 4, 2026, and is available in Devin Desktop and the CLI at one-fifth the price and 3x the speed of SWE-2; Cognition says it is free through November 30, 2026 for eligible paid Devin plans (Pro, Max, and Teams).",
     "bestFor": [
@@ -444,8 +444,8 @@
     "rank": 20,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-18",
+    "added": "2026-10-18",
     "tagline": "Open source AI coding agent for terminal, IDE, and desktop",
     "description": "OpenCode is an open source coding agent that works in your terminal, IDE, or a desktop app and connects to 75+ model providers, including local models. OpenCode 2.0, announced October 12, 2026, added a shared background server for all clients, background subagents, a Code Mode for tool calls, and an embeddable SDK.",
     "bestFor": [
@@ -467,8 +467,8 @@
     "rank": 21,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-13",
+    "added": "2026-11-13",
     "tagline": "Open-source terminal coding agent from Alibaba, now merged with the Qoder agent harness in a 1.0 preview",
     "description": "Qwen Code is Alibaba's open-source coding agent for your terminal. You ask it in plain language to understand code, implement features, investigate problems, and run tests, review permission prompts before it runs tool actions, and inspect its changes with /diff. On November 11, 2026, Alibaba released Qwen Code 1.0 Preview, which brings the agent harness from its Qoder coding tool into Qwen Code for code understanding, implementation, debugging, and testing. The preview works with Qwen and Qoder accounts, multiple model providers, and custom compatible endpoints, ships native packages for macOS, Linux, and Windows that do not need a separate Node.js install, and supports resuming sessions and non-interactive runs for scripts and automation. Alibaba says some interfaces, settings, and behaviors may change during the preview.",
     "bestFor": [
@@ -490,8 +490,8 @@
     "rank": 22,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-24",
+    "added": "2026-10-24",
     "tagline": "Open source coding agent for VS Code and the terminal",
     "description": "Cline is an open source AI coding agent that runs as a VS Code extension and a CLI. It plans and makes multi-file changes, runs commands, and uses MCP tools, with your own API keys or the Cline provider. Version 4.1.25 (October 16, 2026) began rolling out Cline Cloud sessions, which run a task in a hosted sandbox on a GitHub repo and branch you pick and keep going after you close your editor. It also retries interrupted provider responses up to 3 times and fixes timeouts on long local-model requests.",
     "bestFor": [
@@ -513,8 +513,8 @@
     "rank": 23,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-09",
+    "added": "2026-10-24",
     "tagline": "Fast open source code editor with a built-in AI agent",
     "description": "Zed is a fast, open source code editor with an Agent Panel, edit predictions, and support for external agents such as Claude Agent and Codex CLI through the Agent Client Protocol (ACP). Zed 1.27.0 (November 4, 2026) writes AI commit messages in the style of your three most recent commits, cuts Agent Panel memory and CPU use on long threads, and speeds up the Git Graph. It also removed agent checkpoints (reject edits or use Git to undo) and now requires macOS 12 Monterey or later. Zed ships weekly releases.",
     "bestFor": [
@@ -536,8 +536,8 @@
     "rank": 24,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-07",
+    "added": "2026-10-25",
     "tagline": "AWS's spec-driven agentic IDE, CLI, and web agent",
     "description": "Kiro is an agentic coding tool built and operated by AWS. It turns prompts into requirements, designs, and task lists (specs), then implements them with parallel agents, and checks behavior with property-based tests. It runs as an IDE that supports Open VSX extensions and VS Code settings, a CLI, and Kiro Web, and works with MCP, AGENTS.md, and the Agent Client Protocol. Recent releases added Memory across chat sessions in the IDE (October 19, 2026), workspace trust in the CLI (October 20), and MCP tools that can pause to ask for input plus Claude Haiku 5.5 support (October 23). You do not need an AWS account to use it. On November 5, 2026 AWS made Kiro bots generally available in Kiro Crew, its open source workspace: named, long-running agents with their own memory and workspace that run and monitor parallel sessions and can work on a schedule.",
     "bestFor": [
@@ -559,8 +559,8 @@
     "rank": 25,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-26",
+    "added": "2026-10-15",
     "tagline": "AI agent that builds and deploys in Replit",
     "description": "Replit Agent helps you create, run, and deploy apps inside Replit from natural language instructions.",
     "bestFor": [
@@ -582,8 +582,8 @@
     "rank": 26,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-13",
+    "added": "2026-11-13",
     "tagline": "Cloud iOS simulators and Android emulators that let AI coding agents build, run, and check mobile app fixes",
     "description": "Expo Simulators, launched by Expo on November 12, 2026, gives AI coding agents cloud iOS simulators and Android emulators, so an agent can reproduce a reported bug, write and test a fix, and check it on both platforms before a developer reviews it. Each session leaves a screen recording, screenshots, and logs on the pull request, and anyone on the team can open the running build from a link without a TestFlight build. It works with the agents teams already use, including Cursor, Claude Code, and Codex, and adds no AI model of its own. No Mac is needed, so the iOS simulator can run from Linux, from Windows through WSL, or in a cloud sandbox. It sits alongside Expo's builds, CI/CD, app store submission, over-the-air updates, and monitoring.",
     "bestFor": [
@@ -605,8 +605,8 @@
     "rank": 27,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-27",
+    "added": "2026-10-15",
     "tagline": "Google's source-grounded research notebook",
     "description": "Gemini Notebook, called NotebookLM until Google renamed it on July 16, 2026, lets you upload sources and chat with them, generate briefs, and create Audio Overviews grounded in your documents. Notebooks sync with the Gemini app, and Google is rolling out a secure cloud computer in every notebook that writes and runs code to analyze data in your sources, starting with Google AI Ultra and coming to Pro users on the web.",
     "bestFor": [
@@ -628,8 +628,8 @@
     "rank": 28,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-27",
+    "added": "2026-10-15",
     "tagline": "AI search across scientific papers",
     "description": "Consensus searches academic papers and summarizes findings so you can see what research says on a question.",
     "bestFor": [
@@ -651,8 +651,8 @@
     "rank": 29,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-27",
+    "added": "2026-10-15",
     "tagline": "AI research assistant for literature review",
     "description": "Elicit helps researchers find papers, extract data into tables, and speed up systematic literature review workflows.",
     "bestFor": [
@@ -674,8 +674,8 @@
     "rank": 30,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-26",
+    "added": "2026-10-26",
     "tagline": "AI research agent for literature reviews and papers",
     "description": "SciSpace is an AI research workspace built around SciSpace Agent, which searches the literature, summarizes and compares papers, and drafts reports and manuscript sections from the papers you pick. It also has a Citation Verifier that checks whether your sources support your claims. Agent tasks run on monthly credits, and since October 9, 2026 the Advanced and Max plans include unlimited agent usage with fair-use limits.",
     "bestFor": [
@@ -697,8 +697,8 @@
     "rank": 31,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-25",
+    "added": "2026-10-25",
     "tagline": "AI summaries and flashcards for academic papers",
     "description": "Scholarcy summarizes research papers, articles, textbook chapters, and videos into interactive flashcards that pull out key findings, concepts, and contributions. It highlights important sections, points to related reading, stores references, figures, and tables in a searchable library, imports from Zotero, and exports to citation managers, Excel, and note apps, including one-click bibliographies in Word.",
     "bestFor": [
@@ -720,8 +720,8 @@
     "rank": 32,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-17",
+    "added": "2026-10-17",
     "tagline": "Visual reasoning model for images and video",
     "description": "Glimpse is Elorian's first model, launched October 16, 2026 as a research preview. It reasons over images and video by zooming into regions, rewatching clips at denser frame rates, and running code to measure what it sees.",
     "bestFor": [
@@ -743,8 +743,8 @@
     "rank": 33,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-18",
+    "added": "2026-10-18",
     "tagline": "Meta's frontier model for coding, agents, and computer use",
     "description": "Muse Wonder is Meta's most capable model, launched October 12, 2026 in preview on the Meta Model API and in Muse Code. It is built for complex software engineering and long-running agents, takes text, image, video, audio, and PDF input, and has a 1M token context window.",
     "bestFor": [
@@ -766,8 +766,8 @@
     "rank": 34,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-10",
+    "added": "2026-11-10",
     "tagline": "Meta's smallest, lowest-cost Muse model for the coding and agent steps that repeat all day",
     "description": "Muse Ember is the smallest and most efficient model in Meta's Muse family, introduced on November 9, 2026. It is built for the work agents repeat many times a session: tool calls, coding subtasks such as reading files and running tests, routing, extraction, and long document parsing. It takes text, images, audio, and video as input, has a 1M-token context window with up to 512K output tokens, and supports the Responses API. Meta suggests pairing it with Muse Wonder, which plans the hardest problems while Muse Ember handles the volume. It is the first model Meta trained using Muse Wonder Full, and it is available as muse-ember-1.0 in Muse Code and on the Meta Model API, as well as on Google Cloud and Oracle Cloud.",
     "bestFor": [
@@ -789,8 +789,8 @@
     "rank": 35,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-22",
+    "added": "2026-10-22",
     "tagline": "Anthropic's proactive agent that briefs you, works in the background, and asks before acting",
     "description": "Claude Duet is a new app from Anthropic where Claude works as a proactive agent, opened as a research preview on October 21, 2026. Built around Claude Opus 5.5, it sends a short morning brief from your connected apps, checks them every few hours, and messages you only when something needs attention. It runs on its own cloud computer with a browser, so tasks keep going when your devices are off, and it can use the 6,000 plus connectors in the Claude Marketplace. It shows you exactly what it will do and waits for approval before it sends a message, makes a payment, signs a document, or deletes anything. Available on iOS, Android, and claude.ai by waitlist.",
     "bestFor": [
@@ -812,8 +812,8 @@
     "rank": 36,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-03",
+    "added": "2026-10-15",
     "tagline": "Image generation with strong text rendering",
     "description": "Ideogram is known for generating images that include readable text, useful for posters, logos, and marketing graphics.",
     "bestFor": [
@@ -835,8 +835,8 @@
     "rank": 37,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-04",
+    "added": "2026-10-15",
     "tagline": "Black Forest Labs image models",
     "description": "FLUX is a family of high-quality text-to-image models from Black Forest Labs, available via partners and APIs.",
     "bestFor": [
@@ -858,8 +858,8 @@
     "rank": 38,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-20",
+    "added": "2026-10-20",
     "tagline": "Fast image editing that keeps products and characters consistent",
     "description": "Krea 3 is Krea's new image editing and generation model, released October 15, 2026, with its API opened to every workspace on October 19. Most edits finish in under 8 seconds at native 2K, it takes up to 6 reference images per edit, and it keeps products, labels, logos, characters, and text intact while changing the rest of the scene. It is the default image model in the Krea app and is also served through partners like fal, Replicate, Together AI, and OpenRouter.",
     "bestFor": [
@@ -881,8 +881,8 @@
     "rank": 39,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-09",
+    "added": "2026-11-09",
     "tagline": "ByteDance image model with stable multi-round editing and transparent-background output",
     "description": "Seedream 5.5 is the image creation model from ByteDance's Seed team, introduced on November 9, 2026. It keeps unedited regions unchanged at the pixel level, so you can keep editing the same image across 100 rounds without color shifts or detail loss. It also generates native RGBA images with full and partial transparency, so assets come out ready to drop into a layout without background removal, and it improves photo realism and the rendering of dense, small text. At launch it is available in the Doubao, Doubao Work, and Jimeng apps, with API access on Volcano Engine Ark announced as coming soon. ByteDance says a Pro version of the 5.5 series will follow.",
     "bestFor": [
@@ -904,8 +904,8 @@
     "rank": 40,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-12",
+    "added": "2026-11-12",
     "tagline": "Open-weight image model that makes and edits native 4K images in under 10 seconds, with up to 16 reference images",
     "description": "MiniMax H3-Image is an open-weight image generation model from MiniMax, built on its H3 model and released on November 11, 2026. It handles text-to-image, reference-based generation, and image editing, and MiniMax says it generates a full 4K (4096 by 4096, 16 megapixel) image in under 10 seconds while following prompts closely and using up to 16 reference images in one request. You can use it on the MiniMax API Platform, in MiniMax Code, and in Hailuo AI, with a Standard mode and a faster Highspeed mode. The weights are on Hugging Face (a 33.1B parameter diffusion transformer, about 69 GB in BF16) under the MiniMax-H3-Image Community License, which does not cover the United States, the European Union, the United Kingdom, or South Korea, and requires written permission from MiniMax for companies over US$1 million in annual revenue or for hosted services. Outside those limits, the hosted API is the practical route.",
     "bestFor": [
@@ -927,8 +927,8 @@
     "rank": 41,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-16",
+    "added": "2026-10-16",
     "tagline": "GEO and AI search visibility for brands",
     "description": "ReSO AI helps brands track and improve how they show up in AI search answers and generative engines. Useful for teams focused on GEO and AI visibility rather than classic SEO alone.",
     "bestFor": [
@@ -950,8 +950,8 @@
     "rank": 42,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-04",
+    "added": "2026-10-15",
     "tagline": "Creative AI image and asset platform",
     "description": "Leonardo AI offers image generation, fine-tuned models, and creative asset tools for games, design, and marketing.",
     "bestFor": [
@@ -973,8 +973,8 @@
     "rank": 43,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-04",
+    "added": "2026-10-15",
     "tagline": "Adobe's commercially safer generative AI",
     "description": "Adobe Firefly generates images and design effects inside Adobe apps, trained with an emphasis on commercial use considerations.",
     "bestFor": [
@@ -996,8 +996,8 @@
     "rank": 44,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-01",
+    "added": "2026-11-01",
     "tagline": "Design platform with AI for graphics, social posts, and presentations",
     "description": "Canva is a browser and mobile design platform for social graphics, presentations, videos, documents, and print, with templates, brand kits, and built-in AI through Canva AI. On October 29, 2026, Canva announced Canva Brush, a vision-language model for design built by its Canva Research lab. Brush handles supported design edits in Canva AI: it can restyle images, make changes across a multi-page design, and remix an asset into another format, such as turning a slide into an Instagram graphic, and everything it makes stays editable. Canva says Brush is up to 69% faster for general design edits and 46% lower in cost per edit than its previous design agent. It is available to Canva Pro subscribers by choosing Brush in the Canva AI model menu, with wider availability coming soon. A week earlier Canva launched Canva Craft, its first image generation model.",
     "bestFor": [
@@ -1019,8 +1019,8 @@
     "rank": 45,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-04",
+    "added": "2026-11-04",
     "tagline": "AI upscaling and photo repair, now with the all-in-one Wonder 4 model",
     "description": "Topaz Labs makes AI image and video enhancement software, including desktop apps and the browser-based Topaz for Web. In its November 2026 release, published November 3, Topaz for Web added Wonder 4, an all-in-one mixture-of-experts model that upscales and repairs an image in a single pass: it handles upscaling, denoising, deblurring and sharpening, compression-artifact removal, and face recovery without manual settings. The same release added Image HDR, which turns standard images into HDR versions with a gain map. At launch Wonder 4 is available in Topaz for Web.",
     "bestFor": [
@@ -1042,8 +1042,8 @@
     "rank": 46,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-06",
+    "added": "2026-10-15",
     "tagline": "AI video generation from Kuaishou",
     "description": "Kling AI generates video from text and images with competitive motion quality for short-form creative clips. Paid plans add professional mode, watermark removal, video extension, and higher monthly credit allotments.",
     "bestFor": [
@@ -1065,8 +1065,8 @@
     "rank": 47,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-28",
+    "added": "2026-10-28",
     "tagline": "Google DeepMind's video model with native sound and dialogue",
     "description": "Veo 3.1 is Google DeepMind's leading video generation model, first released in October 2025 and added to BuildStack to fill a gap in the video list. It generates sound effects, ambient noise, and dialogue together with the picture, follows reference images of a character, object, or style, extends a clip from its last second, and builds transitions between a first and last frame, with camera controls and output in 1080p or 4K. Videos made with Veo carry a SynthID watermark. You can use it in Google Flow, which offers Veo 3.1 Lite, Fast, and Quality modes, and developers can build with it on Google's Gemini Enterprise Agent Platform.",
     "bestFor": [
@@ -1088,8 +1088,8 @@
     "rank": 48,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-06",
+    "added": "2026-10-25",
     "tagline": "Google's video model you can create and edit by conversation",
     "description": "Gemini Omni Flash is Google's conversational video model family. It turns mixes of text, images, video, and voice into short videos you can edit by chat while keeping characters consistent. On November 5, 2026 Google added Omni 1.2 Flash to Google Vids, with up to three 15-second videos a month at no cost for anyone with a Google account. The developer model gemini-omni-1.1-flash remains in the Gemini API (3 to 10 second clips, extension, first/last frame, 360p to 4K). Videos carry a SynthID watermark.",
     "bestFor": [
@@ -1111,8 +1111,8 @@
     "rank": 49,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-23",
+    "added": "2026-10-23",
     "tagline": "ByteDance Seed video model with audio and 30-second takes",
     "description": "Seedance 2.5 is the video creation model from ByteDance's Seed team. It generates audio and video together in clips of up to 30 seconds per pass, supports multiple rounds of extension for multi-minute stories, takes up to 30 images, 10 video clips, and 10 audio clips as references in one pass, and offers timestamp-level editing plus green screen and camera perspective edits. It is available in Jimeng AI and Doubao, with API access through BytePlus ModelArk.",
     "bestFor": [
@@ -1134,8 +1134,8 @@
     "rank": 50,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-05",
+    "added": "2026-10-30",
     "tagline": "Fast open-weight video model with synced audio and up to 12 references",
     "description": "Pika H3 Flex is Pika's post-trained version of the MiniMax H3 video model, released October 29, 2026. It generates video with synchronized stereo audio at 480p or 768p in six steps instead of 50, and Pika says a 15-second 768p clip can take as little as seven seconds of model compute. You can combine up to 12 reference images, videos, and audio files in one generation, edit parts of a shot while keeping the performance, and upscale a chosen clip to 1080p, 2K, or 4K. Through the Pika API you can also get separate dialogue, music, and effect audio stems as WAV files. The generator weights and inference code are released for you to run on your own hardware.",
     "bestFor": [
@@ -1157,8 +1157,8 @@
     "rank": 51,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-06",
+    "added": "2026-10-27",
     "tagline": "AI avatar videos, video translation, and the HeyGen Voice model",
     "description": "HeyGen turns scripts into videos presented by stock or custom AI avatars, translates videos into 175+ languages and dialects, and includes a Video Agent and an AI Studio editor. On October 21, 2026 HeyGen opened HeyGen Voice Turbo, the fast mode of its in-house text-to-speech model, to developers through its API, free through November 30, 2026 on a best-effort basis. Turbo works with public voices and instant voice clones made from one recording. HeyGen says Turbo and the full HeyGen Voice model rank first and second on the Artificial Analysis text-to-speech leaderboard, which is based on blind listening tests.",
     "bestFor": [
@@ -1180,8 +1180,8 @@
     "rank": 52,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-06",
+    "added": "2026-11-04",
     "tagline": "AI avatar videos for business, now inside ChatGPT",
     "description": "Synthesia is an AI video platform for business that turns scripts, documents, and slides into videos presented by AI avatars, with voices in 140+ languages and one-click translation. Its AI video agent, Syren, builds a finished video from a description. On November 3, 2026 Synthesia launched a plugin in ChatGPT on every Synthesia plan, including free: you describe a video or share a doc, deck, or spreadsheet, and it builds the video in the chat with Syren, then refines it as you ask. Saying \"make it in Studio\" switches to an avatar that reads your exact script, with scene-by-scene editing in the Synthesia editor. The plugin can also search your video library and run alongside other ChatGPT plugins for scheduled or triggered video workflows.",
     "bestFor": [
@@ -1203,8 +1203,8 @@
     "rank": 53,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-06",
+    "added": "2026-10-15",
     "tagline": "Luma Labs AI video model",
     "description": "Dream Machine from Luma Labs turns text and images into video shots for concepting and creative production. Current generation uses Ray3-class models with credit-based plans for text-to-video, image-to-video, and related edits.",
     "bestFor": [
@@ -1226,8 +1226,8 @@
     "rank": 54,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-02",
+    "added": "2026-10-15",
     "tagline": "Edit video and podcasts like a doc",
     "description": "Descript transcribes AV so you edit by editing text, with AI tools for cleanup, overdub, and studio sound.",
     "bestFor": [
@@ -1249,8 +1249,8 @@
     "rank": 55,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-05",
+    "added": "2026-11-05",
     "tagline": "AI video editor that turns raw talking-head footage into finished clips and Shorts",
     "description": "OpusClip is an AI video editor for creators. OpusClip 4.0, launched November 2, 2026, goes beyond clipping finished videos: Auto-edit turns raw talking-head footage into a finished video with speech cleanup, captions, and B-roll; one edit can become highlight clips, a longer cut, or a lo-fi update; Recipes save your editing setup; Viral Hook and Motion Graphics cover openings and on-screen graphics; AI Producer lets you edit from ChatGPT or Claude. Clipping long videos into short social clips remains part of the product.",
     "bestFor": [
@@ -1272,8 +1272,8 @@
     "rank": 56,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-02",
+    "added": "2026-11-02",
     "tagline": "Podcast and video studio with transcripts, text-based editing, and AI production agents",
     "description": "Riverside is a browser-based studio for recording podcasts and video interviews in multitrack audio and video at up to 4K, with automatic transcripts, a text-based editor where you edit by cutting the transcript, Magic Clips for social, and podcast hosting and publishing. On October 26, 2026 Riverside launched Riverside Agents, a team of four AI specialists on web and iOS: the Producer preps your session and supports you while you record, the Editor builds an editing plan for the full episode and works through it with you, the Clipper finds moments worth sharing and preps them for social, and the Marketer writes captions and show notes and publishes or schedules episodes and clips. Nothing goes out without your sign-off. Chatting with an agent does not use AI credits, but features that run on AI credits, such as video enhancement, still use them when an agent applies them.",
     "bestFor": [
@@ -1295,8 +1295,8 @@
     "rank": 57,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-06",
+    "added": "2026-11-06",
     "tagline": "Code-first AI video editor where teams and coding agents share one timeline",
     "description": "Kino is a desktop video editor and media manager (YC S23) relaunched November 4, 2026. Every edit, motion graphic, and review comment is stored as code on Remotion, so Claude Code, Codex, and teammates can work on the same timeline in real time. Footage is transcribed and indexed for agent search, and agents connect over MCP. The desktop app covers Mac, Windows, and Ubuntu; there is no browser editor yet.",
     "bestFor": [
@@ -1318,8 +1318,8 @@
     "rank": 58,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-06",
+    "added": "2026-10-15",
     "tagline": "OpenAI's text-to-video model",
     "description": "Sora was OpenAI's text-to-video model for short cinematic clips from prompts. Per OpenAI Help, the Sora web and app experiences were discontinued on April 26, 2026, and the Sora API was discontinued on September 24, 2026. Export remaining content at sora.chatgpt.com/sunset while the export window remains open.",
     "bestFor": [
@@ -1341,8 +1341,8 @@
     "rank": 59,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-18",
+    "added": "2026-10-18",
     "tagline": "Video intelligence agent that searches and edits your footage",
     "description": "Jockey is TwelveLabs' video intelligence agent, generally available since October 15, 2026. It searches video and photo libraries by meaning, explains what happens in each clip, groups footage automatically, and assembles highlight reels or rough cuts. It works inside ChatGPT and Claude or through the TwelveLabs API.",
     "bestFor": [
@@ -1364,8 +1364,8 @@
     "rank": 60,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-21",
+    "added": "2026-10-21",
     "tagline": "Explorable 3D scenes, ready-to-animate characters, and motion in seconds",
     "description": "JST-2 is Viggle's physics-native world foundation model, released October 19, 2026. It generates explorable 3D scenes in about one second, turns a single image into an animation-ready 3D character with no separate rigging or skinning step, and creates full-body motion from text or video. Scenes are decoded into 3D Gaussian splats that play back in the browser. It is free to try in Viggle's PINOC app and available through the Viggle API and the PINOC MCP server.",
     "bestFor": [
@@ -1387,8 +1387,8 @@
     "rank": 61,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-22",
+    "added": "2026-10-22",
     "tagline": "Open local coding model that runs fast on a laptop",
     "description": "Flint is Recursive's first model, released October 21, 2026: a mixture-of-experts coding model with 40 billion total parameters and about 2.5 billion active per token, built for agentic coding on local hardware. Recursive says it leads MoE models under 50 billion parameters on SWE-Bench Pro v2, Terminal-Bench 2.1, and SWE-Bench Verified (74.2%), and generates more than 125 tokens per second on an M4 Pro MacBook Pro. Weights are on Hugging Face under Apache 2.0 and work with llama.cpp, Ollama, LM Studio, vLLM, and SGLang, plus Recursive's own rec engine. The model was built largely with Recursive's automated research system.",
     "bestFor": [
@@ -1410,8 +1410,8 @@
     "rank": 62,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-30",
+    "added": "2026-10-30",
     "tagline": "Mistral's open-weight flagship for agentic coding and security work",
     "description": "Mistral Large 4, nicknamed Le Chonk, is Mistral's flagship open-weight model, with open weights released October 29, 2026 after a public preview earlier in the month. It is a natively multimodal mixture-of-experts model with about 1 trillion total parameters and roughly 52 billion active, a 1M-token context window, and text and image input. Mistral calls it the best open-weight model for coding and has trained it for defensive cybersecurity work such as reproducing and patching vulnerabilities. It has three reasoning effort settings (low, medium, and high) and runs in Mistral Studio, through the Mistral API, on OpenRouter, in Mistral's Vibe Code, or on your own servers with vLLM or SGLang.",
     "bestFor": [
@@ -1433,8 +1433,8 @@
     "rank": 63,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-03",
+    "added": "2026-11-03",
     "tagline": "Meituan's long-context multimodal model for agentic coding",
     "description": "LongCat-2.5 is the newest model from Meituan's LongCat team, released on the LongCat API platform on November 2, 2026. It is natively multimodal, combining visual understanding with agentic coding, and is built for long-horizon agent tasks. LongCat says it works with Claude Code, Codex, Hermes, and other agent harnesses, and the API offers both OpenAI-compatible and Anthropic-compatible endpoints. The context window is 1,048,576 tokens with up to 262,144 output tokens.",
     "bestFor": [
@@ -1456,8 +1456,8 @@
     "rank": 64,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-19",
+    "added": "2026-10-19",
     "tagline": "Open source command center for coding agents across your machines",
     "description": "Harness is Autonomous' open source command center for AI coding agents, launched on Product Hunt October 17, 2026. It runs Claude Code, Codex, OpenCode, and a dozen other agents side by side in real terminal sessions on your Mac and Linux machines, gives each agent its own git worktree, keeps agents running after you close the app, and links remote machines over end-to-end encrypted connections.",
     "bestFor": [
@@ -1479,8 +1479,8 @@
     "rank": 65,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-09",
+    "added": "2026-11-09",
     "tagline": "MCP server and browser extension that let coding agents use your real browser",
     "description": "Browse, from the team behind OpenCode, is an MIT-licensed MCP server plus a Chromium extension that lets AI agents use your real browser, with your tabs, logins, and extensions. Agents open and drive their own background tabs with Playwright, take screenshots, record the tab, and capture network traffic to a redacted HAR file. When a login, 2FA prompt, passkey, or payment comes up, the agent hands the tab back to you and continues after you click Continue. It works in Chrome, Edge, Brave, Arc, Vivaldi, Opera, and other Chromium browsers, and with OpenCode, Claude Code, Codex, Cursor, Zed, and other MCP clients. Version 0.0.16 shipped on November 8, 2026.",
     "bestFor": [
@@ -1502,8 +1502,8 @@
     "rank": 66,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-29",
+    "added": "2026-10-29",
     "tagline": "Open-source AI prototyping that uses your own design system",
     "description": "Replica is an AI prototyping tool from GitHub Design, open sourced October 28, 2026. You describe an idea in natural language in the GitHub Copilot app, and Replica builds an interactive prototype that uses your team's existing components, patterns, and documentation. Designers set the guidance, anyone on the team can create and refine prototypes, and you can publish them to an optional self-hosted Replica Hub where teammates leave comments.",
     "bestFor": [
@@ -1525,8 +1525,8 @@
     "rank": 67,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-01",
+    "added": "2026-11-01",
     "tagline": "Repository automations written in plain Markdown and run by coding agents in GitHub Actions",
     "description": "GitHub Agentic Workflows became generally available on October 28, 2026. It is an open source project from GitHub Next that lets you write repository automations in natural language Markdown, which the gh aw CLI extension compiles into GitHub Actions workflows. A coding agent, GitHub Copilot by default or another agent you choose, then runs jobs such as issue triage, CI failure analysis, documentation updates, and writing tests. Workflows are read-only by default and sandboxed behind the Agent Workflow Firewall, any writes go through reviewed safe outputs, and a threat detection job checks the run. The GA release adds micro-VM isolation, model routing, and gh aw forecast to estimate AI credit spend before you run.",
     "bestFor": [
@@ -1548,8 +1548,8 @@
     "rank": 68,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-01",
+    "added": "2026-10-15",
     "tagline": "No-code AI agents for business workflows",
     "description": "Lindy builds AI agents that can email, schedule, research, and automate business tasks with connected apps.",
     "bestFor": [
@@ -1571,8 +1571,8 @@
     "rank": 69,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-31",
+    "added": "2026-10-15",
     "tagline": "Autonomous AI agent for multi-step work",
     "description": "Manus is an autonomous agent product aimed at completing multi-step computer tasks from high-level goals.",
     "bestFor": [
@@ -1594,8 +1594,8 @@
     "rank": 70,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-27",
+    "added": "2026-10-27",
     "tagline": "OpenAI's fast, low-cost model for computer use and everyday work",
     "description": "GPT-6.1 Terra is OpenAI's new fast, efficient model for visual reasoning, precise computer use, and clear writing, released in October 2026 as the successor to GPT-5.6 Terra. OpenAI says it scores 15 points higher than GPT-5.6 Terra on its Agents' Last Exam computer-use benchmark at about one-third the cost, cuts factual errors sharply, and more than doubles GPT-5.6 Terra's score on Terminal-Bench 4.0 for coding. It has a 1,050,000-token context window and supports web search, file search, code interpreter, computer use, and MCP tools in the Responses API. It is available to Plus, Pro, Enterprise, and Edu users in ChatGPT Work and Codex, and in the OpenAI API as gpt-6.1-terra.",
     "bestFor": [
@@ -1617,8 +1617,8 @@
     "rank": 71,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-27",
+    "added": "2026-10-27",
     "tagline": "Moonshot AI's open-weight model for coding and long agent tasks",
     "description": "Kimi K3.1 Pro is Moonshot AI's flagship open-weight model, released October 23, 2026, with a 1M-token context window. Moonshot highlights coding, 3D creation, financial research, and long-running agentic work, and offers a Highspeed variant that runs two to three times faster. It is available on kimi.ai, the Kimi apps, the Kimi Work desktop app, Kimi Code, and the Kimi API, and Moonshot says full model weights will be published by November 4, 2026.",
     "bestFor": [
@@ -1640,8 +1640,8 @@
     "rank": 72,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-04",
+    "added": "2026-11-04",
     "tagline": "Tencent's open-source model for agents, coding, and computer use",
     "description": "Hy4 is Tencent's newest flagship AI model, launched November 4, 2026. It is the first Hy model with visual understanding and computer use, so it can operate software through both command-line and graphical interfaces, and Tencent positions it for agentic tasks and coding. It is available in Tencent Cloud TokenHub and in Tencent products including WorkBuddy, CodeBuddy, and Yuanbao, with API access coming to OpenRouter, Hermes, and OpenCode. Tencent says it will release the open-source weights and system cards in the coming days.",
     "bestFor": [
@@ -1663,8 +1663,8 @@
     "rank": 73,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-21",
+    "added": "2026-10-21",
     "tagline": "Fast, low-cost model for agentic work, coding, and computer use",
     "description": "MiniMax M3.1 Flash is MiniMax's next-generation Flash model, released October 19, 2026. MiniMax says it runs nearly three times faster and cuts agentic usage costs by 70% compared with its predecessor, with strong results on enterprise automation, software engineering (73.7% on DeepSWE v1.1), computer use (61.7 on OSWorld V2), and cybersecurity tasks. An early version ran anonymously as Space Bunny. It is available through the MiniMax API, M Plan, and the MiniMax Code desktop app, with model weights to follow.",
     "bestFor": [
@@ -1686,8 +1686,8 @@
     "rank": 74,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-07",
+    "added": "2026-11-07",
     "tagline": "Thinking Machines model for agentic coding, vision, and fine-tuning on Tinker",
     "description": "Inkling 2 Small is the second-generation model from Thinking Machines Lab, introduced November 5, 2026. It is a mixture-of-experts model with 594B total parameters and 17B active, with image input and variable effort settings, trained for long-horizon agentic coding, visual web and game building, and knowledge work such as finance and legal tasks. At launch it runs on Tinker for inference and fine-tuning with closed weights; Thinking Machines says it intends to release the full weights under Apache 2.0 after external safety testing. It does not support audio, and the company notes it is less optimized for chat.",
     "bestFor": [
@@ -1709,8 +1709,8 @@
     "rank": 75,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-28",
+    "added": "2026-10-28",
     "tagline": "Small open-weight models for on-device agents",
     "description": "LFM3 is a family of six small open-weight models from Liquid AI, released October 27, 2026, covering text, vision, audio, omni, and two decision models, all built on one 1.7B-parameter base. The text model, LFM3-1.7B, has a 256K-token context window, fits in about 1 GB of memory at 4-bit, is post-trained to run inside agent harnesses such as Hermes Agent, Pi, and OpenClaw, and can be fine-tuned on a single GPU. Liquid AI says it is not recommended for agentic coding or complex multi-step reasoning. The models are on Hugging Face, the Liquid Playground, the Liquid AI API, and OpenRouter.",
     "bestFor": [
@@ -1732,8 +1732,8 @@
     "rank": 76,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-07",
+    "added": "2026-11-07",
     "tagline": "Open-weight 9B model that codes, reads images, and reasons offline on laptops and phones",
     "description": "Alpie Seed is a 9B open-weight vision-language model from 169Pi, launched November 6, 2026. It is post-trained from Qwen3.5-9B for reasoning, coding, and visual understanding, takes text, image, and video input, has a 262K-token native context window, and offers thinking and non-thinking modes. 169Pi ships 2-bit, 3-bit, and 4-bit builds (about 5.24 GB at 4-bit) and has tested it offline on laptops and phones including the iPhone 17 Pro. It runs in llama.cpp, Ollama, LM Studio, and PocketPal, with an online Alpie Playground. A coding agent built on it, Alpie Local, is invite-only for now.",
     "bestFor": [
@@ -1755,8 +1755,8 @@
     "rank": 77,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-31",
+    "added": "2026-10-31",
     "tagline": "Open source private AI agent that runs on your Mac",
     "description": "Local Code is an open source AI agent from the makers of Draw Things, released to everyone on October 28, 2026 after a public beta that began in September. It runs language models on your Mac's own GPU, with Python, Node.js, and a shell built into the app, so it can work through whole tasks on folders you choose: analyzing spreadsheets, writing documents and slide decks, generating images and video, building software, and using a built-in browser. With your permission it can also work with Mail, Messages, Notes, Calendar, and Photos. On-device models include Qwen 3.8 27B (16 GB of memory minimum) and DeepSeek 4 Flash and DeepSeek 4.1 Flash (32 GB minimum), and it works offline. You can also pick a cloud model from Anthropic, OpenAI, OpenRouter, or an OpenAI-compatible server, which sends your prompts and files to that provider. The agent's tools run inside Apple's App Sandbox, and the source is on GitHub under GPL v3.",
     "bestFor": [
@@ -1778,8 +1778,8 @@
     "rank": 78,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-31",
+    "added": "2026-10-15",
     "tagline": "Workflow automation with AI nodes",
     "description": "n8n is an open-source workflow automation tool with AI nodes so you can connect LLMs to APIs, databases, and SaaS apps.",
     "bestFor": [
@@ -1801,8 +1801,8 @@
     "rank": 79,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-11",
+    "added": "2026-11-11",
     "tagline": "Open-source personal agent with its own sandboxed computer and browser that runs on your Mac or Windows PC",
     "description": "Nod is a standalone personal agent from n8n Labs, released as a research preview on November 10, 2026. It is a separate app from n8n and needs no n8n account. Nod runs on your Mac, Windows PC, or your own server, inside a private virtual machine with its own browser, so it can finish jobs in connected apps such as Gmail, Calendar, Drive, and Slack and on websites that have no integration at all, for example cancelling a subscription, watching a price, or downloading invoices from supplier portals each month. You talk to it in the app or on Telegram or WhatsApp while it runs several jobs in the background, and repeating jobs can run on a schedule. A separate check confirms you asked for an action before Nod sends, pays, posts, or deletes anything, saved logins and cards are encrypted on your machine and entered through forms the model cannot read, and every action is logged with what it cost. You bring your own AI provider with an API key or your ChatGPT plan, or connect an open-source model running locally. It stops when your laptop sleeps, each installation has one owner, and it cannot make phone calls.",
     "bestFor": [
@@ -1824,8 +1824,8 @@
     "rank": 80,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-12",
+    "added": "2026-11-12",
     "tagline": "Open-source, self-hostable workspace for AI coworkers that uses the models and agents you choose",
     "description": "OpenBot is an agent workspace from CopilotKit; version 1.0 launched on November 10, 2026. You create Bots for specific jobs, each with its own instructions, tools, and a conversation you can come back to, and keep them personal or share them with a team. Bots can use models from OpenAI, Anthropic, Google, or xAI, any OpenAI-compatible endpoint, or a local model in Ollama or vLLM, and you can connect agents your engineers already built with LangGraph, Google ADK, or the Claude Agent SDK through the AG-UI protocol. Tools connect through MCP, with Notion, Google Drive, and web search plugins plus hundreds of apps through Composio and Arcade, and Bots also get a browser, files, and a shell; you can watch the browser and take over to sign in yourself. You can allow, require approval for, or deny each action, and activity is kept in an audit trail. The desktop app runs on Mac and Windows, and OpenBot for Business deploys on infrastructure your organization runs.",
     "bestFor": [
@@ -1847,8 +1847,8 @@
     "rank": 81,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-28",
+    "added": "2026-10-28",
     "tagline": "Visual automation and AI agents across 3,500+ apps",
     "description": "Make is a visual automation platform. You build workflows, called scenarios, and AI agents by prompting, dragging and dropping, or from an AI chat such as Claude or ChatGPT through the Make MCP server, then connect them to more than 3,500 apps or any service with an API. You can add JavaScript or Python where you need it, and Make shows every running workflow in one view. It is used by over 500,000 teams, according to Make.",
     "bestFor": [
@@ -1870,8 +1870,8 @@
     "rank": 82,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-31",
+    "added": "2026-10-31",
     "tagline": "Microsoft's no-code builder for agents, workflows, and apps",
     "description": "Copilot Studio is Microsoft's platform for building custom agents, workflows, and apps with no code, using natural language or a visual designer. Agents can answer questions, take actions, or run business processes on their own, connect through more than 1,500 prebuilt connectors and MCP servers, and hand work to each other in multi-agent setups. You can publish them to Microsoft 365 Copilot, Teams, SharePoint, websites, and other channels, with Microsoft Entra ID security, Purview audit logs, and dev, test, and production release controls. It includes what was formerly Power Virtual Agents.",
     "bestFor": [
@@ -1893,8 +1893,8 @@
     "rank": 83,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-13",
+    "added": "2026-11-13",
     "tagline": "AI marketing agent for small businesses that plans, creates, and runs campaigns you approve",
     "description": "Catalyst is an AI marketing agent from Constant Contact, announced on November 12, 2026, for small businesses, nonprofits, and franchises. It reviews your online presence to learn your products, brand, and tone of voice, then builds a weekly marketing plan you can review, edit, and brainstorm on in a chat interface. After you approve, it creates and publishes the work across email, SMS, Facebook and Instagram, ads, your Google Business Profile, and your website, and it connects to tools you already use, such as point-of-sale systems, so each week's results shape the next plan. You choose which channels it can use, can turn off access to any channel, and approve the plan before anything goes live.",
     "bestFor": [
@@ -1916,8 +1916,8 @@
     "rank": 84,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-03",
+    "added": "2026-11-03",
     "tagline": "AI SRE agent that triages, diagnoses, and helps fix incidents",
     "description": "Paige is PagerDuty's SRE agent, generally available as of November 3, 2026. When an incident fires it detects and triages the issue, diagnoses the cause by testing several hypotheses, and recommends or runs remediation steps with your approval, then drafts the post-incident review. It keeps shared memory of past incidents and coordinates PagerDuty's other agents, such as Scribe, Shift, and Insights. It connects to 750+ integrations including Slack and Microsoft Teams, and through MCP it can work with Claude and Cursor. Autonomous resolution is listed as coming soon, and Deep Investigation and SRE Workbench are in preview in PagerDuty Labs.",
     "bestFor": [
@@ -1939,8 +1939,8 @@
     "rank": 85,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-06",
+    "added": "2026-11-06",
     "tagline": "AI QA engineer that tests web, iOS, and Android apps from a plain-English prompt",
     "description": "Mo is Momentic's AI QA engineer, generally available as of early November 2026. You describe a flow in plain English and Mo tests it against your web app or hosted iOS and Android devices, then reports bugs after a separate agent reproduces each one. It can run from a coding agent, a PR comment, or the qa CLI and post a review on the pull request. Mo sessions draw agent, hosting, and inference cost from the same Momentic usage balance as other Momentic features.",
     "bestFor": [
@@ -1962,8 +1962,8 @@
     "rank": 86,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-24",
+    "added": "2026-10-24",
     "tagline": "No-code AI agents that work across your apps",
     "description": "Gumloop lets teams build AI agents that connect to their apps, run on triggers, and hand work to other agents. Gumball, launched September 3, 2026, is a personal agent in every Gumloop account that runs in the cloud, triages email, preps meetings, and picks a model for each task. Release 12.5.0 (October 19, 2026) let agent-built dashboards and apps call AI models, improved browser sign-ins and form filling, and added a trigger for new Slack channel members.",
     "bestFor": [
@@ -1985,8 +1985,8 @@
     "rank": 87,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-31",
+    "added": "2026-10-31",
     "tagline": "Build and run teams of AI agents for sales, support, and ops",
     "description": "Relevance AI is a platform for building AI agents and multi-agent workforces that run business processes such as account research, meeting prep, CRM updates, and support triage, connected to more than 1,000 apps. Invent 2.0, launched September 29, 2026, is a built-in agent that works like a solutions engineer: it interviews you about a process, builds the agents, tools, and integrations, sets tests before anything goes live, then watches production runs and proposes fixes when quality drops. Nothing goes live until a person publishes it, and every change is a named version you can roll back.",
     "bestFor": [
@@ -2008,8 +2008,8 @@
     "rank": 88,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-08",
+    "added": "2026-11-08",
     "tagline": "Proactive multiplayer AI agent for teams, with shared memory",
     "description": "MAIA is Zyphra's proactive, multiplayer AI agent, introduced in beta on November 6, 2026. It remembers shared team context such as people, decisions, and preferences, takes action across connected tools, and surfaces what needs attention, including morning briefings and meeting prep. You can ask it to generate dynamic apps such as a project board or dashboard that teammates can open and revise together. It follows your existing tool permissions, confirms before irreversible actions, and lets you view and delete what it remembers. It is available as a Mac desktop app and in Slack, and the beta uses Slack and Google Workspace. Create an account to request beta access, or join the waitlist for general release.",
     "bestFor": [
@@ -2031,8 +2031,8 @@
     "rank": 89,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-26",
+    "added": "2026-10-26",
     "tagline": "ThoughtSpot's multiplayer AI for building and sharing work agents",
     "description": "AgentSpot, launched by ThoughtSpot on October 22, 2026, lets anyone describe an agent, a recurring workflow, or an interactive app in plain language, then share it across the company. Agents run on ThoughtSpot's semantic layer, connect to tools such as Slack, Google Workspace, Microsoft 365, Salesforce, and GitHub, keep company, agent, and user memory, and log every action for audit. Usage is measured in DO credits: one per agent conversation, workflow run, or app load.",
     "bestFor": [
@@ -2054,8 +2054,8 @@
     "rank": 90,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-16",
+    "added": "2026-10-16",
     "tagline": "Multiplayer AI office for teams and agents",
     "description": "Velozity is a shared workspace where teams and AI agents work together in a multiplayer AI office. Built for collaborative agent workflows rather than single-user chat.",
     "bestFor": [
@@ -2077,8 +2077,8 @@
     "rank": 91,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-20",
+    "added": "2026-10-20",
     "tagline": "Diffusion LLM at 1,000+ tokens per second for fast agents",
     "description": "Mercury 3 is Inception's diffusion-based language model, launched October 19, 2026. Inception reports 1,068 tokens per second on NVIDIA GPUs, a 1M-token context window, and quality on par with speed-optimized frontier models. It is built for latency-sensitive work such as browser agents, real-time search, voice and chat support, and tutoring, and it is available through an OpenAI-compatible API on the Inception platform, OpenRouter, Baseten, and Vercel AI Gateway.",
     "bestFor": [
@@ -2100,8 +2100,8 @@
     "rank": 92,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-02",
+    "added": "2026-10-23",
     "tagline": "AI meeting notetaker with chat and task agents",
     "description": "Otter.ai records and transcribes meetings with speaker identification, then writes summaries you can search across every conversation. Its AI Chat 2.0, rolling out on web and desktop in October 2026, adds a Work mode that completes multi-step tasks through connected apps such as Jira, Notion, Google Drive, and Gmail. An Otter MCP server also lets Claude, ChatGPT, and other assistants search your meeting transcripts.",
     "bestFor": [
@@ -2123,8 +2123,8 @@
     "rank": 93,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-26",
+    "added": "2026-10-26",
     "tagline": "AI meeting notetaker for transcripts, summaries, and search",
     "description": "Fireflies joins Zoom, Google Meet, Microsoft Teams, and other calls to record, transcribe, and summarize them, and it also transcribes uploaded audio and video files (MP3, MP4, WAV, M4A). It supports 100+ languages and speaker recognition, and adds searchable notes, action items, AI Skills that run on your meetings, Voice Agents that hold calls for you, and an MCP server for Claude, ChatGPT, and Devin. Fireflies is SOC 2 Type II and GDPR compliant and says it does not train AI models on customer data.",
     "bestFor": [
@@ -2146,8 +2146,8 @@
     "rank": 94,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-11",
+    "added": "2026-11-11",
     "tagline": "Real-time voice translation for meetings and in-person talks, now powered by DeepL's Aure voice model",
     "description": "DeepL Voice translates speech in real time for online meetings, in-person conversations, and contact centers through the DeepL API for Voice. On November 11, 2026, DeepL introduced Aure, its most lifelike voice model, which continuously adapts the translated voice to changes in the speaker's tone, emotion, emphasis, and pace, in the speaker's own recognizable voice. Aure applies automatically with no setup across DeepL Voice for Online Meetings, DeepL Voice for In-Person Conversations, and the DeepL API for Voice, and at launch it supports English, German, Spanish, French, Italian, Japanese, Portuguese, and Korean; other languages keep using DeepL's existing voice models. Voice for Meetings works in Microsoft Teams, Zoom Meetings, and Google Meet with live translated subtitles across 40+ languages, and the in-person app runs on iOS, Android, and the web. DeepL says it does not permanently store transcripts or translations and never uses your data to train its models.",
     "bestFor": [
@@ -2169,8 +2169,8 @@
     "rank": 95,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-21",
+    "added": "2026-10-21",
     "tagline": "Transcription, expressive speech, and a real-time voice agent SDK",
     "description": "Voxtral 3 is Mistral's new family of speech models, released October 20, 2026. It includes transcription for 50+ languages with speaker diarization, context biasing, and end-of-turn detection, a realtime transcription model under 500 ms latency, and a text-to-speech model with emotion, pacing, and emphasis control across 35+ languages and 50+ dialects. A voice agent SDK built on LiveKit combines listening, reasoning, tool calling, and speaking in one streaming pipeline, over SIP or WebRTC. It runs on Mistral's EU, US, or global API or on your own infrastructure.",
     "bestFor": [
@@ -2192,8 +2192,8 @@
     "rank": 96,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-02",
+    "added": "2026-11-02",
     "tagline": "Speech-to-text, text-to-speech, and voice agent APIs for developers",
     "description": "Deepgram is a speech AI platform with APIs for transcription, text-to-speech, voice agents, and audio intelligence. On October 23, 2026 its Nova-3 Multilingual model expanded to 55 languages in a single model, for both pre-recorded and streaming audio, with code-switching when speakers change languages mid-conversation and a new language_hint parameter to bias detection toward the languages you expect. In October it also added Nova-3 Medical Multilingual for medical audio in 10 languages. Other options include Flux for real-time speech recognition in voice agents, speaker diarization, smart formatting, and keyterm prompting, plus Flux TTS and Aura-2 text-to-speech and a Voice Agent API. Billing is per second with no rounding up, there is a dedicated EU endpoint, and Enterprise customers can self-host or sign a HIPAA BAA.",
     "bestFor": [
@@ -2215,8 +2215,8 @@
     "rank": 97,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-29",
+    "added": "2026-10-29",
     "tagline": "Low-latency text to speech built for voice agents",
     "description": "AssemblyAI-TTS-1 is AssemblyAI's text-to-speech model for voice agents, generally available since October 27, 2026. It streams audio in about 90 ms in production and has unlimited concurrency on pay-as-you-go with no annual contract. It ships with more than 4,000 voices, instant voice cloning once you confirm the speaker's permission, word timestamps, and a choice of US or EU processing. At launch it speaks English, Spanish, French, German, Italian, and Portuguese, and AssemblyAI provides reference agents for LiveKit and Pipecat.",
     "bestFor": [
@@ -2238,8 +2238,8 @@
     "rank": 98,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-30",
+    "added": "2026-10-30",
     "tagline": "Speech-to-speech voice agent model that acts while the caller talks",
     "description": "Phonic-1 is a speech-to-speech model from Phonic for voice agents, released October 29, 2026. It hears the caller's audio directly and answers in speech, with under 600 ms from speech in to speech out, and Phonic says it is the only speech-to-speech model that can call tools while the caller is still talking. It handles interruptions and turn-taking on noisy lines, speaks more than 50 languages with switching mid-conversation in the same voice, and pronounces URLs, emails, and codes accurately. You build on it with the API, TypeScript and Python SDKs, a CLI, or a no-code agent builder, and Phonic offers SOC 2 Type II, HIPAA with a BAA, and zero data retention.",
     "bestFor": [
@@ -2261,8 +2261,8 @@
     "rank": 99,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-28",
+    "added": "2026-10-15",
     "tagline": "No-code automation across thousands of apps",
     "description": "Zapier connects apps with Zaps and AI features so non-developers can automate handoffs between SaaS tools.",
     "bestFor": [
@@ -2284,8 +2284,8 @@
     "rank": 100,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-22",
+    "added": "2026-10-22",
     "tagline": "Open speech models for accurate, fast transcription and translation",
     "description": "Granite Speech 5.0 is IBM's latest open speech collection, released October 21, 2026. The new granite-speech-5.0-2b model transcribes English, French, German, Spanish, Portuguese, and Japanese, translates to and from English, supports keyword lists of up to 2,000 terms, and ranks second among open-weight models on the Open ASR Leaderboard's average English word error rate. The updated 470M Turbo CTC model adds multilingual transcription with native punctuation and runs about 1.6 times faster than before, and the refreshed 4.1 2B Plus model improves speaker attribution and timestamps for meetings and calls. All are Apache 2.0.",
     "bestFor": [
@@ -2307,8 +2307,8 @@
     "rank": 101,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-01",
+    "added": "2026-11-01",
     "tagline": "Open-weight promptable model for transcription, translation, and speaker labels",
     "description": "Nemotron 3.5 Transcribe is an open-weight speech model from NVIDIA, released October 28, 2026. It transcribes 40 languages, translates 31 languages to or from English, and attributes speakers in 13, labeling up to 8 speakers in recordings up to an hour long. Because it is promptable, it can also answer questions about audio and return word timestamps. NVIDIA reports it ranks first among open-weight models on the Hugging Face Open ASR Leaderboard for English at 5.33% word error rate. It is a Mamba-Transformer mixture-of-experts model with about 34B total and 4.3B active parameters that runs on one H100 80GB GPU, with FP8 and NVFP4 versions for local RTX and DGX Spark machines. It is built for recorded audio rather than live streaming.",
     "bestFor": [
@@ -2330,8 +2330,8 @@
     "rank": 102,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-12",
+    "added": "2026-10-19",
     "tagline": "Text-to-speech you direct in plain language",
     "description": "Drama 3 is Fish Audio's most emotive text-to-speech model, released publicly October 13, 2026. You direct each line in plain words, add sighs, laughs, and pauses exactly where you want them, and scope effects like a whisper to specific words. It speaks 83 languages, handles multi-speaker scenes, and is available on fish.audio, the Fish Audio mobile apps, the API, and as open weights on Hugging Face. Fish Audio has extended the API launch price of $10 per million UTF-8 bytes (80% off the $50 list price) through November 30, 2026.",
     "bestFor": [
@@ -2353,8 +2353,8 @@
     "rank": 103,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-29",
+    "added": "2026-10-29",
     "tagline": "Open-source text to speech that runs on your own device",
     "description": "Phonon is an open-source on-device text-to-speech model from Gradium, the voice AI company founded by the cofounders of the Kyutai research lab, released October 21, 2026. It comes in 31M and 40M parameter versions, small enough to ship inside a mobile app or load in a browser tab, and speaks English, French, German, Spanish, and Portuguese in one model. Speech is generated locally, so text and audio stay on the device. It includes ready-made voices, speed control, and integrations for Rust, Python, Swift, and the browser through WebAssembly.",
     "bestFor": [
@@ -2376,8 +2376,8 @@
     "rank": 104,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-01",
+    "added": "2026-10-15",
     "tagline": "AI writing assistant for clarity and tone",
     "description": "Grammarly checks grammar, clarity, and tone across browsers and docs, with generative rewrite features on paid plans.",
     "bestFor": [
@@ -2399,8 +2399,8 @@
     "rank": 105,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-01",
+    "added": "2026-10-15",
     "tagline": "AI writing and Q&A inside Notion",
     "description": "Notion AI drafts, summarizes, and answers questions over your Notion workspace content.",
     "bestFor": [
@@ -2422,8 +2422,8 @@
     "rank": 106,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-01",
+    "added": "2026-10-15",
     "tagline": "AI content platform for marketing teams",
     "description": "Jasper helps marketing teams generate on-brand copy, campaigns, and content workflows with brand voice controls.",
     "bestFor": [
@@ -2445,8 +2445,8 @@
     "rank": 107,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-12",
+    "added": "2026-10-15",
     "tagline": "AI music and song generation",
     "description": "Suno generates full songs with vocals and instrumentals from text prompts for creators and hobbyists.",
     "bestFor": [
@@ -2468,8 +2468,8 @@
     "rank": 108,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-20",
+    "added": "2026-10-20",
     "tagline": "Always-on agent that keeps your docs in sync with your code",
     "description": "Autopilot is Mintlify's always-on documentation agent, launched in beta October 20, 2026. It watches your repos and the systems around them, such as Slack, your project tracker, and support tickets, drafts doc updates when code merges or the same question keeps coming in, and opens a pull request for your team to review. Nothing publishes until someone merges, and it learns your team's tone and update habits from the PRs you review.",
     "bestFor": [
@@ -2491,8 +2491,8 @@
     "rank": 109,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-10",
+    "added": "2026-11-10",
     "tagline": "Medium's private writing notebook with an AI assistant you call mid-sentence with @TK",
     "description": "TK is a private, agentic notebook for writing and thinking from Medium, launched on November 9, 2026. You can call its AI assistant without leaving the page by typing @TK mid-sentence, for example to check a fact or pull in a paragraph you wrote earlier. It ships with AI skills for editorial and headline feedback, can match a draft to the style guides of Medium publications, and turns any search, topic, tag, or library into a wiki-style summary page that links back to your notes. It imports your Medium archive plus vaults from Bear and Obsidian, imports and exports Markdown, and includes an MCP server and a Claude skill so your own agent can read what you have written. Medium says no AI company trains on your writing without your permission. Shared social libraries let you get human feedback on drafts.",
     "bestFor": [
@@ -2514,8 +2514,8 @@
     "rank": 110,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-11-02",
+    "added": "2026-10-15",
     "tagline": "Speech-to-text transcription model",
     "description": "Whisper is OpenAI's speech recognition model for transcription and translation, available via API and open weights for some versions.",
     "bestFor": [
@@ -2537,8 +2537,8 @@
     "rank": 111,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-31",
+    "added": "2026-10-15",
     "tagline": "Turn websites into LLM-ready markdown",
     "description": "Firecrawl crawls and converts websites into clean markdown and structured data for RAG and agent pipelines.",
     "bestFor": [
@@ -2560,8 +2560,8 @@
     "rank": 112,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-19",
+    "added": "2026-10-19",
     "tagline": "Meta's open-weight model for coding and agentic work",
     "description": "Muse Spark Open is Meta's open-weight release of Muse Spark, published October 15, 2026. It is a natively multimodal model with 816B total parameters (42B active) and a 1M token context window, built for long-horizon coding and agent tasks. Weights are on Hugging Face and run on vLLM, SGLang, llama.cpp, and Apple MLX, including on two M5 Ultra Mac Studios.",
     "bestFor": [
@@ -2583,8 +2583,8 @@
     "rank": 113,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-10-17",
+    "added": "2026-10-17",
     "tagline": "Open-weight model for coding and long-running agents",
     "description": "Beam is Reflection's first open-weight model, released October 16, 2026 under Apache 2.0 for advanced coding, reasoning, and long-horizon agent work. You can self-host the weights from Hugging Face or call it through Reflection's API and partner platforms.",
     "bestFor": [
@@ -2606,8 +2606,8 @@
     "rank": 114,
     "featured": false,
     "affiliate": false,
-    "newRelease": true,
     "updated": "2026-11-13",
+    "added": "2026-10-15",
     "tagline": "High-value coding and reasoning models",
     "description": "DeepSeek offers competitive chat and coding models with strong price-to-performance via web and API access.",
     "bestFor": [
@@ -2629,8 +2629,8 @@
     "rank": 115,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-15",
+    "added": "2026-10-15",
     "tagline": "Popular editor with AI video tools",
     "description": "CapCut is a widely used video editor with AI features for captions, effects, and short-form social content.",
     "bestFor": [
@@ -2652,8 +2652,8 @@
     "rank": 116,
     "featured": false,
     "affiliate": false,
-    "newRelease": false,
     "updated": "2026-10-15",
+    "added": "2026-10-15",
     "tagline": "Empathic voice AI and expression measurement",
     "description": "Hume AI provides expressive voice interfaces and tools for understanding vocal emotion in conversational AI products.",
     "bestFor": [
