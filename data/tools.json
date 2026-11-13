@@ -16,7 +16,11 @@
       "debugging with repo context",
       "agentic multi-file changes"
     ],
-    "pricingNote": "Free plan with limited agent requests; Plus $8 a month (Grok models only), Premium $30, Super $100, and Ultra $200 a month; Teams from $30 per user a month; third-party models billed at API list price"
+    "pricingNote": "Free plan with limited agent requests; Plus $8 a month (Grok models only), Premium $30, Super $100, and Ultra $200 a month; Teams from $30 per user a month; third-party models billed at API list price",
+    "strength": "Codebase-aware chat, tab completion, and agents for multi-file edits, with cloud agents that can publish live apps on paid plans.",
+    "watchOut": "Plus is limited to Grok models; third-party models are billed at API list price, and the free plan caps agent requests.",
+    "freeTier": true,
+    "priceFrom": "from $8/mo"
   },
   {
     "slug": "claude",
@@ -35,7 +39,11 @@
       "nuanced writing",
       "coding help"
     ],
-    "pricingNote": "Free plan; Pro is $20 per month ($17 a month billed annually), Max is $100 per month, and the new Ultra plan is $200 per month; Team and Enterprise plans for organizations"
+    "pricingNote": "Free plan; Pro is $20 per month ($17 a month billed annually), Max is $100 per month, and the new Ultra plan is $200 per month; Team and Enterprise plans for organizations",
+    "strength": "Long-context analysis, careful writing, and strong coding help, with Fable 5.2, Whiteboards, and Sheets on paid plans.",
+    "watchOut": "Fable 5.2 and the newer Whiteboards, Sheets, Data, and Meetings features are on paid plans, not the free plan.",
+    "freeTier": true,
+    "priceFrom": "from $20/mo"
   },
   {
     "slug": "chatgpt",
@@ -54,7 +62,11 @@
       "drafting content",
       "quick coding help"
     ],
-    "pricingNote": "Free plan for everyone; Go, Plus, and Pro plans for individuals and Business (from 2 users) and Enterprise plans for companies, all priced per user a month on chatgpt.com/pricing"
+    "pricingNote": "Free plan for everyone; Go, Plus, and Pro plans for individuals and Business (from 2 users) and Enterprise plans for companies, all priced per user a month on chatgpt.com/pricing",
+    "strength": "OpenAI's flagship conversational AI for everyday Q&A, drafting content, and quick coding help.",
+    "watchOut": "Paid plan prices are not listed here; confirm current Go, Plus, Pro, Business, and Enterprise prices on the official pricing page.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "gemini",
@@ -73,7 +85,11 @@
       "multimodal research",
       "summarizing Drive content"
     ],
-    "pricingNote": "Free with a Google account; Google AI Plus is $4.99, Google AI Pro $19.99, and Google AI Ultra from $99.99 per month (US prices)"
+    "pricingNote": "Free with a Google account; Google AI Plus is $4.99, Google AI Pro $19.99, and Google AI Ultra from $99.99 per month (US prices)",
+    "strength": "Multimodal assistant across the web and Google Workspace, including Drive content.",
+    "watchOut": "Listed Google AI Plus, Pro, and Ultra prices are US rates; confirm local pricing.",
+    "freeTier": true,
+    "priceFrom": "from $4.99/mo"
   },
   {
     "slug": "github-copilot",
@@ -92,7 +108,11 @@
       "PR assistance",
       "multi-IDE teams"
     ],
-    "pricingNote": "Copilot Free with limited use; Pro $10, Pro+ $39, and Max $100 a month; Business $19 and Enterprise $39 per seat a month"
+    "pricingNote": "Copilot Free with limited use; Pro $10, Pro+ $39, and Max $100 a month; Business $19 and Enterprise $39 per seat a month",
+    "strength": "Inline code completion and PR help inside your IDE and GitHub, including multi-IDE teams.",
+    "watchOut": "The free plan has limited use; Business and Enterprise are priced per seat.",
+    "freeTier": true,
+    "priceFrom": "from $10/mo"
   },
   {
     "slug": "midjourney",
@@ -111,7 +131,11 @@
       "stylized marketing visuals",
       "creative exploration"
     ],
-    "pricingNote": "Subscription only: Basic $10, Standard $30, Pro $60, and Mega $120 a month, or 20% less billed yearly ($8, $24, $48, and $96 a month); Standard and above include unlimited Relax mode image generations; companies with more than $1M in yearly revenue need Pro or Mega"
+    "pricingNote": "Subscription only: Basic $10, Standard $30, Pro $60, and Mega $120 a month, or 20% less billed yearly ($8, $24, $48, and $96 a month); Standard and above include unlimited Relax mode image generations; companies with more than $1M in yearly revenue need Pro or Mega",
+    "strength": "Artistic AI image generation well suited to concept art, stylized marketing visuals, and creative exploration.",
+    "watchOut": "Subscription only, with no free plan; companies with more than $1M in yearly revenue need Pro or Mega.",
+    "freeTier": false,
+    "priceFrom": "from $10/mo"
   },
   {
     "slug": "perplexity",
@@ -130,7 +154,11 @@
       "ongoing agent work with Teammates",
       "private local Computer tasks on a Mac"
     ],
-    "pricingNote": "Free Standard plan; paid Pro and Max plans on perplexity.ai, plus Education Pro at $10 per month for verified students and educators"
+    "pricingNote": "Free Standard plan; paid Pro and Max plans on perplexity.ai, plus Education Pro at $10 per month for verified students and educators",
+    "strength": "AI search with cited answers, plus agent work with Teammates and private local Computer tasks on a Mac.",
+    "watchOut": "Regular Pro and Max prices are not listed here; Education Pro is $10 a month for verified students and educators.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "elevenlabs",
@@ -149,7 +177,11 @@
       "podcast narration",
       "multilingual dubbing"
     ],
-    "pricingNote": "Free plan with 10,000 credits a month and no commercial license; Starter is $6 per month and adds a commercial license, Creator $22, and Pro $99; Scale and Business plans for teams; Scribe v3 speech to text API $0.20 per hour"
+    "pricingNote": "Free plan with 10,000 credits a month and no commercial license; Starter is $6 per month and adds a commercial license, Creator $22, and Pro $99; Scale and Business plans for teams; Scribe v3 speech to text API $0.20 per hour",
+    "strength": "Realistic voiceovers, podcast narration, and multilingual dubbing, plus a Scribe speech-to-text API.",
+    "watchOut": "The free plan has 10,000 credits a month and no commercial license; Starter is the first plan that adds one.",
+    "freeTier": true,
+    "priceFrom": "from $6/mo"
   },
   {
     "slug": "runway",
@@ -168,7 +200,11 @@
       "image-to-video",
       "creative video edits"
     ],
-    "pricingNote": "Free with 125 one-time credits; Standard $12 a month billed yearly ($15 monthly) with 625 credits; Pro $28 a month billed yearly ($35 monthly) with 2,250 credits; Max $76 a month billed yearly ($95 monthly) with 9,500 credits; extra credits from 1,000 minimum; see runway.com/pricing"
+    "pricingNote": "Free with 125 one-time credits; Standard $12 a month billed yearly ($15 monthly) with 625 credits; Pro $28 a month billed yearly ($35 monthly) with 2,250 credits; Max $76 a month billed yearly ($95 monthly) with 9,500 credits; extra credits from 1,000 minimum; see runway.com/pricing",
+    "strength": "AI video generation and editing on credit-based Standard, Pro, and Max plans.",
+    "watchOut": "The 125 free credits are one-time, not a monthly allowance, and extra credits start at a 1,000-credit minimum.",
+    "freeTier": false,
+    "priceFrom": "from $12/mo"
   },
   {
     "slug": "claude-code",
@@ -187,7 +223,11 @@
       "repo-wide refactors",
       "CLI workflows"
     ],
-    "pricingNote": "Uses Claude subscription or API; see Anthropic docs"
+    "pricingNote": "Uses Claude subscription or API; see Anthropic docs",
+    "strength": "Anthropic's agentic coding in the terminal, using your Claude subscription or API.",
+    "watchOut": "There is no standalone price in this listing; you need a Claude subscription or an Anthropic API key.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "openai-codex",
@@ -206,7 +246,11 @@
       "managing several agent sessions from one command center",
       "teams already on ChatGPT plans"
     ],
-    "pricingNote": "Sign in with a ChatGPT plan or use an OpenAI API key; see openai.com/codex for plan details"
+    "pricingNote": "Sign in with a ChatGPT plan or use an OpenAI API key; see openai.com/codex for plan details",
+    "strength": "OpenAI's open-source coding agent that runs in your terminal.",
+    "watchOut": "You sign in with a ChatGPT plan or an OpenAI API key; plan details are on the official Codex page.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "google-antigravity",
@@ -225,7 +269,11 @@
       "IDE and CLI agent workflows",
       "building with Google AI agents"
     ],
-    "pricingNote": "Free for individuals with rate limits; Google AI Pro and Ultra unlock more capacity"
+    "pricingNote": "Free for individuals with rate limits; Google AI Pro and Ultra unlock more capacity",
+    "strength": "Google's agentic coding platform across an app, CLI, IDE, and SDK.",
+    "watchOut": "The free individual plan has rate limits; Google AI Pro and Ultra unlock more capacity.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "grok",
@@ -244,7 +292,11 @@
       "general chat",
       "coding assistance"
     ],
-    "pricingNote": "Free to try on grok.com and in the apps; paid plans are sold through The X Subscription: Plus $8, Premium $30, Super $100, and Ultra $200 a month (less billed yearly); existing SuperGrok and X Premium plans continue"
+    "pricingNote": "Free to try on grok.com and in the apps; paid plans are sold through The X Subscription: Plus $8, Premium $30, Super $100, and Ultra $200 a month (less billed yearly); existing SuperGrok and X Premium plans continue",
+    "strength": "xAI assistant with real-time awareness of X, free to try on grok.com and in the apps.",
+    "watchOut": "Paid plans are sold through The X Subscription; existing SuperGrok and X Premium plans continue.",
+    "freeTier": true,
+    "priceFrom": "from $8/mo"
   },
   {
     "slug": "v0",
@@ -263,7 +315,11 @@
       "React/Next.js scaffolding",
       "design-to-code starts"
     ],
-    "pricingNote": "Free plan with a 7 message per day limit and deploys to Vercel; Plus starts at $30 per user per month and Business is $100 per user per month"
+    "pricingNote": "Free plan with a 7 message per day limit and deploys to Vercel; Plus starts at $30 per user per month and Business is $100 per user per month",
+    "strength": "Vercel's AI UI generator for React, with deploys to Vercel even on the free plan.",
+    "watchOut": "The free plan is limited to 7 messages a day.",
+    "freeTier": true,
+    "priceFrom": "from $30/mo"
   },
   {
     "slug": "lovable",
@@ -282,7 +338,11 @@
       "non-developer prototyping",
       "full-stack scaffolding"
     ],
-    "pricingNote": "Free plan with 5 build credits a day (up to 30 a month); paid Pro and Business plans add monthly credits, see lovable.dev/pricing"
+    "pricingNote": "Free plan with 5 build credits a day (up to 30 a month); paid Pro and Business plans add monthly credits, see lovable.dev/pricing",
+    "strength": "Build full-stack apps from natural language.",
+    "watchOut": "The free plan has 5 build credits a day (up to 30 a month); paid plan prices are on the official pricing page.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "bolt",
@@ -301,7 +361,11 @@
       "quick demos",
       "full-stack experiments"
     ],
-    "pricingNote": "Free plan with 1M tokens a month and website hosting; Pro from $25 a month and Teams from $30 a month, billed monthly; Enterprise is custom"
+    "pricingNote": "Free plan with 1M tokens a month and website hosting; Pro from $25 a month and Teams from $30 a month, billed monthly; Enterprise is custom",
+    "strength": "In-browser AI app builder by StackBlitz, with website hosting on the free plan.",
+    "watchOut": "The free plan includes 1M tokens a month; Pro and Teams are billed monthly.",
+    "freeTier": true,
+    "priceFrom": "from $25/mo"
   },
   {
     "slug": "wix-studio-two",
@@ -320,7 +384,11 @@
       "designers handing sites to developers",
       "visual editing plus real React code"
     ],
-    "pricingNote": "Rolling out to Wix Partners first, then gradually to all users; Wix Studio site plans are listed on wix.com/studio/plans"
+    "pricingNote": "Rolling out to Wix Partners first, then gradually to all users; Wix Studio site plans are listed on wix.com/studio/plans",
+    "strength": "AI-native visual site builder that exports real React code.",
+    "watchOut": "It is rolling out to Wix Partners first, then gradually to all users; site plan prices are on the official Wix Studio plans page.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "spacefast",
@@ -339,7 +407,11 @@
       "sharing private drafts and collecting comments on the page",
       "small apps that need a ready database"
     ],
-    "pricingNote": "Free to start with no card; Personal plans include $1 a month of usage, custom domains, and a database; Go is $5 a month and Pro is $15 a month per member; Enterprise is custom"
+    "pricingNote": "Free to start with no card; Personal plans include $1 a month of usage, custom domains, and a database; Go is $5 a month and Pro is $15 a month per member; Enterprise is custom",
+    "strength": "Automattic's publishing home for apps and sites your AI builds, with a live link in the chat.",
+    "watchOut": "Personal plans include only $1 a month of usage, plus custom domains and a database.",
+    "freeTier": true,
+    "priceFrom": "from $1/mo"
   },
   {
     "slug": "windsurf",
@@ -358,7 +430,11 @@
       "managing several coding agents in one place",
       "autocomplete-heavy workflows"
     ],
-    "pricingNote": "Free $0; Pro $20 per month; Max $200 per month; Teams $80 per month plus $40 per full seat; Enterprise on request"
+    "pricingNote": "Free $0; Pro $20 per month; Max $200 per month; Teams $80 per month plus $40 per full seat; Enterprise on request",
+    "strength": "Cognition's agentic IDE and agent command center, formerly Windsurf.",
+    "watchOut": "Teams pricing is $80 a month plus $40 per full seat; Enterprise is on request.",
+    "freeTier": true,
+    "priceFrom": "from $20/mo"
   },
   {
     "slug": "opencode",
@@ -377,7 +453,11 @@
       "model-agnostic coding workflows",
       "parallel agent sessions"
     ],
-    "pricingNote": "Free and open source; bring your own model provider or subscription, or use OpenCode Zen models"
+    "pricingNote": "Free and open source; bring your own model provider or subscription, or use OpenCode Zen models",
+    "strength": "Open source AI coding agent for terminal, IDE, and desktop.",
+    "watchOut": "You bring your own model provider or subscription, or use OpenCode Zen models.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "qwen-code",
@@ -396,7 +476,11 @@
       "scripted, non-interactive coding runs",
       "using a Qwen or Qoder account or your own model endpoint"
     ],
-    "pricingNote": "Free and open source under the Apache 2.0 license; sign in with a Qwen Plus or Pro subscription, or connect a model provider with your own API key"
+    "pricingNote": "Free and open source under the Apache 2.0 license; sign in with a Qwen Plus or Pro subscription, or connect a model provider with your own API key",
+    "strength": "Open-source terminal coding agent from Alibaba, now merged with the Qoder agent harness in a 1.0 preview.",
+    "watchOut": "You sign in with a Qwen Plus or Pro subscription, or connect a model provider with your own API key.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "cline",
@@ -415,7 +499,11 @@
       "bring-your-own-key model choice",
       "MCP tool workflows"
     ],
-    "pricingNote": "Free and open source for individual developers; pay only for AI inference with your own keys or Cline credits. Enterprise plan on cline.bot"
+    "pricingNote": "Free and open source for individual developers; pay only for AI inference with your own keys or Cline credits. Enterprise plan on cline.bot",
+    "strength": "Open source coding agent for VS Code and the terminal; individual developers pay only for inference.",
+    "watchOut": "You pay for AI inference with your own keys or Cline credits; there is a separate Enterprise plan.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "zed",
@@ -434,7 +522,11 @@
       "running external coding agents in one editor",
       "pair programming and collaboration"
     ],
-    "pricingNote": "Personal plan is $0 with your own API keys or external agents; Pro is $10 per month with $5 of tokens; Business is $30 per seat per month"
+    "pricingNote": "Personal plan is $0 with your own API keys or external agents; Pro is $10 per month with $5 of tokens; Business is $30 per seat per month",
+    "strength": "Fast open source code editor with a built-in agent that can also run external agents.",
+    "watchOut": "The $0 Personal plan needs your own API keys or external agents; Pro includes $5 of tokens.",
+    "freeTier": true,
+    "priceFrom": "from $10/mo"
   },
   {
     "slug": "kiro",
@@ -453,7 +545,11 @@
       "parallel agents from plan to PR",
       "teams that want AWS-grade admin controls"
     ],
-    "pricingNote": "Free tier with 50 credits; Pro is $20, Pro+ $40, Pro Max $100, and Power $200 per user per month; add-on credits $0.04 each"
+    "pricingNote": "Free tier with 50 credits; Pro is $20, Pro+ $40, Pro Max $100, and Power $200 per user per month; add-on credits $0.04 each",
+    "strength": "AWS's spec-driven agentic IDE, CLI, and web agent for planned work on larger codebases.",
+    "watchOut": "The free tier includes 50 credits; add-on credits are $0.04 each.",
+    "freeTier": true,
+    "priceFrom": "from $20/mo"
   },
   {
     "slug": "replit-agent",
@@ -472,7 +568,11 @@
       "learn-by-building",
       "quick hosted prototypes"
     ],
-    "pricingNote": "Part of Replit paid plans: Core is $20 per month ($18 billed annually) and Pro is $100 per month ($90 billed annually); Enterprise is custom"
+    "pricingNote": "Part of Replit paid plans: Core is $20 per month ($18 billed annually) and Pro is $100 per month ($90 billed annually); Enterprise is custom",
+    "strength": "An AI agent that builds and deploys apps inside Replit.",
+    "watchOut": "It is part of Replit paid plans (Core from $20 a month, Pro $100); this listing does not include a separate free agent plan.",
+    "freeTier": false,
+    "priceFrom": "from $20/mo"
   },
   {
     "slug": "expo-simulators",
@@ -491,7 +591,11 @@
       "iOS simulator testing without a Mac",
       "pull requests with recordings and logs as proof"
     ],
-    "pricingNote": "Available on Expo paid plans; usage-based at $0.10 per simulator minute for iOS and Android, with 60 minutes a month included on the Starter, Production, and Enterprise plans"
+    "pricingNote": "Available on Expo paid plans; usage-based at $0.10 per simulator minute for iOS and Android, with 60 minutes a month included on the Starter, Production, and Enterprise plans",
+    "strength": "Cloud iOS simulators and Android emulators that let coding agents build, run, and check mobile app fixes.",
+    "watchOut": "Available on Expo paid plans only; Starter, Production, and Enterprise include 60 minutes a month.",
+    "freeTier": false,
+    "priceFrom": "from $0.10/min"
   },
   {
     "slug": "notebooklm",
@@ -510,7 +614,11 @@
       "research briefs",
       "audio overviews of sources"
     ],
-    "pricingNote": "Free with a Google account; higher limits on Google AI Plus, Pro, and Ultra plans, and included in Google Workspace plans"
+    "pricingNote": "Free with a Google account; higher limits on Google AI Plus, Pro, and Ultra plans, and included in Google Workspace plans",
+    "strength": "Google's source-grounded research notebook for asking questions answered from your own files.",
+    "watchOut": "Higher limits require Google AI Plus, Pro, or Ultra, or a Google Workspace plan.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "consensus",
@@ -529,7 +637,11 @@
       "evidence summaries",
       "academic writing support"
     ],
-    "pricingNote": "Free plan with unlimited paper searches; Pro is $20 per month ($12 billed annually) and Deep is $65 per month ($45 billed annually)"
+    "pricingNote": "Free plan with unlimited paper searches; Pro is $20 per month ($12 billed annually) and Deep is $65 per month ($45 billed annually)",
+    "strength": "AI search across scientific papers that summarizes what the research says, with links to each study.",
+    "watchOut": "The free plan covers unlimited paper searches; Pro and Deep add paid review features.",
+    "freeTier": true,
+    "priceFrom": "from $20/mo"
   },
   {
     "slug": "elicit",
@@ -548,7 +660,11 @@
       "extracting study data",
       "research workflows"
     ],
-    "pricingNote": "Free Basic plan with unlimited paper search and summaries; Pro is $49 and Scale $229 per user per month, billed annually"
+    "pricingNote": "Free Basic plan with unlimited paper search and summaries; Pro is $49 and Scale $229 per user per month, billed annually",
+    "strength": "Literature review assistant that searches more than 138 million papers and pulls study details into tables.",
+    "watchOut": "The systematic review workflow is on paid plans; Pro is $49 and Scale $229 per user per month, billed annually.",
+    "freeTier": true,
+    "priceFrom": "from $49/mo"
   },
   {
     "slug": "scispace",
@@ -567,7 +683,11 @@
       "summarizing and comparing research papers",
       "checking that citations support your claims"
     ],
-    "pricingNote": "Basic is $0 with 100 credits per month; Premium is $20 per month ($12 billed annually); Advanced is $90 ($70 billed annually) and Max $200 ($160 billed annually), both with unlimited agent usage under fair-use limits"
+    "pricingNote": "Basic is $0 with 100 credits per month; Premium is $20 per month ($12 billed annually); Advanced is $90 ($70 billed annually) and Max $200 ($160 billed annually), both with unlimited agent usage under fair-use limits",
+    "strength": "AI research agent for literature reviews and papers, with an agent mode on higher plans.",
+    "watchOut": "Basic is limited to 100 credits a month; Advanced and Max advertise unlimited agent usage under fair-use limits.",
+    "freeTier": true,
+    "priceFrom": "from $20/mo"
   },
   {
     "slug": "scholarcy",
@@ -586,7 +706,11 @@
       "screening many articles fast",
       "building a library of research notes"
     ],
-    "pricingNote": "Free plan limited to 10 summaries (free Article Summarizer allows 1 per day); paid subscription unlocks unlimited summaries, see scholarcy.com/pricing"
+    "pricingNote": "Free plan limited to 10 summaries (free Article Summarizer allows 1 per day); paid subscription unlocks unlimited summaries, see scholarcy.com/pricing",
+    "strength": "AI summaries and flashcards for academic papers.",
+    "watchOut": "The free plan is limited to 10 summaries, and the free Article Summarizer allows 1 per day.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "elorian-glimpse",
@@ -605,7 +729,11 @@
       "video understanding and captioning",
       "visual counting and annotation"
     ],
-    "pricingNote": "API listed at $0.60 per 1M input and $3 per 1M output tokens; chat UI also available"
+    "pricingNote": "API listed at $0.60 per 1M input and $3 per 1M output tokens; chat UI also available",
+    "strength": "Visual reasoning model that zooms into images, rewatches video, and runs code to measure what it sees.",
+    "watchOut": "It launched as a research preview; pricing is listed for the API, with a chat UI also available.",
+    "freeTier": false,
+    "priceFrom": "API from $0.60/1M in"
   },
   {
     "slug": "muse-wonder",
@@ -624,7 +752,11 @@
       "long-running agents",
       "computer use automation"
     ],
-    "pricingNote": "API listed at $4 per 1M input and $20 per 1M output tokens; Muse Wonder Full requires a Muse Code subscription"
+    "pricingNote": "API listed at $4 per 1M input and $20 per 1M output tokens; Muse Wonder Full requires a Muse Code subscription",
+    "strength": "Meta's frontier model for coding, agents, and computer use.",
+    "watchOut": "Muse Wonder Full requires a Muse Code subscription; the listed price is API-only.",
+    "freeTier": false,
+    "priceFrom": "API from $4/1M in"
   },
   {
     "slug": "muse-ember",
@@ -643,7 +775,11 @@
       "tool calls, routing, and data extraction at high volume",
       "parsing long documents and screenshots"
     ],
-    "pricingNote": "Meta Model API: $0.10 per million input tokens, $0.004 per million cached input tokens, and $0.50 per million output tokens for prompts up to 200K tokens; longer prompts cost $0.30 input and $1.50 output per million"
+    "pricingNote": "Meta Model API: $0.10 per million input tokens, $0.004 per million cached input tokens, and $0.50 per million output tokens for prompts up to 200K tokens; longer prompts cost $0.30 input and $1.50 output per million",
+    "strength": "Meta's smallest, lowest-cost Muse model for the coding and agent steps that repeat all day.",
+    "watchOut": "Prompts over 200K tokens cost more: $0.30 input and $1.50 output per million tokens.",
+    "freeTier": false,
+    "priceFrom": "API from $0.10/1M in"
   },
   {
     "slug": "claude-duet",
@@ -662,7 +798,11 @@
       "background admin and business tasks",
       "dashboards, forecasts, and prototypes"
     ],
-    "pricingNote": "Research preview by waitlist for US Pro and Max subscribers; included in the plan and uses its usage limits"
+    "pricingNote": "Research preview by waitlist for US Pro and Max subscribers; included in the plan and uses its usage limits",
+    "strength": "A proactive Anthropic agent that briefs you, works in the background, and asks before acting.",
+    "watchOut": "Research preview by waitlist for US Pro and Max subscribers only; it uses that plan's usage limits.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "ideogram",
@@ -681,7 +821,11 @@
       "poster and logo drafts",
       "marketing graphics"
     ],
-    "pricingNote": "Free accounts get weekly credits; Plus $15, Pro $42, and Team $20 per user a month billed yearly ($20, $60, and $30 billed monthly); pay as you go credits at 1 cent each, including API use; Enterprise is custom"
+    "pricingNote": "Free accounts get weekly credits; Plus $15, Pro $42, and Team $20 per user a month billed yearly ($20, $60, and $30 billed monthly); pay as you go credits at 1 cent each, including API use; Enterprise is custom",
+    "strength": "Image generation with strong text rendering.",
+    "watchOut": "Free accounts get weekly credits only; paid plans are cheaper billed yearly than monthly.",
+    "freeTier": true,
+    "priceFrom": "from $15/mo"
   },
   {
     "slug": "flux",
@@ -700,7 +844,11 @@
       "API image generation",
       "product visuals"
     ],
-    "pricingNote": "Pay as you go API credits (1 credit is $0.01), priced per image by model and resolution, with the same price in the API and the Playground and no subscriptions or seat fees; licenses for self-hosting the open weights are sold separately"
+    "pricingNote": "Pay as you go API credits (1 credit is $0.01), priced per image by model and resolution, with the same price in the API and the Playground and no subscriptions or seat fees; licenses for self-hosting the open weights are sold separately",
+    "strength": "Black Forest Labs image models with the same pay-as-you-go price in the API and the Playground, and no seat fees.",
+    "watchOut": "Price is per image by model and resolution; licenses for self-hosting the open weights are sold separately.",
+    "freeTier": false,
+    "priceFrom": "from $0.01/credit"
   },
   {
     "slug": "krea-3",
@@ -719,7 +867,11 @@
       "consistent characters across images",
       "precise edits from plain-language instructions"
     ],
-    "pricingNote": "Free Krea plan with a daily compute allowance; paid Basic, Pro, and Max plans on krea.ai; API $0.06 per 2K image and $0.03 per 1K image"
+    "pricingNote": "Free Krea plan with a daily compute allowance; paid Basic, Pro, and Max plans on krea.ai; API $0.06 per 2K image and $0.03 per 1K image",
+    "strength": "Fast image editing that keeps products and characters consistent.",
+    "watchOut": "Paid plan prices are on krea.ai; the API is $0.06 per 2K image and $0.03 per 1K image.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "seedream-5-5",
@@ -738,7 +890,11 @@
       "transparent-background design assets",
       "images with dense or small text"
     ],
-    "pricingNote": "Available in the Doubao, Doubao Work, and Jimeng apps; API on Volcano Engine Ark announced but not live as of November 9, 2026, so check the official site for current pricing"
+    "pricingNote": "Available in the Doubao, Doubao Work, and Jimeng apps; API on Volcano Engine Ark announced but not live as of November 9, 2026, so check the official site for current pricing",
+    "strength": "ByteDance image model with stable multi-round editing and transparent-background output.",
+    "watchOut": "The Volcano Engine Ark API was announced but not live as of November 9, 2026; check the official site.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "minimax-h3-image",
@@ -757,7 +913,11 @@
       "edits that combine many reference images",
       "character and style consistency without fine-tuning"
     ],
-    "pricingNote": "MiniMax API: Standard $2.30 per 1M text input tokens, $1.50 per 1M image input tokens, and $3.80 per 1M image output tokens (MiniMax lists about $0.022 for a 1K image and $0.069 for a 4K image); Highspeed $7.60 per 1M output tokens; 50% off 4K images until November 17, 2026; open weights under a community license that excludes the US, EU, UK, and South Korea"
+    "pricingNote": "MiniMax API: Standard $2.30 per 1M text input tokens, $1.50 per 1M image input tokens, and $3.80 per 1M image output tokens (MiniMax lists about $0.022 for a 1K image and $0.069 for a 4K image); Highspeed $7.60 per 1M output tokens; 50% off 4K images until November 17, 2026; open weights under a community license that excludes the US, EU, UK, and South Korea",
+    "strength": "Open-weight image model that makes and edits native 4K images in under 10 seconds, with up to 16 reference images.",
+    "watchOut": "The community license excludes the US, EU, UK, and South Korea; 50% off 4K images ends November 17, 2026.",
+    "freeTier": false,
+    "priceFrom": "API from $2.30/1M text in"
   },
   {
     "slug": "reso-ai",
@@ -776,7 +936,11 @@
       "brand presence in LLM answers",
       "monitoring generative search mentions"
     ],
-    "pricingNote": "See official site for pricing"
+    "pricingNote": "See official site for pricing",
+    "strength": "GEO and AI search visibility for brands.",
+    "watchOut": "This listing does not include a price; check the official site.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "leonardo",
@@ -795,7 +959,11 @@
       "fine-tuned styles",
       "creative production"
     ],
-    "pricingNote": "Free plan with 150 fast tokens a day (free creations are public); Essential $12, Premium $30, and Ultimate $60 a month, with up to 20% off billed yearly; Premium and Ultimate add unlimited relaxed image generation on select models; team plans from $24 per seat a month; pay as you go API"
+    "pricingNote": "Free plan with 150 fast tokens a day (free creations are public); Essential $12, Premium $30, and Ultimate $60 a month, with up to 20% off billed yearly; Premium and Ultimate add unlimited relaxed image generation on select models; team plans from $24 per seat a month; pay as you go API",
+    "strength": "Creative AI image and asset platform, with unlimited relaxed generation on Premium and Ultimate for select models.",
+    "watchOut": "Free creations are public; the free plan has 150 fast tokens a day.",
+    "freeTier": true,
+    "priceFrom": "from $12/mo"
   },
   {
     "slug": "adobe-firefly",
@@ -814,7 +982,11 @@
       "brand-safe generative fills",
       "design teams on Adobe"
     ],
-    "pricingNote": "Free use with limited daily generations; paid Firefly Standard, Pro, Pro Plus, and Premium plans include 2,000, 4,000, 10,000, and 50,000 monthly credits for premium features plus unlimited standard image generations; Creative Cloud Pro includes 4,000 credits"
+    "pricingNote": "Free use with limited daily generations; paid Firefly Standard, Pro, Pro Plus, and Premium plans include 2,000, 4,000, 10,000, and 50,000 monthly credits for premium features plus unlimited standard image generations; Creative Cloud Pro includes 4,000 credits",
+    "strength": "Adobe's commercially safer generative AI, with unlimited standard image generations on paid Firefly plans.",
+    "watchOut": "Free use has limited daily generations; paid plan dollar prices are not listed here.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "canva",
@@ -833,7 +1005,11 @@
       "presentations and brand kits for small teams",
       "editable AI design edits"
     ],
-    "pricingNote": "Canva Free for anyone; paid Pro Lite, Pro (one person, 10x more AI use than Free), and Business (small teams, 20x more AI use, plus team tools) plans with a free trial; optional AI Pass add-on; free Canva for Nonprofits for one team of up to 50; prices vary by region on canva.com/pricing"
+    "pricingNote": "Canva Free for anyone; paid Pro Lite, Pro (one person, 10x more AI use than Free), and Business (small teams, 20x more AI use, plus team tools) plans with a free trial; optional AI Pass add-on; free Canva for Nonprofits for one team of up to 50; prices vary by region on canva.com/pricing",
+    "strength": "Design platform with AI for graphics, social posts, and presentations, plus a free plan for anyone.",
+    "watchOut": "Prices vary by region; Pro and Business add much more AI use than Free, with an optional AI Pass add-on.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "topaz-labs",
@@ -852,7 +1028,11 @@
       "repairing old, blurry, or compressed photos",
       "one-click photo enhancement in the browser"
     ],
-    "pricingNote": "Topaz for Web Image is $12 a month on a limited-time sale (normally $19) or $109 a year (normally $199); Topaz Studio with every app is $69 a month, $45 a month on an annual commitment, or $399 a year; personal plans allow commercial use only for organizations under $1M in annual revenue"
+    "pricingNote": "Topaz for Web Image is $12 a month on a limited-time sale (normally $19) or $109 a year (normally $199); Topaz Studio with every app is $69 a month, $45 a month on an annual commitment, or $399 a year; personal plans allow commercial use only for organizations under $1M in annual revenue",
+    "strength": "AI upscaling and photo repair, now with the all-in-one Wonder 4 model.",
+    "watchOut": "The $12 a month web image price is a limited-time sale (normally $19); personal commercial use is only for organizations under $1M in annual revenue.",
+    "freeTier": false,
+    "priceFrom": "from $12/mo"
   },
   {
     "slug": "kling",
@@ -871,7 +1051,11 @@
       "image-to-video",
       "social content"
     ],
-    "pricingNote": "Free Basic plan with login credits; Standard $79.20 a year (660 credits a month); Pro $293.04 a year (3,000 credits a month); Premier from $728.64 a year (8,000 credits a month); monthly renewals and higher Premier tiers on klingai.com/membership"
+    "pricingNote": "Free Basic plan with login credits; Standard $79.20 a year (660 credits a month); Pro $293.04 a year (3,000 credits a month); Premier from $728.64 a year (8,000 credits a month); monthly renewals and higher Premier tiers on klingai.com/membership",
+    "strength": "AI video generation from Kuaishou for short clips, image-to-video, and social content.",
+    "watchOut": "Paid plans are listed as yearly totals; professional mode, watermark removal, and video extension are on paid plans.",
+    "freeTier": true,
+    "priceFrom": "from $79.20/yr"
   },
   {
     "slug": "veo-3-1",
@@ -890,7 +1074,11 @@
       "keeping a character consistent across shots",
       "image-to-video with first and last frames"
     ],
-    "pricingNote": "Every Google Flow account gets 50 free credits a day: a Veo 3.1 Lite video uses 10 credits, Fast 20, and Quality 100 (Lite and Fast cost half on Ultra); Google AI Plus, Pro, and Ultra add monthly credits, and free users may be unable to generate video at peak hours"
+    "pricingNote": "Every Google Flow account gets 50 free credits a day: a Veo 3.1 Lite video uses 10 credits, Fast 20, and Quality 100 (Lite and Fast cost half on Ultra); Google AI Plus, Pro, and Ultra add monthly credits, and free users may be unable to generate video at peak hours",
+    "strength": "Google DeepMind video model that generates sound, dialogue, and picture together, with character consistency and 1080p or 4K output.",
+    "watchOut": "A Quality render uses 100 credits, so 50 free daily credits do not cover one Quality video; free users may be unable to generate at peak hours.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "gemini-omni-flash",
@@ -909,7 +1097,11 @@
       "editing a generated video by chat",
       "Veo replacement in the Gemini API"
     ],
-    "pricingNote": "Included with Google AI Plus, Pro, and Ultra in the Gemini app and Flow; up to three 15-second Omni 1.2 Flash videos a month at no cost in Google Vids for anyone with a Google account; no cost in YouTube Shorts and YouTube Create; API billed per Gemini API pricing"
+    "pricingNote": "Included with Google AI Plus, Pro, and Ultra in the Gemini app and Flow; up to three 15-second Omni 1.2 Flash videos a month at no cost in Google Vids for anyone with a Google account; no cost in YouTube Shorts and YouTube Create; API billed per Gemini API pricing",
+    "strength": "Conversational video model that turns mixed references into short videos you can edit by chat.",
+    "watchOut": "The no-cost Google Vids allowance is up to three 15-second Omni 1.2 Flash videos a month; the Gemini API is billed separately.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "seedance-2-5",
@@ -928,7 +1120,11 @@
       "reference-driven shots and characters",
       "editing specific moments in a clip"
     ],
-    "pricingNote": "Available in Jimeng AI and Doubao apps; API via BytePlus ModelArk; see official site"
+    "pricingNote": "Available in Jimeng AI and Doubao apps; API via BytePlus ModelArk; see official site",
+    "strength": "ByteDance Seed video model with synced audio, 30-second takes, and timestamp-level editing.",
+    "watchOut": "Pricing is not listed here; it is available in Jimeng AI and Doubao apps, with API access through BytePlus ModelArk.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "pika-h3-flex",
@@ -947,7 +1143,11 @@
       "reference-guided shots from images, video, and audio",
       "self-hosted open-weight video generation"
     ],
-    "pricingNote": "Pika API from $0.02 per output second at 480p ($0.04 at 768p, $0.07 at 1080p, $0.16 at 4K), and from $0.06 per second for reference to video; the 50% API Club launch discount and 15 free API Club generations a day ended November 5, 2026; audio stems $0.001 per second; open weights on Hugging Face and GitHub; on pika.art, Free plus Starter $10 a month ($8 yearly), Creator $35 ($28 yearly), Fancy from $95 ($76 yearly), with limited-time free daily H3 Flex generations on Creator and Fancy"
+    "pricingNote": "Pika API from $0.02 per output second at 480p ($0.04 at 768p, $0.07 at 1080p, $0.16 at 4K), and from $0.06 per second for reference to video; the 50% API Club launch discount and 15 free API Club generations a day ended November 5, 2026; audio stems $0.001 per second; open weights on Hugging Face and GitHub; on pika.art, Free plus Starter $10 a month ($8 yearly), Creator $35 ($28 yearly), Fancy from $95 ($76 yearly), with limited-time free daily H3 Flex generations on Creator and Fancy",
+    "strength": "Fast open-weight video model with synced audio and up to 12 references, including self-hosted weights.",
+    "watchOut": "The 50% API Club launch discount and 15 free API Club generations a day ended November 5, 2026.",
+    "freeTier": true,
+    "priceFrom": "from $10/mo"
   },
   {
     "slug": "heygen",
@@ -966,7 +1166,11 @@
       "translating videos into other languages",
       "text to speech through an API"
     ],
-    "pricingNote": "Free plan with 3 watermarked videos a month; Creator $29 a month ($24 billed annually) with 600 credits; Pro from $49 a month; Business $149 a month plus $20 per extra seat; see heygen.com/pricing"
+    "pricingNote": "Free plan with 3 watermarked videos a month; Creator $29 a month ($24 billed annually) with 600 credits; Pro from $49 a month; Business $149 a month plus $20 per extra seat; see heygen.com/pricing",
+    "strength": "AI avatar videos, translation into 175+ languages, and a Voice model API.",
+    "watchOut": "The free plan is 3 watermarked videos a month; Voice Turbo is free through November 30, 2026 on a best-effort basis.",
+    "freeTier": true,
+    "priceFrom": "from $29/mo"
   },
   {
     "slug": "synthesia",
@@ -985,7 +1189,11 @@
       "turning docs and decks into avatar videos",
       "making videos from inside ChatGPT"
     ],
-    "pricingNote": "Free Basic plan with 500 credits a month (videos carry a Synthesia watermark); Starter $19 a month ($14 a month billed yearly) and Pro $89 a month ($59 a month billed yearly), with first-month discounts; Enterprise is custom; the ChatGPT plugin works on every plan"
+    "pricingNote": "Free Basic plan with 500 credits a month (videos carry a Synthesia watermark); Starter $19 a month ($14 a month billed yearly) and Pro $89 a month ($59 a month billed yearly), with first-month discounts; Enterprise is custom; the ChatGPT plugin works on every plan",
+    "strength": "Business avatar videos from scripts, docs, and decks, including a ChatGPT plugin on every plan.",
+    "watchOut": "Free Basic videos carry a Synthesia watermark; first-month discounts may apply to paid plans.",
+    "freeTier": true,
+    "priceFrom": "from $19/mo"
   },
   {
     "slug": "luma-dream-machine",
@@ -1004,7 +1212,11 @@
       "image-to-video",
       "creative prototyping"
     ],
-    "pricingNote": "Plus $30 a month ($25 billed yearly) with 10,000 credits; Pro $90 ($75 yearly) with 40,000; Ultra $300 ($250 yearly) with 150,000; Team and Enterprise custom; see lumalabs.ai/pricing"
+    "pricingNote": "Plus $30 a month ($25 billed yearly) with 10,000 credits; Pro $90 ($75 yearly) with 40,000; Ultra $300 ($250 yearly) with 150,000; Team and Enterprise custom; see lumalabs.ai/pricing",
+    "strength": "Luma Labs video model for concept shots, image-to-video, and creative prototyping.",
+    "watchOut": "Plans are credit-based, starting at Plus with 10,000 credits; no free plan is listed here.",
+    "freeTier": false,
+    "priceFrom": "from $30/mo"
   },
   {
     "slug": "descript",
@@ -1023,7 +1235,11 @@
       "talking-head video",
       "transcript-based edits"
     ],
-    "pricingNote": "Free plan with 1 media hour a month; Hobbyist $16, Creator $24, and Business $50 per person a month billed yearly ($24, $35, and $65 billed monthly); Enterprise is custom"
+    "pricingNote": "Free plan with 1 media hour a month; Hobbyist $16, Creator $24, and Business $50 per person a month billed yearly ($24, $35, and $65 billed monthly); Enterprise is custom",
+    "strength": "Edit video and podcasts by editing a transcript, with cleanup, overdub, and studio sound.",
+    "watchOut": "The free plan includes 1 media hour a month.",
+    "freeTier": true,
+    "priceFrom": "from $16/mo"
   },
   {
     "slug": "opusclip",
@@ -1042,7 +1258,11 @@
       "auto-editing talking-head footage",
       "captions and social clips for YouTube"
     ],
-    "pricingNote": "Free plan with watermarked caption templates and limited exports; Starter $15 a month; Pro $29 a month; Business is custom; details on opus.pro/pricing"
+    "pricingNote": "Free plan with watermarked caption templates and limited exports; Starter $15 a month; Pro $29 a month; Business is custom; details on opus.pro/pricing",
+    "strength": "Turns raw talking-head footage into finished videos, Shorts, and social clips, including edits from ChatGPT or Claude.",
+    "watchOut": "The free plan uses watermarked caption templates and has limited exports.",
+    "freeTier": true,
+    "priceFrom": "from $15/mo"
   },
   {
     "slug": "riverside",
@@ -1061,7 +1281,11 @@
       "transcripts and text-based editing",
       "turning episodes into social clips"
     ],
-    "pricingNote": "Free plan with a watermark; Pro $29 a month or $24 billed yearly, Grow $39 or $34, Webinar $99 or $79; Business is custom; 14-day free trial; Agents are on every plan, and some AI features use AI credits"
+    "pricingNote": "Free plan with a watermark; Pro $29 a month or $24 billed yearly, Grow $39 or $34, Webinar $99 or $79; Business is custom; 14-day free trial; Agents are on every plan, and some AI features use AI credits",
+    "strength": "Browser studio for remote podcasts and interviews, with transcripts, text-based editing, and AI production agents.",
+    "watchOut": "The free plan includes a watermark; some AI features use AI credits, and there is a 14-day free trial of paid plans.",
+    "freeTier": true,
+    "priceFrom": "from $29/mo"
   },
   {
     "slug": "kino",
@@ -1080,7 +1304,11 @@
       "real-time team timeline collaboration",
       "motion graphics as code on Remotion"
     ],
-    "pricingNote": "Free plan with the full editor, unlimited imports and exports, and 100 MCP calls a week; Pro is $25 per editor a month or $240 a year with unlimited MCP calls; Editor Plus is $200 per person a month with agent and Seedance credits; details on kino.ai/pricing and kino.ai/docs/teams-and-billing"
+    "pricingNote": "Free plan with the full editor, unlimited imports and exports, and 100 MCP calls a week; Pro is $25 per editor a month or $240 a year with unlimited MCP calls; Editor Plus is $200 per person a month with agent and Seedance credits; details on kino.ai/pricing and kino.ai/docs/teams-and-billing",
+    "strength": "Code-first desktop video editor where teams and coding agents share one Remotion timeline over MCP.",
+    "watchOut": "There is no browser editor yet; the free plan limits MCP calls to 100 a week.",
+    "freeTier": true,
+    "priceFrom": "from $25/mo"
   },
   {
     "slug": "sora",
@@ -1099,7 +1327,11 @@
       "cinematic short clips",
       "creative ideation"
     ],
-    "pricingNote": "Sora web and app experiences discontinued April 26, 2026; Sora API discontinued September 24, 2026; see OpenAI Help on the Sora discontinuation"
+    "pricingNote": "Sora web and app experiences discontinued April 26, 2026; Sora API discontinued September 24, 2026; see OpenAI Help on the Sora discontinuation",
+    "strength": "OpenAI's text-to-video model for short cinematic clips from prompts.",
+    "watchOut": "The Sora web and app experiences were discontinued April 26, 2026, and the API on September 24, 2026; export remaining content while the window is open.",
+    "freeTier": false,
+    "priceFrom": "Discontinued"
   },
   {
     "slug": "twelvelabs-jockey",
@@ -1118,7 +1350,11 @@
       "highlight reels and rough cuts",
       "ad and social video analysis"
     ],
-    "pricingNote": "Free plan to start; paid Plus and Pro plans on twelvelabs.io"
+    "pricingNote": "Free plan to start; paid Plus and Pro plans on twelvelabs.io",
+    "strength": "Video intelligence agent that searches libraries by meaning and assembles highlight reels or rough cuts, including inside ChatGPT and Claude.",
+    "watchOut": "Paid Plus and Pro prices are not listed here.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "viggle-jst-2",
@@ -1137,7 +1373,11 @@
       "animation-ready characters from one image",
       "full-body motion from text or video"
     ],
-    "pricingNote": "Free trials in PINOC on viggle.ai; API starts with 100 free credits"
+    "pricingNote": "Free trials in PINOC on viggle.ai; API starts with 100 free credits",
+    "strength": "Physics-native model for explorable 3D scenes, animation-ready characters from one image, and full-body motion.",
+    "watchOut": "Access is listed as free trials in PINOC and 100 free API credits to start, not a lasting free plan.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "recursive-flint",
@@ -1156,7 +1396,11 @@
       "local coding agents in OpenCode or pi",
       "fixing bugs and writing tests without API fees"
     ],
-    "pricingNote": "Free open weights (Apache 2.0) on Hugging Face"
+    "pricingNote": "Free open weights (Apache 2.0) on Hugging Face",
+    "strength": "Open local coding model that Recursive says runs at more than 125 tokens per second on an M4 Pro MacBook Pro.",
+    "watchOut": "You need capable local hardware; it is a 40-billion-parameter mixture-of-experts model (about 2.5 billion active per token).",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "mistral-large-4",
@@ -1175,7 +1419,11 @@
       "security patching and vulnerability work",
       "long-context, multi-repository software work"
     ],
-    "pricingNote": "API $0.70 per 1M input tokens, $0.07 cached input, and $2.10 per 1M output tokens; open weights under the Mistral Ecosystem Open-Weight license (modified MIT; Model-as-a-Service providers need a separate commercial license)"
+    "pricingNote": "API $0.70 per 1M input tokens, $0.07 cached input, and $2.10 per 1M output tokens; open weights under the Mistral Ecosystem Open-Weight license (modified MIT; Model-as-a-Service providers need a separate commercial license)",
+    "strength": "Mistral's open-weight flagship for agentic coding, long-context work, and defensive security patching, with a 1M-token context window.",
+    "watchOut": "Model-as-a-Service providers need a separate commercial license under the Mistral Ecosystem Open-Weight license.",
+    "freeTier": true,
+    "priceFrom": "API from $0.70/1M in"
   },
   {
     "slug": "longcat-2-5",
@@ -1194,7 +1442,11 @@
       "low-cost model for Claude Code or Codex harnesses",
       "tasks mixing screenshots and code"
     ],
-    "pricingNote": "Limited-time pay as you go API pricing of $0.30 per 1M uncached input tokens, $0.006 per 1M cached input tokens, and $1.20 per 1M output tokens"
+    "pricingNote": "Limited-time pay as you go API pricing of $0.30 per 1M uncached input tokens, $0.006 per 1M cached input tokens, and $1.20 per 1M output tokens",
+    "strength": "Meituan's long-context multimodal model for agentic coding, with a 1,048,576-token context window and OpenAI- and Anthropic-compatible endpoints.",
+    "watchOut": "The listed API prices are limited-time pay as you go rates.",
+    "freeTier": false,
+    "priceFrom": "API from $0.30/1M in"
   },
   {
     "slug": "harness-autonomous",
@@ -1213,7 +1465,11 @@
       "managing agents across multiple machines",
       "supervising agents from desktop or phone"
     ],
-    "pricingNote": "Free desktop app and MIT-licensed source; bring your own agent subscriptions and model usage"
+    "pricingNote": "Free desktop app and MIT-licensed source; bring your own agent subscriptions and model usage",
+    "strength": "Open source command center for running several coding agents in parallel across Mac and Linux machines.",
+    "watchOut": "You bring your own agent subscriptions and model usage; it is a desktop app, not a hosted model.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "opencode-browse",
@@ -1232,7 +1488,11 @@
       "browser automation with human handoff for logins and payments",
       "screenshots, recordings, and network capture for agents"
     ],
-    "pricingNote": "Free and open source (MIT); the extension is free on the Chrome Web Store; bring your own coding agent"
+    "pricingNote": "Free and open source (MIT); the extension is free on the Chrome Web Store; bring your own coding agent",
+    "strength": "MCP server and Chrome extension that let coding agents use your real browser, with human handoff for logins and payments.",
+    "watchOut": "You bring your own coding agent; the agent hands the tab back to you for logins, 2FA, passkeys, or payments.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "github-replica",
@@ -1251,7 +1511,11 @@
       "design and product team collaboration",
       "turning ideas into clickable demos"
     ],
-    "pricingNote": "Free and open source under the MIT license; you use it through the GitHub Copilot app"
+    "pricingNote": "Free and open source under the MIT license; you use it through the GitHub Copilot app",
+    "strength": "Open-source AI prototyping that builds interactive demos from your own design system, inside the GitHub Copilot app.",
+    "watchOut": "You use it through the GitHub Copilot app; publishing to a Replica Hub is optional and self-hosted.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "github-agentic-workflows",
@@ -1270,7 +1534,11 @@
       "scheduled repo chores like docs and tests",
       "teams already on GitHub Actions"
     ],
-    "pricingNote": "Open source and available on GitHub Free, Team, and Enterprise plans; runs on GitHub Actions; the default Copilot engine needs a GitHub Copilot license, or bring your own coding agent"
+    "pricingNote": "Open source and available on GitHub Free, Team, and Enterprise plans; runs on GitHub Actions; the default Copilot engine needs a GitHub Copilot license, or bring your own coding agent",
+    "strength": "Repository automations written in Markdown and run by a coding agent in GitHub Actions, read-only by default.",
+    "watchOut": "The default Copilot engine needs a GitHub Copilot license, unless you bring your own coding agent.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "lindy",
@@ -1289,7 +1557,11 @@
       "email and calendar automation",
       "no-code agent setups"
     ],
-    "pricingNote": "Start with $50 in free credits for 7 days, no card; then Team seats from $29.99 per active user a month with 3,000 credits each (more credits in steps, such as 5,000 for $49.99) in a shared pool; top-ups $10 per 1,000 credits; Enterprise is custom"
+    "pricingNote": "Start with $50 in free credits for 7 days, no card; then Team seats from $29.99 per active user a month with 3,000 credits each (more credits in steps, such as 5,000 for $49.99) in a shared pool; top-ups $10 per 1,000 credits; Enterprise is custom",
+    "strength": "No-code AI agents for business workflows such as email and calendar automation.",
+    "watchOut": "The $50 in free credits lasts 7 days; after that, Team seats start at $29.99 per active user a month.",
+    "freeTier": false,
+    "priceFrom": "from $29.99/mo"
   },
   {
     "slug": "manus",
@@ -1308,7 +1580,11 @@
       "research-and-deliver workflows",
       "agent demos"
     ],
-    "pricingNote": "Free plan with 300 credits a day; Pro from $20 a month (4,000 credits) or $40 a month (8,000 credits, 7-day free trial); Team from $20 per seat a month; 17% off with annual billing"
+    "pricingNote": "Free plan with 300 credits a day; Pro from $20 a month (4,000 credits) or $40 a month (8,000 credits, 7-day free trial); Team from $20 per seat a month; 17% off with annual billing",
+    "strength": "Autonomous agent for multi-step computer tasks from high-level goals.",
+    "watchOut": "The free plan has 300 credits a day; Pro credit packs start at 4,000 credits a month.",
+    "freeTier": true,
+    "priceFrom": "from $20/mo"
   },
   {
     "slug": "gpt-6-1-terra",
@@ -1327,7 +1603,11 @@
       "high-volume document and invoice processing",
       "reading charts, drawings, and screenshots"
     ],
-    "pricingNote": "In ChatGPT Work and Codex on Plus, Pro, Enterprise, and Edu plans; API $1 per 1M input and $5 per 1M output tokens ($0.05 cached input), with Batch and Flex 50% lower"
+    "pricingNote": "In ChatGPT Work and Codex on Plus, Pro, Enterprise, and Edu plans; API $1 per 1M input and $5 per 1M output tokens ($0.05 cached input), with Batch and Flex 50% lower",
+    "strength": "OpenAI's fast, low-cost model for computer use, document processing, and reading charts and screenshots.",
+    "watchOut": "In ChatGPT it is on Plus, Pro, Enterprise, and Edu plans, not the free plan.",
+    "freeTier": false,
+    "priceFrom": "API from $1/1M in"
   },
   {
     "slug": "kimi-k3-1-pro",
@@ -1346,7 +1626,11 @@
       "coding with a 1M-token context",
       "financial and document research"
     ],
-    "pricingNote": "API $2 per 1M input tokens, $10 per 1M output, and $0.20 cached input (Highspeed $4 and $20); API unlocks after a $1 top-up; in Kimi Code on Plus (Moderato) plans and above"
+    "pricingNote": "API $2 per 1M input tokens, $10 per 1M output, and $0.20 cached input (Highspeed $4 and $20); API unlocks after a $1 top-up; in Kimi Code on Plus (Moderato) plans and above",
+    "strength": "Moonshot AI's open-weight model for coding and long agent tasks.",
+    "watchOut": "API access unlocks after a $1 top-up; in Kimi Code it is on Plus (Moderato) plans and above.",
+    "freeTier": false,
+    "priceFrom": "API from $2/1M in"
   },
   {
     "slug": "tencent-hy4",
@@ -1365,7 +1649,11 @@
       "agentic coding at a low token price",
       "teams building on Tencent Cloud"
     ],
-    "pricingNote": "API about $0.90 per 1M input tokens, $2.70 per 1M output, and $0.045 per 1M cached input, with 50% off on Tencent Cloud TokenHub through December 31, 2026; free in WorkBuddy and CodeBuddy from November 4 to 15, 2026; open weights coming"
+    "pricingNote": "API about $0.90 per 1M input tokens, $2.70 per 1M output, and $0.045 per 1M cached input, with 50% off on Tencent Cloud TokenHub through December 31, 2026; free in WorkBuddy and CodeBuddy from November 4 to 15, 2026; open weights coming",
+    "strength": "Tencent's open-source model for agents, coding, and computer use, with open weights coming.",
+    "watchOut": "The free WorkBuddy and CodeBuddy window runs only from November 4 to 15, 2026; TokenHub is 50% off through December 31, 2026.",
+    "freeTier": false,
+    "priceFrom": "API from $0.90/1M in"
   },
   {
     "slug": "minimax-m3-1-flash",
@@ -1384,7 +1672,11 @@
       "long multi-step coding tasks",
       "computer use and browser automation"
     ],
-    "pricingNote": "API $0.15 per 1M input tokens and $0.60 per 1M output tokens on platform.minimax.io"
+    "pricingNote": "API $0.15 per 1M input tokens and $0.60 per 1M output tokens on platform.minimax.io",
+    "strength": "Fast, low-cost model for agentic work, coding, and computer use.",
+    "watchOut": "This listing only includes API pricing on platform.minimax.io, with no free hosted plan named.",
+    "freeTier": false,
+    "priceFrom": "API from $0.15/1M in"
   },
   {
     "slug": "inkling-2-small",
@@ -1403,7 +1695,11 @@
       "fine-tuning a strong base model on Tinker",
       "building websites, games, and 3D scenes with visual feedback"
     ],
-    "pricingNote": "Tinker serverless inference (beta) $0.30 per 1M input tokens, $0.03 cached input, and $1.00 per 1M output; fine-tuning $1.50 per 1M training tokens at 64K context or $3.00 at 256K; see thinkingmachines.ai/tinker/pricing"
+    "pricingNote": "Tinker serverless inference (beta) $0.30 per 1M input tokens, $0.03 cached input, and $1.00 per 1M output; fine-tuning $1.50 per 1M training tokens at 64K context or $3.00 at 256K; see thinkingmachines.ai/tinker/pricing",
+    "strength": "Thinking Machines model for agentic coding, vision, and fine-tuning on Tinker.",
+    "watchOut": "Tinker serverless inference is in beta; fine-tuning is billed separately at $1.50 or $3.00 per 1M training tokens depending on context length.",
+    "freeTier": false,
+    "priceFrom": "API from $0.30/1M in"
   },
   {
     "slug": "liquid-lfm3",
@@ -1422,7 +1718,11 @@
       "tool calling with a long 256K context",
       "fine-tuning a small model on one GPU"
     ],
-    "pricingNote": "Free open weights on Hugging Face under the LFM Open License v1.0, which allows free commercial use for companies under $10 million in annual revenue; also on the Liquid AI API and OpenRouter"
+    "pricingNote": "Free open weights on Hugging Face under the LFM Open License v1.0, which allows free commercial use for companies under $10 million in annual revenue; also on the Liquid AI API and OpenRouter",
+    "strength": "Small open-weight models for on-device agents, also available on the Liquid AI API and OpenRouter.",
+    "watchOut": "The LFM Open License allows free commercial use only for companies under $10 million in annual revenue.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "alpie-seed",
@@ -1441,7 +1741,11 @@
       "local coding help without an API key",
       "reading documents, screenshots, and charts on-device"
     ],
-    "pricingNote": "Free open weights under Apache 2.0 on Hugging Face, Ollama, and Kaggle; free Alpie Playground at playground.169pi.ai; Alpie Local coding agent is invite-only with a waitlist"
+    "pricingNote": "Free open weights under Apache 2.0 on Hugging Face, Ollama, and Kaggle; free Alpie Playground at playground.169pi.ai; Alpie Local coding agent is invite-only with a waitlist",
+    "strength": "Open-weight 9B model that codes, reads images, and reasons offline on laptops and phones, with a free playground.",
+    "watchOut": "The Alpie Local coding agent is invite-only with a waitlist.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "local-code",
@@ -1460,7 +1764,11 @@
       "working on local files, documents, and slides",
       "local coding and data analysis"
     ],
-    "pricingNote": "Free with on-device models, and bring your own API keys at no markup; optional cloud credit top-ups from $9.99 with no subscription; Teams option for setup, custom skills, and on-prem"
+    "pricingNote": "Free with on-device models, and bring your own API keys at no markup; optional cloud credit top-ups from $9.99 with no subscription; Teams option for setup, custom skills, and on-prem",
+    "strength": "Open source private AI agent that runs on your Mac with on-device models, and bring-your-own keys at no markup.",
+    "watchOut": "Optional cloud credit top-ups start at $9.99 with no subscription; Teams is a separate option for setup, custom skills, and on-prem.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "n8n",
@@ -1479,7 +1787,11 @@
       "self-hosted AI pipelines",
       "connecting LLMs to apps"
     ],
-    "pricingNote": "Free self-hosted Community Edition; n8n Cloud Starter 20 euros and Pro 50 euros a month billed annually, with no card for the trial; Business 667 euros a month billed annually (self-hosted); Enterprise is custom"
+    "pricingNote": "Free self-hosted Community Edition; n8n Cloud Starter 20 euros and Pro 50 euros a month billed annually, with no card for the trial; Business 667 euros a month billed annually (self-hosted); Enterprise is custom",
+    "strength": "Workflow automation with AI nodes, including a free self-hosted Community Edition.",
+    "watchOut": "Cloud Starter is 20 euros a month billed annually; Business is 667 euros a month billed annually for self-hosted.",
+    "freeTier": true,
+    "priceFrom": "from 20 euros/mo"
   },
   {
     "slug": "nod",
@@ -1498,7 +1810,11 @@
       "recurring personal jobs like price checks and invoice downloads",
       "a private agent that runs on your own computer"
     ],
-    "pricingNote": "Free and open source under Apache 2.0; you pay your own model provider for usage, or run an open-source model locally; set a monthly spending limit, and Nod checks in once a task passes $5"
+    "pricingNote": "Free and open source under Apache 2.0; you pay your own model provider for usage, or run an open-source model locally; set a monthly spending limit, and Nod checks in once a task passes $5",
+    "strength": "Open-source personal agent with its own sandboxed computer and browser, running on your Mac or Windows PC.",
+    "watchOut": "You pay your own model provider, or run an open-source model locally; Nod checks in once a task passes $5.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "openbot",
@@ -1517,7 +1833,11 @@
       "bringing your own models and existing agents into one app",
       "agents with per-action approvals and an audit trail"
     ],
-    "pricingNote": "Desktop app for Mac and Windows is free for personal use; the OpenBot application template is open source under the MIT license; OpenBot for Business is in early access, and CopilotKit Intelligence is licensed separately (hosted from $49 a month)"
+    "pricingNote": "Desktop app for Mac and Windows is free for personal use; the OpenBot application template is open source under the MIT license; OpenBot for Business is in early access, and CopilotKit Intelligence is licensed separately (hosted from $49 a month)",
+    "strength": "Open-source, self-hostable workspace for AI coworkers that uses the models and agents you choose.",
+    "watchOut": "The desktop app is free for personal use; OpenBot for Business is in early access, and CopilotKit Intelligence is licensed separately (hosted from $49 a month).",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "make",
@@ -1536,7 +1856,11 @@
       "AI agents with tools and limits you set",
       "automations you can build from a chat"
     ],
-    "pricingNote": "Free plan with 1,000 credits a month, no card and no time limit (most actions use 1 credit); paid Core, Pro, and Teams plans add credits, and Enterprise is custom"
+    "pricingNote": "Free plan with 1,000 credits a month, no card and no time limit (most actions use 1 credit); paid Core, Pro, and Teams plans add credits, and Enterprise is custom",
+    "strength": "Visual automation and AI agents across 3,500+ apps, with a lasting free plan and no card required.",
+    "watchOut": "The free plan includes 1,000 credits a month, and most actions use 1 credit; paid plan prices are not listed here.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "copilot-studio",
@@ -1555,7 +1879,11 @@
       "IT-governed agents at larger companies",
       "mixing agent steps with classic workflows"
     ],
-    "pricingNote": "Pay as you go at $0.01 per Copilot Credit through an Azure subscription, or $200 a month (billed annually) for a tenant pack of 25,000 credits; prepaid plans save up to 20%; agents used in Microsoft 365 Copilot are included for licensed users; free trial for individuals"
+    "pricingNote": "Pay as you go at $0.01 per Copilot Credit through an Azure subscription, or $200 a month (billed annually) for a tenant pack of 25,000 credits; prepaid plans save up to 20%; agents used in Microsoft 365 Copilot are included for licensed users; free trial for individuals",
+    "strength": "Microsoft's no-code builder for agents, workflows, and apps, including agents used in Microsoft 365 Copilot for licensed users.",
+    "watchOut": "Individual access is a free trial; prepaid or $200 a month tenant packs are billed annually, and pay as you go needs an Azure subscription.",
+    "freeTier": false,
+    "priceFrom": "from $0.01/credit"
   },
   {
     "slug": "constant-contact-catalyst",
@@ -1574,7 +1902,11 @@
       "email, social, SMS, and ads from one weekly plan",
       "owners without a marketing hire"
     ],
-    "pricingNote": "Early access with a waitlist; Constant Contact invites early users to try it for free; no pricing published yet"
+    "pricingNote": "Early access with a waitlist; Constant Contact invites early users to try it for free; no pricing published yet",
+    "strength": "AI marketing agent for small businesses that plans, creates, and runs campaigns you approve.",
+    "watchOut": "Early access is waitlisted; no pricing has been published yet.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "pagerduty-sre-agent",
@@ -1593,7 +1925,11 @@
       "faster root cause analysis",
       "drafting post-incident reviews"
     ],
-    "pricingNote": "Included with the PagerDuty Reliability Platform (platform fee based on operational scale, with flexible credits) or with PagerDuty Advance; free trial and product tour available"
+    "pricingNote": "Included with the PagerDuty Reliability Platform (platform fee based on operational scale, with flexible credits) or with PagerDuty Advance; free trial and product tour available",
+    "strength": "AI SRE agent that triages, diagnoses, and helps fix incidents.",
+    "watchOut": "It is included with the PagerDuty Reliability Platform or PagerDuty Advance; platform fees depend on operational scale.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "momentic-mo",
@@ -1612,7 +1948,11 @@
       "web and mobile app regression testing",
       "PR reviews that run tests from a coding agent"
     ],
-    "pricingNote": "Free plan with $50 of usage a month and no card; Scale $500 a month with $500 of usage; Enterprise is custom; Mo draws $1 per $1 of Mo spend from the shared usage balance; details on momentic.ai/pricing"
+    "pricingNote": "Free plan with $50 of usage a month and no card; Scale $500 a month with $500 of usage; Enterprise is custom; Mo draws $1 per $1 of Mo spend from the shared usage balance; details on momentic.ai/pricing",
+    "strength": "AI QA engineer that tests web, iOS, and Android apps from a plain-English prompt.",
+    "watchOut": "The free plan includes $50 of usage a month; the next listed plan is Scale at $500 a month.",
+    "freeTier": true,
+    "priceFrom": "from $500/mo"
   },
   {
     "slug": "gumloop",
@@ -1631,7 +1971,11 @@
       "automating work across business apps",
       "email triage and meeting prep"
     ],
-    "pricingNote": "Pro starts at $37 per month with a 14-day free trial and 20k credits per month; Enterprise is custom pricing"
+    "pricingNote": "Pro starts at $37 per month with a 14-day free trial and 20k credits per month; Enterprise is custom pricing",
+    "strength": "No-code AI agents that work across your apps.",
+    "watchOut": "Pro starts at $37 a month with a 14-day free trial and 20k credits; no lasting free plan is listed.",
+    "freeTier": false,
+    "priceFrom": "from $37/mo"
   },
   {
     "slug": "relevance-ai",
@@ -1650,7 +1994,11 @@
       "building agents by describing a process",
       "tested, governed agents in production"
     ],
-    "pricingNote": "Pro $19 a month billed annually ($29 monthly) with 2,500 Actions a month; Team $234 a month billed annually ($349 monthly) with 7,000 Actions; Enterprise is custom; AI model costs are passed through at cost as Vendor Credits, or bring your own API keys; the Free plan is retired"
+    "pricingNote": "Pro $19 a month billed annually ($29 monthly) with 2,500 Actions a month; Team $234 a month billed annually ($349 monthly) with 7,000 Actions; Enterprise is custom; AI model costs are passed through at cost as Vendor Credits, or bring your own API keys; the Free plan is retired",
+    "strength": "Build and run teams of AI agents for sales, support, and ops, with model costs passed through or your own keys.",
+    "watchOut": "The Free plan is retired; listed Pro and Team prices are the annual rates, and monthly billing costs more.",
+    "freeTier": false,
+    "priceFrom": "from $19/mo"
   },
   {
     "slug": "maia",
@@ -1669,7 +2017,11 @@
       "actions across Slack and Google Workspace",
       "morning briefings and meeting prep for a team"
     ],
-    "pricingNote": "Free during beta, with daily usage caps; request beta access or join the waitlist for general availability. Paid general-availability pricing has not been published"
+    "pricingNote": "Free during beta, with daily usage caps; request beta access or join the waitlist for general availability. Paid general-availability pricing has not been published",
+    "strength": "Proactive multiplayer AI agent for teams, with shared memory.",
+    "watchOut": "It is free during beta with daily usage caps; paid general-availability pricing has not been published.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "agentspot",
@@ -1688,7 +2040,11 @@
       "scheduled business workflows on company data",
       "governed agents with audit trails"
     ],
-    "pricingNote": "Free plan with no time limit and no card: unlimited agents and users plus a weekly allowance of conversations, workflow runs, and app sessions; paid Fleet plan for more usage"
+    "pricingNote": "Free plan with no time limit and no card: unlimited agents and users plus a weekly allowance of conversations, workflow runs, and app sessions; paid Fleet plan for more usage",
+    "strength": "ThoughtSpot's multiplayer AI for building and sharing work agents, with a lasting free plan and no card required.",
+    "watchOut": "The free plan has a weekly allowance of conversations, workflow runs, and app sessions; paid Fleet prices are not listed here.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "velozity",
@@ -1707,7 +2063,11 @@
       "shared multiplayer AI workspaces",
       "coordinating multiple agents"
     ],
-    "pricingNote": "Free to start; see official site for plans"
+    "pricingNote": "Free to start; see official site for plans",
+    "strength": "Multiplayer AI office for teams and agents.",
+    "watchOut": "Plans beyond free to start are not listed here; check the official site.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "mercury-3",
@@ -1726,7 +2086,11 @@
       "browser and search agents",
       "real-time chat and voice support"
     ],
-    "pricingNote": "API list price $0.20 per 1M input and $0.70 per 1M output tokens, 50% off at launch; 100 million free API tokens to try"
+    "pricingNote": "API list price $0.20 per 1M input and $0.70 per 1M output tokens, 50% off at launch; 100 million free API tokens to try",
+    "strength": "Diffusion LLM at 1,000+ tokens per second for fast agents.",
+    "watchOut": "Launch pricing is 50% off the API list price, and the 100 million free tokens are to try the API, not a lasting free plan.",
+    "freeTier": false,
+    "priceFrom": "API from $0.20/1M in"
   },
   {
     "slug": "otter",
@@ -1745,7 +2109,11 @@
       "searching past meetings",
       "turning meeting follow-ups into tasks"
     ],
-    "pricingNote": "Free Basic plan with 300 transcription minutes a month; Pro $16.99 per user a month billed monthly, less billed yearly; Business $30 per user a month or $24 billed yearly; Enterprise is custom"
+    "pricingNote": "Free Basic plan with 300 transcription minutes a month; Pro $16.99 per user a month billed monthly, less billed yearly; Business $30 per user a month or $24 billed yearly; Enterprise is custom",
+    "strength": "AI meeting notetaker with chat and task agents.",
+    "watchOut": "The free Basic plan includes 300 transcription minutes a month.",
+    "freeTier": true,
+    "priceFrom": "from $16.99/mo"
   },
   {
     "slug": "fireflies",
@@ -1764,7 +2132,11 @@
       "searching past calls",
       "sending call notes to CRMs and Slack"
     ],
-    "pricingNote": "Free plan; Pro is $10 and Business $19 per seat per month billed annually ($18 and $29 billed monthly); Enterprise is $39 per seat per month, annual only"
+    "pricingNote": "Free plan; Pro is $10 and Business $19 per seat per month billed annually ($18 and $29 billed monthly); Enterprise is $39 per seat per month, annual only",
+    "strength": "AI meeting notetaker for transcripts, summaries, and search.",
+    "watchOut": "Listed Pro and Business prices are the annual rates; monthly billing costs more, and Enterprise is annual only.",
+    "freeTier": true,
+    "priceFrom": "from $10/mo"
   },
   {
     "slug": "deepl-voice",
@@ -1783,7 +2155,11 @@
       "face-to-face conversations across languages",
       "contact center calls in more than one language"
     ],
-    "pricingNote": "DeepL Pro plans include 30 minutes of DeepL Voice per user a month (Individual from 7.49 euros a month, Team 24.99 and Business 49.99 euros per user a month, billed annually, German prices); DeepL Voice for Meetings needs its own subscription; Enterprise is custom"
+    "pricingNote": "DeepL Pro plans include 30 minutes of DeepL Voice per user a month (Individual from 7.49 euros a month, Team 24.99 and Business 49.99 euros per user a month, billed annually, German prices); DeepL Voice for Meetings needs its own subscription; Enterprise is custom",
+    "strength": "Real-time voice translation for meetings and in-person talks, powered by DeepL's Aure voice model.",
+    "watchOut": "DeepL Voice is included in DeepL Pro plans (30 minutes per user a month); Voice for Meetings needs its own subscription. Prices listed are German annual rates.",
+    "freeTier": false,
+    "priceFrom": "from 7.49 euros/mo"
   },
   {
     "slug": "mistral-voxtral-3",
@@ -1802,7 +2178,11 @@
       "phone and web voice agents",
       "expressive text-to-speech in many languages"
     ],
-    "pricingNote": "API from $0.0035 per minute for transcription; TTS $13 per 1M characters; voice agent API from $0.04 per minute"
+    "pricingNote": "API from $0.0035 per minute for transcription; TTS $13 per 1M characters; voice agent API from $0.04 per minute",
+    "strength": "Transcription, expressive speech, and a real-time voice agent SDK.",
+    "watchOut": "This listing is API-priced only: transcription from $0.0035 a minute, TTS $13 per 1M characters, and voice agent from $0.04 a minute.",
+    "freeTier": false,
+    "priceFrom": "API from $0.0035/min"
   },
   {
     "slug": "deepgram",
@@ -1821,7 +2201,11 @@
       "real-time streaming speech to text",
       "multilingual and medical transcription"
     ],
-    "pricingNote": "$200 free credit with no card; pay as you go from $0.0043 per minute for Nova-3 pre-recorded and $0.0077 per minute streaming (Nova-3 Multilingual $0.0052 and $0.0092); diarization included on pre-recorded audio; Growth from $4,000 a year saves up to 20%; Enterprise is custom"
+    "pricingNote": "$200 free credit with no card; pay as you go from $0.0043 per minute for Nova-3 pre-recorded and $0.0077 per minute streaming (Nova-3 Multilingual $0.0052 and $0.0092); diarization included on pre-recorded audio; Growth from $4,000 a year saves up to 20%; Enterprise is custom",
+    "strength": "Speech-to-text, text-to-speech, and voice agent APIs for developers, with diarization included on pre-recorded audio.",
+    "watchOut": "The $200 credit is a one-time free credit with no card, not a lasting free plan; Growth starts at $4,000 a year.",
+    "freeTier": false,
+    "priceFrom": "from $0.0043/min"
   },
   {
     "slug": "assemblyai-tts-1",
@@ -1840,7 +2224,11 @@
       "low-latency streaming speech",
       "cloned voices for agents"
     ],
-    "pricingNote": "$15 per 1M characters, pay as you go, with every voice, language, and voice cloning included; volume pricing for committed usage"
+    "pricingNote": "$15 per 1M characters, pay as you go, with every voice, language, and voice cloning included; volume pricing for committed usage",
+    "strength": "Low-latency text to speech built for voice agents, with every voice, language, and voice cloning included in the pay-as-you-go price.",
+    "watchOut": "There is no free plan listed; volume pricing is for committed usage.",
+    "freeTier": false,
+    "priceFrom": "from $15/1M chars"
   },
   {
     "slug": "phonic-1",
@@ -1859,7 +2247,11 @@
       "multilingual customer support calls",
       "natural turn-taking on noisy lines"
     ],
-    "pricingNote": "One price per minute starting at $0.07, with no LLM pass-through or per-token charges"
+    "pricingNote": "One price per minute starting at $0.07, with no LLM pass-through or per-token charges",
+    "strength": "Speech-to-speech voice agent model that acts while the caller talks, with one price per minute and no LLM pass-through charges.",
+    "watchOut": "No free plan is listed; the starting price is $0.07 per minute.",
+    "freeTier": false,
+    "priceFrom": "from $0.07/min"
   },
   {
     "slug": "zapier",
@@ -1878,7 +2270,11 @@
       "no-code ops workflows",
       "AI-assisted Zaps"
     ],
-    "pricingNote": "Free plan with 100 tasks a month and two-step Zaps; Professional starts at $19.99 per month billed annually ($29.99 monthly); Team and Enterprise for organizations; 14-day Professional trial with no card"
+    "pricingNote": "Free plan with 100 tasks a month and two-step Zaps; Professional starts at $19.99 per month billed annually ($29.99 monthly); Team and Enterprise for organizations; 14-day Professional trial with no card",
+    "strength": "No-code automation across thousands of apps, with a free plan for two-step Zaps.",
+    "watchOut": "The free plan is limited to 100 tasks a month and two-step Zaps; listed Professional prices start at the annual rate.",
+    "freeTier": true,
+    "priceFrom": "from $19.99/mo"
   },
   {
     "slug": "ibm-granite-speech-5",
@@ -1897,7 +2293,11 @@
       "fast on-device transcription",
       "meetings and multi-speaker calls"
     ],
-    "pricingNote": "Free open weights (Apache 2.0) on Hugging Face"
+    "pricingNote": "Free open weights (Apache 2.0) on Hugging Face",
+    "strength": "Open speech models for accurate, fast transcription and translation, with Apache 2.0 weights on Hugging Face.",
+    "watchOut": "You run the open weights yourself; this listing does not include a hosted plan.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "nvidia-nemotron-transcribe",
@@ -1916,7 +2316,11 @@
       "multilingual transcription and translation",
       "self-hosted speech pipelines"
     ],
-    "pricingNote": "Free open weights under the OpenMDW-1.1 license, which allows commercial use, on Hugging Face and ModelScope; hosted endpoints from Baseten, DeepInfra, and Simplismart are priced by those providers"
+    "pricingNote": "Free open weights under the OpenMDW-1.1 license, which allows commercial use, on Hugging Face and ModelScope; hosted endpoints from Baseten, DeepInfra, and Simplismart are priced by those providers",
+    "strength": "Open-weight promptable model for transcription, translation, and speaker labels, under a license that allows commercial use.",
+    "watchOut": "Hosted endpoints from Baseten, DeepInfra, and Simplismart are priced by those providers, not in this listing.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "fish-audio-drama-3",
@@ -1935,7 +2339,11 @@
       "audio drama and game dialogue",
       "expressive voiceovers for short video"
     ],
-    "pricingNote": "API $50 per 1M UTF-8 bytes of input text (about 180,000 English words), with a launch price of $10 through November 30, 2026; creator plans on fish.audio from free (8,000 credits a month) to Plus at $15 a month ($11 billed yearly) and Pro at $100 a month ($75 billed yearly); open weights free for commercial use under US$500K annual revenue"
+    "pricingNote": "API $50 per 1M UTF-8 bytes of input text (about 180,000 English words), with a launch price of $10 through November 30, 2026; creator plans on fish.audio from free (8,000 credits a month) to Plus at $15 a month ($11 billed yearly) and Pro at $100 a month ($75 billed yearly); open weights free for commercial use under US$500K annual revenue",
+    "strength": "Text-to-speech you direct in plain language, including character dialogue and audiobook-style performances.",
+    "watchOut": "The API launch price of $10 per 1M UTF-8 bytes ends November 30, 2026, then $50 list; open weights are free for commercial use only under US$500K annual revenue.",
+    "freeTier": true,
+    "priceFrom": "from $15/mo"
   },
   {
     "slug": "gradium-phonon",
@@ -1954,7 +2362,11 @@
       "private text to speech inside apps",
       "speech in the browser and on embedded hardware"
     ],
-    "pricingNote": "Free open weights and code under Apache 2.0; voice cloning and voice design through the Gradium API"
+    "pricingNote": "Free open weights and code under Apache 2.0; voice cloning and voice design through the Gradium API",
+    "strength": "Open-source text to speech that runs on your own device under Apache 2.0.",
+    "watchOut": "Voice cloning and voice design go through the Gradium API, whose price is not listed here.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "grammarly",
@@ -1973,7 +2385,11 @@
       "tone adjustments",
       "everyday writing polish"
     ],
-    "pricingNote": "Free plan with 100 AI prompts a month; Pro from $12 a month with 2,000 AI prompts per member and a free trial; Enterprise is custom"
+    "pricingNote": "Free plan with 100 AI prompts a month; Pro from $12 a month with 2,000 AI prompts per member and a free trial; Enterprise is custom",
+    "strength": "AI writing assistant for clarity and tone, with a free plan that includes 100 AI prompts a month.",
+    "watchOut": "Pro starts at $12 a month with 2,000 AI prompts per member; Enterprise is custom.",
+    "freeTier": true,
+    "priceFrom": "from $12/mo"
   },
   {
     "slug": "notion-ai",
@@ -1992,7 +2408,11 @@
       "meeting summaries",
       "drafting in Notion"
     ],
-    "pricingNote": "Free and Plus plans include a trial of Notion AI; the Business plan, from $20 per member a month, adds Notion Agent, AI Meeting Notes, and Enterprise Search (beta); yearly billing saves up to 20%; Custom Agents use Notion credits at $10 per 1,000"
+    "pricingNote": "Free and Plus plans include a trial of Notion AI; the Business plan, from $20 per member a month, adds Notion Agent, AI Meeting Notes, and Enterprise Search (beta); yearly billing saves up to 20%; Custom Agents use Notion credits at $10 per 1,000",
+    "strength": "AI writing and Q&A inside Notion, including Notion Agent, AI Meeting Notes, and Enterprise Search on Business.",
+    "watchOut": "Free and Plus only include a trial of Notion AI; Agent, meeting notes, and Enterprise Search are on the Business plan from $20 per member a month.",
+    "freeTier": false,
+    "priceFrom": "from $20/mo"
   },
   {
     "slug": "jasper",
@@ -2011,7 +2431,11 @@
       "brand voice content",
       "campaign drafts"
     ],
-    "pricingNote": "Pro $59 per seat a month billed yearly or $69 monthly, with a 7-day free trial; Business is custom"
+    "pricingNote": "Pro $59 per seat a month billed yearly or $69 monthly, with a 7-day free trial; Business is custom",
+    "strength": "AI content platform for marketing teams, with brand-oriented writing on Pro and Business.",
+    "watchOut": "There is no lasting free plan; Pro is $59 per seat a month billed yearly ($69 monthly) with a 7-day free trial.",
+    "freeTier": false,
+    "priceFrom": "from $59/mo"
   },
   {
     "slug": "suno",
@@ -2030,7 +2454,11 @@
       "music ideation",
       "vocal demos"
     ],
-    "pricingNote": "Free plan with no commercial rights; Pro $10 a month ($8 billed yearly) and Premier $30 a month ($24 billed yearly) add commercial use rights and the v6 models"
+    "pricingNote": "Free plan with no commercial rights; Pro $10 a month ($8 billed yearly) and Premier $30 a month ($24 billed yearly) add commercial use rights and the v6 models",
+    "strength": "AI music and song generation.",
+    "watchOut": "The free plan has no commercial rights; Pro and Premier add commercial use rights and the v6 models.",
+    "freeTier": true,
+    "priceFrom": "from $10/mo"
   },
   {
     "slug": "mintlify-autopilot",
@@ -2049,7 +2477,11 @@
       "drafting docs from merged code",
       "answering repeated support questions in docs"
     ],
-    "pricingNote": "Beta on Mintlify Pro and Enterprise plans; 250 credits per PR it opens or updates, and runs with nothing to update cost nothing"
+    "pricingNote": "Beta on Mintlify Pro and Enterprise plans; 250 credits per PR it opens or updates, and runs with nothing to update cost nothing",
+    "strength": "Always-on agent that keeps your docs in sync with your code, opening or updating PRs.",
+    "watchOut": "It is in beta on Mintlify Pro and Enterprise plans only; it uses 250 credits per PR it opens or updates.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "tk-medium",
@@ -2068,7 +2500,11 @@
       "turning scattered notes into organized ideas",
       "giving your AI agent access to your own notes and drafts"
     ],
-    "pricingNote": "Free with a Medium account on the web, iOS, and Android; Medium says a native desktop app is on the roadmap"
+    "pricingNote": "Free with a Medium account on the web, iOS, and Android; Medium says a native desktop app is on the roadmap",
+    "strength": "Medium's private writing notebook with an AI assistant you call mid-sentence with @TK.",
+    "watchOut": "It is free with a Medium account on web, iOS, and Android; Medium says a native desktop app is on the roadmap, not available yet.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "openai-whisper",
@@ -2087,7 +2523,11 @@
       "subtitle drafts",
       "speech translation"
     ],
-    "pricingNote": "Whisper API $0.006 per minute; OpenAI also lists gpt-transcribe at $0.0045 and gpt-4o-mini-transcribe at $0.003 per minute; open-source Whisper models are free to run yourself"
+    "pricingNote": "Whisper API $0.006 per minute; OpenAI also lists gpt-transcribe at $0.0045 and gpt-4o-mini-transcribe at $0.003 per minute; open-source Whisper models are free to run yourself",
+    "strength": "Speech-to-text transcription, with a hosted Whisper API and open-source models you can run yourself.",
+    "watchOut": "Hosted alternatives listed by OpenAI include gpt-transcribe at $0.0045 and gpt-4o-mini-transcribe at $0.003 per minute.",
+    "freeTier": true,
+    "priceFrom": "API from $0.006/min"
   },
   {
     "slug": "firecrawl",
@@ -2106,7 +2546,11 @@
       "RAG data prep",
       "agent browsing backends"
     ],
-    "pricingNote": "Free plan with 1,000 credits a month and no card (about 1,000 pages); Hobby $19, Standard $99, and Growth $399 a month, about 17% less billed annually; Scale and Enterprise for higher volume"
+    "pricingNote": "Free plan with 1,000 credits a month and no card (about 1,000 pages); Hobby $19, Standard $99, and Growth $399 a month, about 17% less billed annually; Scale and Enterprise for higher volume",
+    "strength": "Turns websites into LLM-ready markdown, with a free plan of about 1,000 pages a month and no card required.",
+    "watchOut": "The free plan is 1,000 credits a month; Hobby, Standard, and Growth are cheaper billed annually.",
+    "freeTier": true,
+    "priceFrom": "from $19/mo"
   },
   {
     "slug": "muse-spark-open",
@@ -2125,7 +2569,11 @@
       "long-context software engineering",
       "running a frontier-class model locally"
     ],
-    "pricingNote": "Open weights under the Muse Model License (limited commercial terms); hosted on OpenRouter, Together AI, Fireworks, Groq, and others"
+    "pricingNote": "Open weights under the Muse Model License (limited commercial terms); hosted on OpenRouter, Together AI, Fireworks, Groq, and others",
+    "strength": "Meta's open-weight model for coding and agentic work, hosted on OpenRouter, Together AI, Fireworks, Groq, and others.",
+    "watchOut": "The Muse Model License has limited commercial terms; hosted prices are set by those providers, not listed here.",
+    "freeTier": true,
+    "priceFrom": "See pricing"
   },
   {
     "slug": "reflection-beam",
@@ -2144,7 +2592,11 @@
       "long-horizon coding agents",
       "open-weight model customization"
     ],
-    "pricingNote": "Free to start on platform.reflection.ai; open weights under Apache 2.0"
+    "pricingNote": "Free to start on platform.reflection.ai; open weights under Apache 2.0",
+    "strength": "Open-weight model for coding and long-running agents, free to start on platform.reflection.ai, under Apache 2.0.",
+    "watchOut": "Paid hosted plan details beyond free to start are not listed here.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "deepseek",
@@ -2163,7 +2615,11 @@
       "reasoning tasks",
       "API experimentation"
     ],
-    "pricingNote": "Free web access; API deepseek-flash (DeepSeek-V4.1-Flash) $0.30 per 1M input tokens (cache miss) and $1.20 per 1M output tokens at peak, and deepseek-v4-pro $1.32 input and $3.96 output at peak; off-peak rates are half; peak hours are 01:00 to 04:00 and 06:00 to 10:00 UTC on weekdays"
+    "pricingNote": "Free web access; API deepseek-flash (DeepSeek-V4.1-Flash) $0.30 per 1M input tokens (cache miss) and $1.20 per 1M output tokens at peak, and deepseek-v4-pro $1.32 input and $3.96 output at peak; off-peak rates are half; peak hours are 01:00 to 04:00 and 06:00 to 10:00 UTC on weekdays",
+    "strength": "High-value coding and reasoning models, with free web access and usage-based API pricing that drops by half off-peak.",
+    "watchOut": "API prices listed are peak rates; peak hours are 01:00 to 04:00 and 06:00 to 10:00 UTC on weekdays.",
+    "freeTier": true,
+    "priceFrom": "API from $0.30/1M in"
   },
   {
     "slug": "capcut",
@@ -2182,7 +2638,11 @@
       "auto captions",
       "quick edits"
     ],
-    "pricingNote": "Free with Pro upgrades on capcut.com"
+    "pricingNote": "Free with Pro upgrades on capcut.com",
+    "strength": "Popular editor with AI video tools, available free with Pro upgrades.",
+    "watchOut": "Pro upgrade prices are not listed here; check capcut.com.",
+    "freeTier": true,
+    "priceFrom": "Free"
   },
   {
     "slug": "hume",
@@ -2201,6 +2661,10 @@
       "emotion-aware UX",
       "conversational voice apps"
     ],
-    "pricingNote": "Developer plans on hume.ai"
+    "pricingNote": "Developer plans on hume.ai",
+    "strength": "Empathic voice AI and expression measurement.",
+    "watchOut": "This listing only points to developer plans on hume.ai; prices are not included here.",
+    "freeTier": false,
+    "priceFrom": "See pricing"
   }
 ]

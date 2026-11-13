@@ -163,3 +163,100 @@ test('homepage top ranked section stays in editorial rank order', async () => {
   assert.deepEqual(slugs, byRank.slice(0, 12).map((tool) => tool.slug))
   assert.equal(html.includes('FAQPage'), true)
 })
+
+function visible(html) {
+  return html
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+}
+
+function cardChunk(html, slug) {
+  const needle = `href="/tool/${slug}"`
+  let from = 0
+  while (true) {
+    const hit = html.indexOf(needle, from)
+    assert.ok(hit >= 0, slug)
+    const open = html.lastIndexOf('<article class="card">', hit)
+    const close = html.indexOf('</article>', hit)
+    if (open >= 0 && close > open && open < hit && hit < close) {
+      return visible(html.slice(open, close + 10))
+    }
+    from = hit + 1
+  }
+}
+
+function assertDecisionBlock(html, slug) {
+  const card = cardChunk(html, slug)
+  const tool = tools.find((item) => item.slug === slug)
+  assert.match(card, />Best for<\/dt>/)
+  assert.match(card, />Price<\/dt>/)
+  assert.match(card, />Strength<\/dt>/)
+  assert.match(card, />Watch-out<\/dt>/)
+  assert.equal(card.includes(tool.strength), true, slug)
+  assert.equal(card.includes(tool.watchOut), true, slug)
+  assert.match(card, /Free tier: (yes|no)/)
+  assert.equal(card.includes('#' + tool.rank), true, slug)
+}
+
+test('search, category, and guide cards show a decision block and ranking is unchanged', async () => {
+  const blog = 'blog post'
+  const writeBlog = 'write a blog post'
+  const stripped = tools.map((tool) => {
+    const { strength, watchOut, freeTier, priceFrom, affiliate, ...rest } = tool
+    return rest
+  })
+  assert.deepEqual(
+    rankTools(tools, blog).map((tool) => tool.slug),
+    rankTools(stripped, blog).map((tool) => tool.slug),
+  )
+  assert.deepEqual(
+    rankTools(tools, writeBlog).map((tool) => tool.slug),
+    rankTools(stripped, writeBlog).map((tool) => tool.slug),
+  )
+  assert.deepEqual(
+    rankTools(tools, '').map((tool) => tool.slug),
+    byRank.map((tool) => tool.slug),
+  )
+  const source = readFileSync(new URL('../src/search.js', import.meta.url), 'utf8')
+  assert.equal(source.includes('strength'), false)
+  assert.equal(source.includes('watchOut'), false)
+  assert.equal(source.includes('freeTier'), false)
+  assert.equal(source.includes('priceFrom'), false)
+  assert.equal(source.includes('affiliate'), false)
+
+  const app = (await import('../src/index.js')).default
+  const searchHtml = await (await app.request('http://local/?q=blog%20post')).text()
+  const grid = searchHtml.match(/Best fit for[\s\S]*?<div class="grid">([\s\S]*?)<\/div>\s*<\/section>/)
+  assert.ok(grid)
+  const searchSlugs = [...grid[1].matchAll(/href="\/tool\/([^"]+)"/g)].map((match) => match[1])
+  assert.deepEqual(searchSlugs, rankTools(tools, blog).map((tool) => tool.slug))
+  for (const slug of searchSlugs.slice(0, 8)) assertDecisionBlock(searchHtml, slug)
+
+  const catHtml = await (await app.request('http://local/category/writing')).text()
+  const writing = tools.filter((tool) => tool.category === 'writing').sort((a, b) => a.rank - b.rank)
+  const catSlugs = [...catHtml.matchAll(/<article class="card">[\s\S]*?href="\/tool\/([^"]+)"/g)].map((match) => match[1])
+  assert.deepEqual(catSlugs, writing.map((tool) => tool.slug))
+  for (const tool of writing) assertDecisionBlock(catHtml, tool.slug)
+
+  const bestHtml = await (await app.request('http://local/best/ai-writing-tool')).text()
+  assert.equal(bestHtml.includes('Compare at a glance'), true)
+  assert.equal(bestHtml.includes('>Best for</dt>'), true)
+  const glance = bestHtml.match(/Compare at a glance[\s\S]*?<div class="grid">([\s\S]*?)<\/div>\s*<\/section>/)
+  assert.ok(glance)
+  const glanceSlugs = [...glance[1].matchAll(/href="\/tool\/([^"]+)"/g)].map((match) => match[1])
+  assert.ok(glanceSlugs.length > 0)
+  for (const slug of glanceSlugs) assertDecisionBlock(bestHtml, slug)
+
+  for (const tool of tools) {
+    assert.equal(typeof tool.strength, 'string')
+    assert.ok(tool.strength.length > 0, tool.slug)
+    assert.equal(typeof tool.watchOut, 'string')
+    assert.ok(tool.watchOut.length > 0, tool.slug)
+    assert.equal(typeof tool.freeTier, 'boolean', tool.slug)
+    assert.equal(typeof tool.priceFrom, 'string', tool.slug)
+    assert.ok(tool.priceFrom.length > 0, tool.slug)
+  }
+})

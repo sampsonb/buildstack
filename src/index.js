@@ -176,18 +176,18 @@ function bySlug(slug) {
 const SECTION_DATES = {
   '/methodology': '2026-11-13',
   '/alternatives/cursor': '2026-10-30',
-  '/best/ai-coding-agent-for-beginners': '2026-11-10',
-  '/best/ai-research-assistant': '2026-10-27',
-  '/best/free-ai-tools': '2026-11-03',
-  '/best/ai-voice-generator': '2026-11-12',
-  '/best/ai-coding-assistant': '2026-11-01',
-  '/best/ai-agent-builder': '2026-11-11',
-  '/best/ai-tools-for-small-business': '2026-11-12',
-  '/best/ai-transcription-tool': '2026-11-02',
-  '/best/ai-writing-tool': '2026-11-03',
-  '/best/ai-image-generator': '2026-11-09',
-  '/best/ai-video-editor-for-youtube': '2026-11-06',
-  '/best/ai-video-generator': '2026-11-06',
+  '/best/ai-coding-agent-for-beginners': '2026-11-13',
+  '/best/ai-research-assistant': '2026-11-13',
+  '/best/free-ai-tools': '2026-11-13',
+  '/best/ai-voice-generator': '2026-11-13',
+  '/best/ai-coding-assistant': '2026-11-13',
+  '/best/ai-agent-builder': '2026-11-13',
+  '/best/ai-tools-for-small-business': '2026-11-13',
+  '/best/ai-transcription-tool': '2026-11-13',
+  '/best/ai-writing-tool': '2026-11-13',
+  '/best/ai-image-generator': '2026-11-13',
+  '/best/ai-video-editor-for-youtube': '2026-11-13',
+  '/best/ai-video-generator': '2026-11-13',
   '/get-featured': '2026-10-15',
 }
 
@@ -313,7 +313,7 @@ a:hover { text-decoration: underline; }
 .searchbox { display: flex; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: .35rem .35rem .35rem 1rem; box-shadow: var(--shadow); }
 .searchbox input { flex: 1; background: transparent; border: 0; outline: 0; color: var(--text); font-size: 1rem; min-width: 0; }
 .searchbox button { background: linear-gradient(135deg, var(--accent), #ff9a3c); color: #1a0f05; border: 0; border-radius: 999px; padding: .7rem 1.1rem; font-weight: 700; cursor: pointer; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.05rem; transition: border-color .15s, transform .15s; }
 .card:hover { border-color: #3a4d6a; transform: translateY(-1px); }
 .card h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
@@ -340,6 +340,14 @@ a:hover { text-decoration: underline; }
 .formrow button { background: var(--accent); color: #1a0f05; border: 0; border-radius: 10px; padding: .7rem 1rem; font-weight: 700; cursor: pointer; }
 .notice { margin-top: .7rem; font-size: .9rem; }
 .rank { color: var(--accent); font-weight: 800; margin-right: .35rem; }
+.decide { margin: .7rem 0 0; display: grid; gap: .32rem; font-size: .8rem; line-height: 1.4; }
+.decide div { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr); gap: .35rem; align-items: start; }
+.decide dt { margin: 0; color: var(--muted); font-weight: 650; }
+.decide dd { margin: 0; color: var(--text); }
+@media (max-width: 420px) {
+  .decide { font-size: .78rem; }
+  .decide div { grid-template-columns: 5.3rem minmax(0, 1fr); gap: .3rem; }
+}
 .prose { line-height: 1.6; color: var(--muted); }
 .prose strong { color: var(--text); }
 ul.clean { padding-left: 1.1rem; }
@@ -388,11 +396,48 @@ async function subscribe(e){
 </html>`
 }
 
+function bestForLine(t) {
+  const items = Array.isArray(t.bestFor) ? t.bestFor.filter(Boolean) : []
+  return items.length ? items.join(', ') : 'See listing'
+}
+
+function priceLine(t) {
+  const from = String(t.priceFrom || '').trim() || 'See pricing'
+  const free = t.freeTier === true ? 'yes' : 'no'
+  return `${from} · Free tier: ${free}`
+}
+
+function decisionBlock(t) {
+  return `<dl class="decide">
+    <div><dt>Best for</dt><dd>${esc(bestForLine(t))}</dd></div>
+    <div><dt>Price</dt><dd>${esc(priceLine(t))}</dd></div>
+    <div><dt>Strength</dt><dd>${esc(t.strength || 'See listing')}</dd></div>
+    <div><dt>Watch-out</dt><dd>${esc(t.watchOut || 'Check the official site for current limits and pricing.')}</dd></div>
+  </dl>`
+}
+
+function glanceSection(items) {
+  const seen = new Set()
+  const list = []
+  for (const x of items || []) {
+    const t = x && (x.t || x)
+    if (!t || !t.slug || seen.has(t.slug)) continue
+    seen.add(t.slug)
+    list.push(t)
+  }
+  if (!list.length) return ''
+  return `<section class="section" id="decide">
+    <h2>Compare at a glance</h2>
+    <div class="grid">${list.map(toolCard).join('')}</div>
+  </section>`
+}
+
 function toolCard(t) {
   return `<article class="card">
     <div class="meta"><span class="rank">#${t.rank}</span><span class="tag">${esc(CATEGORIES[t.category]?.label || t.category)}</span>${t.newRelease ? '<span class="tag new">New</span>' : ''}${t.featured ? '<span class="tag feat">Featured</span>' : ''}</div>
     <h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3>
     <p class="muted" style="margin:0;font-size:.92rem">${esc(t.tagline)}</p>
+    ${decisionBlock(t)}
   </article>`
 }
 
@@ -478,6 +523,10 @@ app.get('/tools.json', (c) => c.json({
     description: t.description,
     bestFor: t.bestFor,
     pricingNote: t.pricingNote,
+    strength: t.strength || '',
+    watchOut: t.watchOut || '',
+    freeTier: !!t.freeTier,
+    priceFrom: t.priceFrom || 'See pricing',
     page: `${SITE}/tool/${t.slug}`,
   })),
 }))
@@ -594,6 +643,9 @@ app.get('/llms-full.txt', (c) => {
         `- BuildStack page: ${SITE}/tool/${t.slug}`,
         `- Best for: ${(t.bestFor || []).join('; ')}`,
         `- Pricing: ${t.pricingNote || 'See official site'}`,
+        `- Price: ${t.priceFrom || 'See pricing'} · Free tier: ${t.freeTier ? 'yes' : 'no'}`,
+        `- Strength: ${t.strength || 'See listing'}`,
+        `- Watch-out: ${t.watchOut || 'Check the official site for current limits and pricing.'}`,
         '',
         t.description,
       )
@@ -886,6 +938,9 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Best for.</strong></p>
     <ul class="clean">${(t.bestFor || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
+    <p><strong>Price.</strong> ${esc(priceLine(t))}</p>
+    ${t.strength ? `<p><strong>Strength.</strong> ${esc(t.strength)}</p>` : ''}
+    ${t.watchOut ? `<p><strong>Watch-out.</strong> ${esc(t.watchOut)}</p>` : ''}
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a> · Listing last changed: ${esc(t.updated || UPDATED)}</p>
     ${t.affiliate ? '<p class="muted">Affiliate link: we may earn a commission if you use the link on this page.</p>' : ''}
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
@@ -985,7 +1040,8 @@ app.get('/methodology', (c) => {
     <p>Tools with no matches are left out. After the category group and the narrower-word order above, a higher score comes first. When two tools are still tied, the higher ranked tool comes first. Search result pages are marked noindex so search engines index the real category and tool pages instead.</p>
 
     <h2>What each listing contains</h2>
-    <p>Every tool page shows the rank, category, a tagline, a description, best-for tags, a short pricing note, and a link to the official site. Pricing notes are short summaries. Always check the official site for current prices.</p>
+    <p>Every tool page shows the rank, category, a tagline, a description, best-for tags, a short pricing note, and a link to the official site. List cards on search results, category pages, and /best guides also show a compact decision block: a one-line best-for summary, a starting price with whether there is a free tier, one strength, and one honest watch-out. Those lines are written from the facts already in the listing. Pricing notes and starting prices are short summaries. Always check the official site for current prices.</p>
+    <p>The decision block is for browsing only. It does not change a tool's rank. Search scoring does not read the strength, watch-out, starting price, or free-tier fields, and it does not read the affiliate flag.</p>
 
     <h2>Dates on this site</h2>
     <p>Each tool page shows when its listing last changed, meaning its name, link, category, tagline, description, best-for tags, or pricing note. A tool moving down one place because another tool was added above it does not count as a change. A guide shows the later of its own last edit and the newest listing change among the tools it covers. The sitemap uses the same dates, so a page is only marked as changed when its content changed. The site-wide date in /tools.json and /llms.txt is the last day any listing changed.</p>
@@ -1297,6 +1353,7 @@ app.get(BEGINNER_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}. When you outgrow them, move to ${grow.map((t) => `${link(t)} (#${t.rank})`).join(' or ')}.</p>
     <p class="muted">Last updated: ${PD} · ${picks.length} beginner picks · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(picks)}
   <section class="section">
     <h2>Quick picks</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -1499,6 +1556,7 @@ app.get(RESEARCH_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${PD} · ${picks.length} research picks · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(picks)}
   <section class="section">
     <h2>AI research assistants at a glance</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -1739,6 +1797,7 @@ app.get(FREE_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${PD} · Free plans checked on ${SD} · ${picks.length} free picks · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(picks)}
   <section class="section">
     <h2>Free AI tools at a glance</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -1899,6 +1958,7 @@ app.get(VOICE_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${PD} · Pricing checked on ${SD} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(picks)}
   <section class="section">
     <h2>AI voice generators at a glance</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -2068,6 +2128,7 @@ app.get(CODING_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${PD} · ${list.length} coding tools ranked · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(list)}
   <section class="section" id="ranking">
     <h2>${esc(NAME)}'s coding ranking</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -2280,6 +2341,7 @@ app.get(AGENT_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${PD} · ${list.length} agent and automation tools ranked · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(list)}
   <section class="section" id="at-a-glance">
     <h2>At a glance</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -2459,6 +2521,7 @@ app.get(SMB_PATH, (c) => {
     <p class="muted">Last updated: ${PD} · ${list.length} tools picked by job · <a href="/methodology">How we rank</a></p>
     <p>BuildStack is run by tier11. If you want help picking tools and rolling them out safely, email <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>.</p>
   </section>
+  ${glanceSection(list)}
   <section class="section" id="starter-stack">
     <h2>The starter stack</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -2633,6 +2696,7 @@ app.get(TRANS_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${PD} · Pricing from official pages, most rechecked on ${SD} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(picks)}
   <section class="section">
     <h2>AI transcription tools at a glance</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -2790,6 +2854,7 @@ app.get(WRITE_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(picks)}
   <section class="section">
     <h2>AI writing tools at a glance</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -2950,6 +3015,7 @@ app.get(IMAGE_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(picks)}
   <section class="section">
     <h2>AI image generators at a glance</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -3102,6 +3168,7 @@ app.get(VIDEO_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(picks)}
   <section class="section">
     <h2>AI video editors for YouTube at a glance</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
@@ -3256,6 +3323,7 @@ app.get(VIDEOGEN_PATH, (c) => {
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
     <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
+  ${glanceSection(picks)}
   <section class="section">
     <h2>AI video generators at a glance</h2>
     <div class="panel" style="overflow-x:auto;padding:.5rem">
