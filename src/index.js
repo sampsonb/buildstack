@@ -5,7 +5,7 @@ import { rankTools } from './search.js'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-12'
+const UPDATED = '2026-11-13'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -58,7 +58,7 @@ function categoryDescription(cat, list) {
   const top = list.slice(0, 3).map((t) => t.name)
   const more = list.length > top.length ? `, plus ${list.length - top.length} more` : ''
   const picks = top.length ? `: ${listNames(top)}${more}` : ''
-  return `${list.length} ${cat.label} AI tools ranked on ${NAME}${picks}. ${cat.blurb}. Updated ${UPDATED}.`
+  return `${list.length} ${cat.label} AI tools ranked on ${NAME}${picks}. ${cat.blurb}. Updated ${maxDate(list.map((t) => t.updated)) || UPDATED}.`
 }
 
 // Tool page meta description: search engines cut snippets at about 155
@@ -155,7 +155,7 @@ function homeFaq() {
     },
     {
       q: 'How often is the BuildStack ranking updated?',
-      a: `BuildStack adds new tools and adjusts ranks as tools launch and change. The list was last updated on ${UPDATED} and has ${all.length} tools. The same date is published in /tools.json and on the methodology page.`,
+      a: `BuildStack adds new tools and adjusts ranks as tools launch and change. The list was last updated on ${UPDATED} and has ${all.length} tools. The same date is published in /tools.json, and each tool page shows when its own listing last changed.`,
     },
   ]
 }
@@ -166,6 +166,73 @@ function tools() {
 
 function bySlug(slug) {
   return tools().find((t) => t.slug === slug)
+}
+
+// Honest per-page dates (added 2026-11-13). Each tool carries `updated`: the last day its facts
+// (name, link, category, tagline, description, best-for tags, or pricing note) changed. Rank
+// renumbering when other tools are added does not count. A guide's date is the later of its own last
+// editorial change (SECTION_DATES, from the git history of that guide's code) and the newest
+// `updated` among the tools it shows. Bump a guide's SECTION_DATES entry when you edit its copy.
+const SECTION_DATES = {
+  '/methodology': '2026-11-13',
+  '/alternatives/cursor': '2026-10-30',
+  '/best/ai-coding-agent-for-beginners': '2026-11-10',
+  '/best/ai-research-assistant': '2026-10-27',
+  '/best/free-ai-tools': '2026-11-03',
+  '/best/ai-voice-generator': '2026-11-12',
+  '/best/ai-coding-assistant': '2026-11-01',
+  '/best/ai-agent-builder': '2026-11-11',
+  '/best/ai-tools-for-small-business': '2026-11-12',
+  '/best/ai-transcription-tool': '2026-11-02',
+  '/best/ai-writing-tool': '2026-11-03',
+  '/best/ai-image-generator': '2026-11-09',
+  '/best/ai-video-editor-for-youtube': '2026-11-06',
+  '/best/ai-video-generator': '2026-11-06',
+  '/get-featured': '2026-10-15',
+}
+
+function maxDate(dates) {
+  return dates.filter(Boolean).reduce((a, b) => (b > a ? b : a), '')
+}
+
+// Collect the tool objects a guide's data function returns (skipping the full list and finder).
+function toolsIn(d) {
+  const out = new Map()
+  const walk = (v) => {
+    if (!v || typeof v !== 'object') return
+    if (Array.isArray(v)) { v.forEach(walk); return }
+    if (typeof v.slug === 'string' && typeof v.updated === 'string' && v.category) { out.set(v.slug, v); return }
+    for (const [k, x] of Object.entries(v)) if (k !== 'all' && k !== 'find') walk(x)
+  }
+  walk(d)
+  return [...out.values()]
+}
+
+function guideData() {
+  return {
+    '/alternatives/cursor': cursorAltData,
+    [BEGINNER_PATH]: beginnerData,
+    [RESEARCH_PATH]: researchData,
+    [FREE_PATH]: freeData,
+    [VOICE_PATH]: voiceData,
+    [CODING_PATH]: codingData,
+    [AGENT_PATH]: agentData,
+    [SMB_PATH]: smbData,
+    [TRANS_PATH]: transData,
+    [WRITE_PATH]: writeData,
+    [IMAGE_PATH]: imageData,
+    [VIDEO_PATH]: videoData,
+    [VIDEOGEN_PATH]: videogenData,
+  }
+}
+
+function pageDate(path) {
+  const all = tools()
+  if (path.startsWith('/tool/')) { const t = bySlug(path.slice(6)); return (t && t.updated) || UPDATED }
+  if (path.startsWith('/category/')) return maxDate(all.filter((t) => t.category === path.slice(10)).map((t) => t.updated)) || UPDATED
+  if (['', '/', '/categories', '/about', '/tools.json', '/llms.txt', '/llms-full.txt'].includes(path)) return maxDate(all.map((t) => t.updated)) || UPDATED
+  const fn = guideData()[path]
+  return maxDate([SECTION_DATES[path], ...(fn ? toolsIn(fn()).map((t) => t.updated) : [])]) || UPDATED
 }
 
 function searchTools(q) {
@@ -380,7 +447,6 @@ Sitemap: ${SITE}/sitemap.xml
 `))
 
 app.get('/sitemap.xml', (c) => {
-  const lastmod = UPDATED
   const urls = [
     '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
@@ -388,7 +454,7 @@ app.get('/sitemap.xml', (c) => {
   ]
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u) => `  <url><loc>${SITE}${u}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n')}
+${urls.map((u) => `  <url><loc>${SITE}${u}</loc><lastmod>${pageDate(u)}</lastmod></url>`).join('\n')}
 </urlset>`
   return c.body(xml, 200, { 'content-type': 'application/xml; charset=utf-8' })
 })
@@ -407,6 +473,7 @@ app.get('/tools.json', (c) => c.json({
     featured: !!t.featured,
     affiliate: !!t.affiliate,
     newRelease: !!t.newRelease,
+    updated: t.updated,
     tagline: t.tagline,
     description: t.description,
     bestFor: t.bestFor,
@@ -556,6 +623,7 @@ app.post('/api/subscribe', async (c) => {
 })
 
 app.get('/', (c) => {
+  const PD = pageDate('/')
   const q = c.req.query('q') || ''
   const results = q ? searchTools(q) : tools()
   const featured = tools().filter((t) => t.featured)
@@ -564,7 +632,7 @@ app.get('/', (c) => {
   const qa = q ? [] : quickAnswers()
   const faq = q ? [] : homeFaq()
   const toolLink = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
-  const homeDescription = `Free AI tool finder. Type a task, get ranked AI tools that fit. ${all.length} tools in ${Object.keys(CATEGORIES).length} categories, with quick answers by job. Updated ${UPDATED}.`
+  const homeDescription = `Free AI tool finder. Type a task, get ranked AI tools that fit. ${all.length} tools in ${Object.keys(CATEGORIES).length} categories, with quick answers by job. Updated ${PD}.`
   const quickBlock = q ? '' : `
   <section class="section" id="quick-answer">
     <h2>Quick answer: which AI tool for which job</h2>
@@ -630,7 +698,7 @@ app.get('/', (c) => {
     </form>
   </section>
   ${q ? `<section class="section"><h2>Best fit for “${esc(q)}”</h2><div class="grid">${results.map(toolCard).join('') || '<p class="muted">No matches. Try a broader phrase.</p>'}</div></section>` : ''}
-  ${q ? '' : `<p class="muted" style="margin:.9rem 0 0;font-size:.88rem">Last updated: ${UPDATED} · ${all.length} ranked tools · <a href="/methodology">How we rank</a></p>`}
+  ${q ? '' : `<p class="muted" style="margin:.9rem 0 0;font-size:.88rem">Last updated: ${PD} · ${all.length} ranked tools · <a href="/methodology">How we rank</a></p>`}
   <section class="section" id="best-for">
     <h2>Find an AI tool by task</h2>
     <div class="pills">
@@ -692,7 +760,7 @@ app.get('/', (c) => {
       }, {
         '@type': 'FAQPage',
         '@id': `${SITE}/#faq`,
-        dateModified: UPDATED,
+        dateModified: PD,
         mainEntity: faq.map((f) => ({
           '@type': 'Question',
           name: f.q,
@@ -714,6 +782,7 @@ app.get('/', (c) => {
 })
 
 app.get('/categories', (c) => {
+  const PD = pageDate('/categories')
   const body = `
   <section class="hero"><h1>Categories</h1><p class="muted">Browse the full ranked stack by category.</p></section>
   <div class="grid">
@@ -739,6 +808,7 @@ app.get('/category/:slug', (c) => {
   const cat = CATEGORIES[slug]
   if (!cat) return c.notFound()
   const list = tools().filter((t) => t.category === slug)
+  const PD = pageDate(`/category/${slug}`)
   const body = `
   <section class="hero">
     <h1>${esc(cat.label)}</h1>
@@ -769,7 +839,7 @@ app.get('/category/:slug', (c) => {
       name: `${cat.label} AI tools`,
       url: `${SITE}/category/${slug}`,
       description: cat.blurb,
-      dateModified: UPDATED,
+      dateModified: PD,
       mainEntity: {
         '@type': 'ItemList',
         name: `Ranked ${cat.label} AI tools`,
@@ -816,7 +886,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Best for.</strong></p>
     <ul class="clean">${(t.bestFor || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
-    <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a></p>
+    <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a> · Listing last changed: ${esc(t.updated || UPDATED)}</p>
     ${t.affiliate ? '<p class="muted">Affiliate link: we may earn a commission if you use the link on this page.</p>' : ''}
     ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
     ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
@@ -840,7 +910,7 @@ app.get('/tool/:slug', (c) => {
       }, {
         '@type': 'FAQPage',
         '@id': `${SITE}/tool/${t.slug}#faq`,
-        dateModified: UPDATED,
+        dateModified: t.updated || UPDATED,
         mainEntity: tf.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([
         ['Home', '/'],
@@ -880,17 +950,18 @@ app.get('/get-featured', (c) => {
 })
 
 app.get('/methodology', (c) => {
+  const PD = pageDate('/methodology')
   const all = tools()
   const catCounts = Object.entries(CATEGORIES)
     .map(([k, v]) => ({ k, label: v.label, n: all.filter((t) => t.category === k).length }))
   const featuredCount = all.filter((t) => t.featured).length
   const newCount = all.filter((t) => t.newRelease).length
-  const description = `How ${NAME} ranks AI tools: one editorial rank per tool, category pages in rank order, use-case search scoring, and featured listings kept separate from rank. ${all.length} tools, updated ${UPDATED}.`
+  const description = `How ${NAME} ranks AI tools: one editorial rank per tool, category pages in rank order, use-case search scoring, and featured listings kept separate from rank. ${all.length} tools, updated ${PD}.`
   const body = `
   <section class="hero">
     <h1>How BuildStack ranks AI tools</h1>
     <p>Short answer: every tool gets one editorial rank, from #1 to #${all.length}. Category pages and the full list show tools in that order. Search reorders tools by how well they match your words, and uses rank only to break ties. Paying for a featured listing does not change a tool's rank.</p>
-    <p class="muted">Last updated: ${UPDATED} · ${all.length} tools</p>
+    <p class="muted">Last updated: ${PD} · ${all.length} tools</p>
   </section>
   <section class="panel prose">
     <h2 style="margin-top:0">One rank per tool</h2>
@@ -916,6 +987,9 @@ app.get('/methodology', (c) => {
     <h2>What each listing contains</h2>
     <p>Every tool page shows the rank, category, a tagline, a description, best-for tags, a short pricing note, and a link to the official site. Pricing notes are short summaries. Always check the official site for current prices.</p>
 
+    <h2>Dates on this site</h2>
+    <p>Each tool page shows when its listing last changed, meaning its name, link, category, tagline, description, best-for tags, or pricing note. A tool moving down one place because another tool was added above it does not count as a change. A guide shows the later of its own last edit and the newest listing change among the tools it covers. The sitemap uses the same dates, so a page is only marked as changed when its content changed. The site-wide date in /tools.json and /llms.txt is the last day any listing changed.</p>
+
     <h2>New releases</h2>
     <p>Recently launched tools carry a New tag and appear in the New releases section of the homepage. The tag does not change rank. ${newCount} tools carry it right now.</p>
 
@@ -938,7 +1012,7 @@ app.get('/methodology', (c) => {
         name: 'How BuildStack ranks AI tools',
         url: `${SITE}/methodology`,
         description,
-        dateModified: UPDATED,
+        dateModified: PD,
         isPartOf: { '@type': 'WebSite', name: NAME, url: SITE },
       }, breadcrumbs([['Home', '/'], ['How we rank', '/methodology']])],
     },
@@ -1032,6 +1106,7 @@ function cursorAltFaq(d) {
 }
 
 app.get('/alternatives/cursor', (c) => {
+  const PD = pageDate('/alternatives/cursor')
   const d = cursorAltData()
   const { find, cursor, groups, list } = d
   if (!cursor) return c.notFound()
@@ -1048,14 +1123,14 @@ app.get('/alternatives/cursor', (c) => {
   ].filter(Boolean)
   const shortHtml = shortParts.map((p) => p.length === 2 ? `${rl(p[0])} ${p[1]}` : `${rl(p[0])} ${p[1]} ${rl(p[2])} ${p[3]}`).join('. ')
   const shortText = shortParts.map((p) => p.length === 2 ? `${rt(p[0])} ${p[1]}` : `${rt(p[0])} ${p[1]} ${rt(p[2])} ${p[3]}`).join('. ')
-  const description = `Best Cursor alternatives, sorted by how you code: ${list.slice(0, 4).map((t) => `${t.name} (#${t.rank})`).join(', ')} and more. ${list.length} coding tools from the ${NAME} ranking. Updated ${UPDATED}.`
+  const description = `Best Cursor alternatives, sorted by how you code: ${list.slice(0, 4).map((t) => `${t.name} (#${t.rank})`).join(', ')} and more. ${list.length} coding tools from the ${NAME} ranking. Updated ${PD}.`
   const title = `Best Cursor Alternatives in 2026, Sorted by How You Code | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><a class="tag" href="/category/coding">Coding</a><span class="tag">Guide</span></div>
     <h1>Best Cursor Alternatives in 2026, Sorted by How You Code</h1>
     <p><strong>Short answer:</strong> ${link(cursor)} is #${cursor.rank} overall on ${NAME}, so every alternative here ranks below it. ${shortHtml}. Pick by how you work, not by one overall winner.</p>
-    <p class="muted">Last updated: ${UPDATED} · ${list.length} alternatives · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · ${list.length} alternatives · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>Cursor alternatives at a glance</h2>
@@ -1112,7 +1187,7 @@ app.get('/alternatives/cursor', (c) => {
         headline: 'Best Cursor Alternatives in 2026, Sorted by How You Code',
         description,
         url: `${SITE}/alternatives/cursor`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${cursor.name} is #${cursor.rank} overall on ${NAME}. ${shortText}.`,
@@ -1201,6 +1276,8 @@ function beginnerFaq(d) {
 }
 
 app.get(BEGINNER_PATH, (c) => {
+  const PD = pageDate(BEGINNER_PATH)
+  const SD = SECTION_DATES[BEGINNER_PATH] || PD
   const d = beginnerData()
   const { find, picks, byRank, grow, publish } = d
   if (!picks.length) return c.notFound()
@@ -1211,14 +1288,14 @@ app.get(BEGINNER_PATH, (c) => {
   const catLink = (t) => `<a href="/category/${esc(t.category)}">${esc(CATEGORIES[t.category]?.label || t.category)}</a>`
   const shortText = `For a first app with no setup, start with ${rt('lovable')} for a full web app from a chat, ${rt('bolt')} for quick builds with free hosting, ${rt('replit-agent')} to learn by building in one place, or ${rt('v0')} for polished screens you can deploy to Vercel. All four run in your browser, so there is nothing to install`
   const shortHtml = `For a first app with no setup, start with ${rl('lovable')} for a full web app from a chat, ${rl('bolt')} for quick builds with free hosting, ${rl('replit-agent')} to learn by building in one place, or ${rl('v0')} for polished screens you can deploy to Vercel. All four run in your browser, so there is nothing to install`
-  const description = `Best AI coding agents for beginners, no setup required: ${byRank.map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')}. Where each runs, what you can build, and how to start free. Updated ${UPDATED}.`
+  const description = `Best AI coding agents for beginners, no setup required: ${byRank.map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')}. Where each runs, what you can build, and how to start free. Updated ${PD}.`
   const title = `${BEGINNER_H1} | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><a class="tag" href="/category/coding">Coding</a><a class="tag" href="/category/agents">Agents</a><span class="tag">Guide</span></div>
     <h1>${esc(BEGINNER_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}. When you outgrow them, move to ${grow.map((t) => `${link(t)} (#${t.rank})`).join(' or ')}.</p>
-    <p class="muted">Last updated: ${UPDATED} · ${picks.length} beginner picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · ${picks.length} beginner picks · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>Quick picks</h2>
@@ -1228,7 +1305,7 @@ app.get(BEGINNER_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.build)}</td><td>${esc(p.where)}</td><td>${esc(p.t.pricingNote || 'See official site')}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${UPDATED}. Prices and limits change, so check the official site before you pay.</p>
+    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${SD}. Prices and limits change, so check the official site before you pay.</p>
   </section>
   <section class="section">
     <h2>One-line verdict for each pick</h2>
@@ -1297,7 +1374,7 @@ app.get(BEGINNER_PATH, (c) => {
         headline: BEGINNER_H1,
         description,
         url: `${SITE}${BEGINNER_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -1395,6 +1472,8 @@ function researchFaq(d) {
 }
 
 app.get(RESEARCH_PATH, (c) => {
+  const PD = pageDate(RESEARCH_PATH)
+  const SD = SECTION_DATES[RESEARCH_PATH] || PD
   const d = researchData()
   const { find, picks, byRank } = d
   if (!picks.length) return c.notFound()
@@ -1406,7 +1485,7 @@ app.get(RESEARCH_PATH, (c) => {
   const pick = (s) => picks.find((p) => p.slug === s)
   const shortText = `For web research with citations, start with ${rt('gemini')} or ${rt('perplexity')}. For your own documents, use ${rt('notebooklm')}. To summarize research papers, use ${rt('elicit')} for literature reviews, ${rt('consensus')} for evidence summaries, or ${rt('scispace')} to compare many papers. Always open the sources before you cite an AI summary`
   const shortHtml = `For web research with citations, start with ${rl('gemini')} or ${rl('perplexity')}. For your own documents, use ${rl('notebooklm')}. To summarize research papers, use ${rl('elicit')} for literature reviews, ${rl('consensus')} for evidence summaries, or ${rl('scispace')} to compare many papers. Always open the sources before you cite an AI summary`
-  const description = `Best AI research assistants in 2026, including tools to summarize papers: ${byRank.slice(0, 6).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more. Sources each uses, pricing, and how to check a summary. Updated ${UPDATED}.`
+  const description = `Best AI research assistants in 2026, including tools to summarize papers: ${byRank.slice(0, 6).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more. Sources each uses, pricing, and how to check a summary. Updated ${PD}.`
   const title = `Best AI Research Assistants in 2026 | ${NAME}`
   const panel = (s) => { const p = pick(s); if (!p) return ''; return `<div class="panel prose" style="margin-bottom:1rem" id="${esc(p.slug)}">
       <h3 style="margin-top:0;color:var(--text)">${esc(p.t.name)} (#${p.t.rank}, ${catLink(p.t)})</h3>
@@ -1418,7 +1497,7 @@ app.get(RESEARCH_PATH, (c) => {
     <div class="meta"><a class="tag" href="/category/research">Research</a><span class="tag">Guide</span></div>
     <h1>${esc(RESEARCH_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · ${picks.length} research picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · ${picks.length} research picks · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>AI research assistants at a glance</h2>
@@ -1428,7 +1507,7 @@ app.get(RESEARCH_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.best)}</td><td>${esc(p.sources)}</td><td>${esc(p.t.pricingNote || 'See official site')}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${UPDATED}. Prices and limits change, so check the official site before you pay.</p>
+    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${SD}. Prices and limits change, so check the official site before you pay.</p>
   </section>
   <section class="section">
     <h2>Best for web research with citations</h2>
@@ -1491,7 +1570,7 @@ app.get(RESEARCH_PATH, (c) => {
         headline: RESEARCH_H1,
         description,
         url: `${SITE}${RESEARCH_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -1622,6 +1701,8 @@ function freeFaq(d) {
 }
 
 app.get(FREE_PATH, (c) => {
+  const PD = pageDate(FREE_PATH)
+  const SD = SECTION_DATES[FREE_PATH] || PD
   const d = freeData()
   const { find, picks, byRank } = d
   if (!picks.length) return c.notFound()
@@ -1633,7 +1714,7 @@ app.get(FREE_PATH, (c) => {
   const short = (f) => `For writing and everyday questions, start with ${f('claude')} or ${f('chatgpt')} on their free plans. For research, use ${f('gemini')} or ${f('perplexity')}. For coding, ${f('google-antigravity')} is free for individuals and ${f('cline')} is open source. For video, ${f('veo-3-1')} gives you 50 free Google Flow credits a day. For automation, ${f('make')} includes 1,000 free credits a month. To avoid vendor limits entirely, run an open-weight model such as ${f('liquid-lfm3')} on your own hardware`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const description = `Best free AI tools in 2026 by task: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with what each free plan includes and the limits to watch. Updated ${UPDATED}.`
+  const description = `Best free AI tools in 2026 by task: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with what each free plan includes and the limits to watch. Updated ${PD}.`
   const title = `Best Free AI Tools in 2026, by Task | ${NAME}`
   const kindLabel = (p) => FREE_KINDS[p.kind]?.label || 'Free'
   const groupHtml = (g) => {
@@ -1656,7 +1737,7 @@ app.get(FREE_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Free</span></div>
     <h1>${esc(FREE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · Free plans checked on ${UPDATED} · ${picks.length} free picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · Free plans checked on ${SD} · ${picks.length} free picks · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>Free AI tools at a glance</h2>
@@ -1704,7 +1785,7 @@ app.get(FREE_PATH, (c) => {
         headline: FREE_H1,
         description,
         url: `${SITE}${FREE_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -1797,6 +1878,8 @@ function voiceFaq(d) {
 }
 
 app.get(VOICE_PATH, (c) => {
+  const PD = pageDate(VOICE_PATH)
+  const SD = SECTION_DATES[VOICE_PATH] || PD
   const d = voiceData()
   const { find, picks, byRank } = d
   if (!picks.length) return c.notFound()
@@ -1807,14 +1890,14 @@ app.get(VOICE_PATH, (c) => {
   const short = (f) => `For realistic voiceovers, start with ${f('elevenlabs')}. For directed, expressive narration, use ${f('fish-audio-drama-3')}. Developers building multilingual voice apps should look at ${f('mistral-voxtral-3')}, and ${f('assemblyai-tts-1')} is built for low-latency voice agents. To keep speech on the device, run ${f('gradium-phonon')}`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const description = `Best AI voice generators and text to speech tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with verified pricing and what each is best for. Updated ${UPDATED}.`
+  const description = `Best AI voice generators and text to speech tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with verified pricing and what each is best for. Updated ${PD}.`
   const title = `Best AI Voice Generators and Text to Speech in 2026 | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Voice</span></div>
     <h1>${esc(VOICE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · Pricing checked on ${UPDATED} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · Pricing checked on ${SD} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>AI voice generators at a glance</h2>
@@ -1870,7 +1953,7 @@ app.get(VOICE_PATH, (c) => {
         headline: VOICE_H1,
         description,
         url: `${SITE}${VOICE_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -1963,6 +2046,8 @@ function codingFaq(d) {
 }
 
 app.get(CODING_PATH, (c) => {
+  const PD = pageDate(CODING_PATH)
+  const SD = SECTION_DATES[CODING_PATH] || PD
   const d = codingData()
   const { find, list, sections } = d
   if (!list.length) return c.notFound()
@@ -1974,14 +2059,14 @@ app.get(CODING_PATH, (c) => {
   const shortText = short(rt)
   const shortHtml = short(rl)
   const checked = CODING_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
-  const description = `Best AI coding assistants in 2026, ranked: ${list.slice(0, 5).map((t) => `${t.name} (#${t.rank})`).join(', ')} and ${list.length - 5} more, with what each is best for and pricing notes. Updated ${UPDATED}.`
+  const description = `Best AI coding assistants in 2026, ranked: ${list.slice(0, 5).map((t) => `${t.name} (#${t.rank})`).join(', ')} and ${list.length - 5} more, with what each is best for and pricing notes. Updated ${PD}.`
   const title = `Best AI Coding Assistants in 2026, Ranked | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Coding</span></div>
     <h1>${esc(CODING_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · ${list.length} coding tools ranked · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · ${list.length} coding tools ranked · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section" id="ranking">
     <h2>${esc(NAME)}'s coding ranking</h2>
@@ -1991,7 +2076,7 @@ app.get(CODING_PATH, (c) => {
         <tbody>${list.map((t) => `<tr><td>${link(t)}</td><td>#${t.rank}</td><td>${esc(CODING_TYPES[t.slug] || 'Coding tool')}</td><td>${esc(listNames(t.bestFor || []))}</td><td>${esc(t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/coding">coding category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${UPDATED}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/coding">coding category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${SD}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
   </section>
   ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
     <h2>${esc(g.heading)}</h2>
@@ -2045,7 +2130,7 @@ app.get(CODING_PATH, (c) => {
         headline: CODING_H1,
         description,
         url: `${SITE}${CODING_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -2173,6 +2258,8 @@ function agentFaq(d) {
 }
 
 app.get(AGENT_PATH, (c) => {
+  const PD = pageDate(AGENT_PATH)
+  const SD = SECTION_DATES[AGENT_PATH] || PD
   const d = agentData()
   const { find, list, sections, tasks } = d
   if (!list.length) return c.notFound()
@@ -2184,14 +2271,14 @@ app.get(AGENT_PATH, (c) => {
   const shortText = short(rt)
   const shortHtml = short(rl)
   const checked = AGENT_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
-  const description = `Best AI agent builders and automation tools in 2026: Lindy, Zapier, Make, n8n, Manus, Copilot Studio and ${list.length - 6} more, compared by no-code or technical, best use, and pricing. Updated ${UPDATED}.`
+  const description = `Best AI agent builders and automation tools in 2026: Lindy, Zapier, Make, n8n, Manus, Copilot Studio and ${list.length - 6} more, compared by no-code or technical, best use, and pricing. Updated ${PD}.`
   const title = `Best AI Agent Builders and Automation Tools in 2026 | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Agents</span></div>
     <h1>${esc(AGENT_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · ${list.length} agent and automation tools ranked · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · ${list.length} agent and automation tools ranked · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section" id="at-a-glance">
     <h2>At a glance</h2>
@@ -2201,7 +2288,7 @@ app.get(AGENT_PATH, (c) => {
         <tbody>${list.map((t) => `<tr><td>${link(t)}</td><td>#${t.rank}</td><td>${esc(AGENT_TYPES[t.slug] || 'Agent tool')}</td><td>${esc(listNames(t.bestFor || []))}</td><td>${esc(t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/agents">agents category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${UPDATED}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/agents">agents category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${SD}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
   </section>
   ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
     <h2>${esc(g.heading)}</h2>
@@ -2251,7 +2338,7 @@ app.get(AGENT_PATH, (c) => {
         headline: AGENT_H1,
         description,
         url: `${SITE}${AGENT_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -2349,6 +2436,8 @@ function smbFaq(d) {
 }
 
 app.get(SMB_PATH, (c) => {
+  const PD = pageDate(SMB_PATH)
+  const SD = SECTION_DATES[SMB_PATH] || PD
   const d = smbData()
   const { find, stack, sections, list } = d
   if (!stack.length) return c.notFound()
@@ -2360,14 +2449,14 @@ app.get(SMB_PATH, (c) => {
   const shortText = short(rt)
   const shortHtml = short(rl)
   const checked = SMB_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
-  const description = `Best AI tools for small business in 2026: a starter stack of ChatGPT, Canva, Notion AI, Zapier and Perplexity, plus ${list.length - 5} more picks by job, with pricing notes. Updated ${UPDATED}.`
+  const description = `Best AI tools for small business in 2026: a starter stack of ChatGPT, Canva, Notion AI, Zapier and Perplexity, plus ${list.length - 5} more picks by job, with pricing notes. Updated ${PD}.`
   const title = `Best AI Tools for Small Business: A Starter Stack by Job | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Small business</span></div>
     <h1>${esc(SMB_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · ${list.length} tools picked by job · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · ${list.length} tools picked by job · <a href="/methodology">How we rank</a></p>
     <p>BuildStack is run by tier11. If you want help picking tools and rolling them out safely, email <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>.</p>
   </section>
   <section class="section" id="starter-stack">
@@ -2378,7 +2467,7 @@ app.get(SMB_PATH, (c) => {
         <tbody>${stack.map((x) => `<tr><td>${esc(x.job)}</td><td>${link(x.t)}</td><td>#${x.t.rank}</td><td>${esc(x.t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category. Pricing for ${esc(listNames(checked))} was checked against official pricing pages on ${UPDATED}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category. Pricing for ${esc(listNames(checked))} was checked against official pricing pages on ${SD}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
   </section>
   ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
     <h2>${esc(g.heading)}</h2>
@@ -2424,7 +2513,7 @@ app.get(SMB_PATH, (c) => {
         headline: SMB_H1,
         description,
         url: `${SITE}${SMB_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -2516,6 +2605,8 @@ function transFaq(d) {
 }
 
 app.get(TRANS_PATH, (c) => {
+  const PD = pageDate(TRANS_PATH)
+  const SD = SECTION_DATES[TRANS_PATH] || PD
   const d = transData()
   const { find, picks, byRank } = d
   if (!picks.length) return c.notFound()
@@ -2526,7 +2617,7 @@ app.get(TRANS_PATH, (c) => {
   const short = (f) => `To edit podcasts and video by transcript, start with ${f('descript')}. For meeting transcripts and summaries, use ${f('otter')} or ${f('fireflies')}. Developers adding speech to text to an app should look at ${f('deepgram')} or the lower-cost ${f('mistral-voxtral-3')}, and to keep audio private on your own hardware, run ${f('nvidia-nemotron-transcribe')} or ${f('ibm-granite-speech-5')}`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const description = `Best AI transcription tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with verified pricing for meetings, podcasts, and developer APIs. Updated ${UPDATED}.`
+  const description = `Best AI transcription tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with verified pricing for meetings, podcasts, and developer APIs. Updated ${PD}.`
   const title = `Best AI Transcription Tools in 2026 | ${NAME}`
   const useCases = [
     ['Meetings', `${rl('otter')} and ${rl('fireflies')} join your calls and send notes afterward. If your team lives in Notion, ${rl('notion-ai')} keeps meeting notes next to your docs.`],
@@ -2540,7 +2631,7 @@ app.get(TRANS_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Voice</span></div>
     <h1>${esc(TRANS_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · Pricing from official pages, most rechecked on ${UPDATED} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · Pricing from official pages, most rechecked on ${SD} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>AI transcription tools at a glance</h2>
@@ -2594,7 +2685,7 @@ app.get(TRANS_PATH, (c) => {
         headline: TRANS_H1,
         description,
         url: `${SITE}${TRANS_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -2678,6 +2769,7 @@ function writeFaq(d) {
 }
 
 app.get(WRITE_PATH, (c) => {
+  const PD = pageDate(WRITE_PATH)
   const d = writeData()
   const { find, picks, byRank } = d
   if (!picks.length) return c.notFound()
@@ -2689,14 +2781,14 @@ app.get(WRITE_PATH, (c) => {
   const shortText = short(rt)
   const shortHtml = short(rl)
   const steps = WRITE_WORKFLOW.map((s) => ({ ...s, t: s.slug ? find(s.slug) : null }))
-  const description = `Best AI writing tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus a blog post workflow and verified pricing. Updated ${UPDATED}.`
+  const description = `Best AI writing tools in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus a blog post workflow and verified pricing. Updated ${PD}.`
   const title = `Best AI Writing Tools in 2026 (and for Blog Posts) | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Writing</span></div>
     <h1>${esc(WRITE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>AI writing tools at a glance</h2>
@@ -2756,7 +2848,7 @@ app.get(WRITE_PATH, (c) => {
         headline: WRITE_H1,
         description,
         url: `${SITE}${WRITE_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -2838,6 +2930,7 @@ function imageFaq(d) {
 }
 
 app.get(IMAGE_PATH, (c) => {
+  const PD = pageDate(IMAGE_PATH)
   const d = imageData()
   const { find, picks, byRank } = d
   if (!picks.length) return c.notFound()
@@ -2848,14 +2941,14 @@ app.get(IMAGE_PATH, (c) => {
   const short = (f) => `The best AI image generator for artistic images is ${f('midjourney')}. Choose ${f('ideogram')} for readable text, ${f('flux')} for photorealism and API use, ${f('krea-3')} for consistent products and characters, ${f('seedream-5-5')} for many rounds of edits and transparent assets, ${f('leonardo')} for game assets and custom styles, and ${f('adobe-firefly')} if you want the commercially safer option inside Adobe apps`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const description = `Best AI image generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus the best Midjourney alternatives and verified pricing. Updated ${UPDATED}.`
+  const description = `Best AI image generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus the best Midjourney alternatives and verified pricing. Updated ${PD}.`
   const title = `Best AI Image Generators in 2026 (Midjourney Alternatives) | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Images</span></div>
     <h1>${esc(IMAGE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>AI image generators at a glance</h2>
@@ -2912,7 +3005,7 @@ app.get(IMAGE_PATH, (c) => {
         headline: IMAGE_H1,
         description,
         url: `${SITE}${IMAGE_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -2988,6 +3081,7 @@ function videoFaq(d) {
 }
 
 app.get(VIDEO_PATH, (c) => {
+  const PD = pageDate(VIDEO_PATH)
   const d = videoData()
   const { find, picks, byRank } = d
   if (!picks.length) return c.notFound()
@@ -2999,14 +3093,14 @@ app.get(VIDEO_PATH, (c) => {
   const shortText = short(rt)
   const shortHtml = short(rl)
   const steps = VIDEO_WORKFLOW.map((s) => ({ ...s, t: s.slug ? find(s.slug) : null }))
-  const description = `Best AI video editors for YouTube in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with a Shorts workflow and verified pricing. Updated ${UPDATED}.`
+  const description = `Best AI video editors for YouTube in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with a Shorts workflow and verified pricing. Updated ${PD}.`
   const title = `Best AI Video Editors for YouTube in 2026 | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
     <h1>${esc(VIDEO_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>AI video editors for YouTube at a glance</h2>
@@ -3059,7 +3153,7 @@ app.get(VIDEO_PATH, (c) => {
         headline: VIDEO_H1,
         description,
         url: `${SITE}${VIDEO_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
@@ -3142,6 +3236,7 @@ function videogenFaq(d) {
 }
 
 app.get(VIDEOGEN_PATH, (c) => {
+  const PD = pageDate(VIDEOGEN_PATH)
   const d = videogenData()
   const { find, picks, byRank } = d
   if (!picks.length) return c.notFound()
@@ -3152,14 +3247,14 @@ app.get(VIDEOGEN_PATH, (c) => {
   const short = (f) => `The best overall AI video generator for creators is ${f('runway')}. Choose ${f('kling')} for short social clips, ${f('veo-3-1')} for cinematic storytelling with sound, ${f('luma-dream-machine')} for fast concept shots, and ${f('viggle-jst-2')} for 3D scenes and character motion`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const description = `Best AI video generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with text-to-video vs image-to-video notes and verified pricing. Updated ${UPDATED}.`
+  const description = `Best AI video generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, with text-to-video vs image-to-video notes and verified pricing. Updated ${PD}.`
   const title = `Best AI Video Generators in 2026 | ${NAME}`
   const body = `
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
     <h1>${esc(VIDEOGEN_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${UPDATED} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${PD} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section">
     <h2>AI video generators at a glance</h2>
@@ -3211,7 +3306,7 @@ app.get(VIDEOGEN_PATH, (c) => {
         headline: VIDEOGEN_H1,
         description,
         url: `${SITE}${VIDEOGEN_PATH}`,
-        dateModified: UPDATED,
+        dateModified: PD,
         author: { '@type': 'Organization', name: NAME, url: SITE },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
