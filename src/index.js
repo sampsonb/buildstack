@@ -188,6 +188,7 @@ const SECTION_DATES = {
   '/best/ai-image-generator': '2026-11-13',
   '/best/ai-video-editor-for-youtube': '2026-11-13',
   '/best/ai-video-generator': '2026-11-13',
+  '/guides/how-celebrity-deepfakes-are-made': '2026-11-13',
   '/get-featured': '2026-10-15',
 }
 
@@ -368,7 +369,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/best/ai-image-generator">AI image generators</a> · <a href="/best/ai-video-editor-for-youtube">AI video editors for YouTube</a> · <a href="/best/ai-video-generator">AI video generators</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/guides/how-celebrity-deepfakes-are-made">How celebrity deepfakes get made</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/best/ai-image-generator">AI image generators</a> · <a href="/best/ai-video-editor-for-youtube">AI video editors for YouTube</a> · <a href="/best/ai-video-generator">AI video generators</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -493,7 +494,7 @@ Sitemap: ${SITE}/sitemap.xml
 
 app.get('/sitemap.xml', (c) => {
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
@@ -565,6 +566,7 @@ app.get('/llms.txt', (c) => {
     `- Best AI image generators in 2026, plus the best Midjourney alternatives: ${SITE}/best/ai-image-generator`,
     `- Best AI video editors for YouTube in 2026: ${SITE}/best/ai-video-editor-for-youtube`,
     `- Best AI video generators in 2026, by what you want to make: ${SITE}/best/ai-video-generator`,
+    `- How viral celebrity deepfakes get made, and how to spot one (not a how-to): ${SITE}/guides/how-celebrity-deepfakes-are-made`,
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -628,6 +630,8 @@ app.get('/llms-full.txt', (c) => {
     ...videoData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
     `- Best AI video generators in 2026, by what you want to make: ${SITE}/best/ai-video-generator`,
     ...videogenData().byRank.map((p) => `  - ${p.t.name} (#${p.t.rank}): ${p.role}. Pricing: ${p.t.pricingNote}`),
+    `- How viral celebrity deepfakes get made, and how to spot one (not a how-to): ${SITE}/guides/how-celebrity-deepfakes-are-made`,
+    `  Published 2026-11-13. Editor: Sampson Brueher. High-level explainer on how viral celebrity fakes are usually assembled, how to spot one, and where BuildStack draws the line. Not a how-to, and face-swap apps are not listed.`,
   ]
   for (const [k, cat] of Object.entries(CATEGORIES)) {
     const list = all.filter((t) => t.category === k)
@@ -731,6 +735,7 @@ app.get('/', (c) => {
       <a class="pill" href="/best/ai-image-generator">Best AI image generators</a>
       <a class="pill" href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>
       <a class="pill" href="/best/ai-video-generator">Best AI video generators</a>
+      <a class="pill" href="/guides/how-celebrity-deepfakes-are-made">How celebrity deepfakes get made</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -872,7 +877,7 @@ app.get('/category/:slug', (c) => {
     ${slug === 'agents' ? '<p class="muted">Want to build an app with no coding? See the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>.</p>' : ''}
     ${slug === 'voice' ? '<p class="muted">Need a voiceover or a text to speech API? See the <a href="/best/ai-voice-generator">best AI voice generators and text to speech tools</a>.</p>' : ''}
     ${slug === 'voice' || slug === 'video' ? '<p class="muted">Need transcripts of meetings, interviews, or podcasts? See the <a href="/best/ai-transcription-tool">best AI transcription tools for creators and developers</a>.</p>' : ''}
-    ${slug === 'video' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-video-editor-for-youtube">best AI video editors for YouTube</a> or the <a href="/best/ai-video-generator">best AI video generators</a>.</p>' : ''}
+    ${slug === 'video' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-video-editor-for-youtube">best AI video editors for YouTube</a> or the <a href="/best/ai-video-generator">best AI video generators</a>.</p><p class="muted">Curious how viral celebrity clips get made? See <a href="/guides/how-celebrity-deepfakes-are-made">how celebrity deepfakes get made, and how to spot one</a>.</p>' : ''}
     ${slug === 'images' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-image-generator">best AI image generators, plus the best Midjourney alternatives</a>.</p>' : ''}
     ${slug === 'writing' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-writing-tool">best AI writing tools, and the best for blog posts</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
@@ -3353,6 +3358,7 @@ app.get(VIDEOGEN_PATH, (c) => {
       <p>Most generators sell monthly credit allotments. Longer clips, higher resolution, audio, and reference-heavy modes cost more credits per second. Free tiers often watermark output or give a one-time credit deposit. Always confirm commercial-use terms on the official plan page for ${rl('runway')}, ${rl('kling')}, ${rl('veo-3-1')}, ${rl('luma-dream-machine')}, ${rl('pika-h3-flex')}, ${rl('heygen')}, and ${rl('synthesia')}.</p>
       <h2>How we chose</h2>
       <p>This page covers video generators ranked on ${esc(NAME)}, using the same editorial ranks as the rest of the site. Featured listings do not affect rank, and we do not score clip quality, since results depend on your prompts and taste. ${rl('sora')} remains in the directory for search context but is discontinued. Browse the full <a href="/category/video">video category</a> or read the full <a href="/methodology">methodology</a>.</p>
+      <p>Curious how viral celebrity clips usually get made, and how to look more carefully before you share one? See <a href="/guides/how-celebrity-deepfakes-are-made">how celebrity deepfakes get made, and how to spot one</a>. It is a high-level explainer, not a how-to, and we do not list face-swap apps.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -3388,6 +3394,128 @@ app.get(VIDEOGEN_PATH, (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Video', '/category/video'], ['AI video generators', VIDEOGEN_PATH]])],
+    },
+  }))
+})
+
+
+const DEEPFAKE_PATH = '/guides/how-celebrity-deepfakes-are-made'
+const DEEPFAKE_H1 = 'How viral celebrity deepfakes get made, and how to spot one'
+const DEEPFAKE_DESC = 'A plain-language look at how viral celebrity deepfakes are usually assembled, how to spot one, and where BuildStack draws the line. Not a how-to.'
+const DEEPFAKE_PUBLISHED = '2026-11-13'
+
+function deepfakeFaq() {
+  return [
+    {
+      q: 'Is ComfyUI a deepfake tool?',
+      a: 'No. ComfyUI is a general workbench for image and video workflows, used for art, effects, and animation, not a deepfake product.',
+    },
+    {
+      q: 'If the big video apps block celebrities, why do these clips still spread?',
+      a: 'Many are made with face-swap tools, local image-to-video workflows, or smaller sites without the same restrictions, and labels are often stripped.',
+    },
+    {
+      q: 'Can I trust an app that claims to detect deepfakes?',
+      a: 'Not on its own. Detectors are unreliable on new or compressed fakes and can flag real video by mistake. Check the source, context, and any Content Credentials or platform labels too.',
+    },
+    {
+      q: 'What should I do if a nonconsensual intimate deepfake is posted?',
+      a: 'Ask the platform to remove it, keep records, and consider reporting it to law enforcement. In the United States, covered platforms generally have 48 hours after a valid request. If they fail, or have no way to request removal, report the platform at https://takeitdown.ftc.gov/. This is not legal advice.',
+    },
+  ]
+}
+
+app.get(DEEPFAKE_PATH, (c) => {
+  const PD = pageDate(DEEPFAKE_PATH)
+  const faq = deepfakeFaq()
+  const title = `${DEEPFAKE_H1} | ${NAME}`
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
+    <h1>${esc(DEEPFAKE_H1)}</h1>
+    <p class="muted">Published ${DEEPFAKE_PUBLISHED} · Sampson Brueher, editor</p>
+  </section>
+  <section class="section">
+    <div class="panel prose">
+      <p>When a clip of a famous person saying or doing something shocking starts flying around, the first question is often the right one: is this real? Many viral celebrity videos are not footage of that person at all. This article explains, at a high level, how those clips usually get made, and how to look more carefully before you share one. It is not a how-to, and we will not walk through tools, settings, or filter workarounds.</p>
+
+      <h2 style="color:var(--text)">Four common routes, in plain terms</h2>
+      <p>Most viral celebrity fakes follow one of four paths, or a mix of them.</p>
+      <p><strong>Face-swap is the classic method.</strong> Software takes a face from photos or video of one person and pastes it onto existing footage of someone else. Tools in this category include DeepFaceLab and FaceFusion. Because the body and background already exist, the result can look like a real event even when the face is not.</p>
+      <p><strong>Image-to-video starts with a still photo.</strong> A model is asked to animate that picture, as if the person had been filmed. People often run models like this inside a power-user workbench such as ComfyUI, a general creative workbench for images and video, not a deepfake product. What matters is the choice to animate a real person's likeness, not the workbench.</p>
+      <p><strong>Hosted video apps do the work in a browser.</strong> Google's <a href="/tool/veo-3-1">Veo</a> is built to reject photorealistic depictions of prominent people. While it was available, OpenAI's Sora also blocked depictions of public figures, except through a consent-based character feature. OpenAI discontinued the Sora app on April 26, 2026, and the Sora API on September 24, 2026. <a href="/tool/kling">Kling</a> requires users to respect likeness rights and prohibits impersonation. The biggest apps generally try to block videos of real celebrities. Some smaller sites do not, and we will not name those sites here.</p>
+      <p><strong>Voice cloning and lip-sync handle the soundtrack.</strong> A voice model can imitate how someone sounds, and a lip-sync or talking-head tool can match a mouth to that audio. Used with consent, they power dubbing and avatars. Used without consent, they can put words in a real person's mouth. For legitimate tools we already rank, see <a href="/best/ai-voice-generator">AI voice generators</a> and <a href="/best/ai-video-generator">AI video generators</a>.</p>
+
+      <h2 style="color:var(--text)">How to spot one</h2>
+      <p>Newer fakes are getting harder to catch by eye, and no single tell is proof.</p>
+      <p><strong>Face edges and hairline.</strong> Homeland Security guidance includes watching for a change in skin tone near the edge of the face, double edges, and blurring on the face that does not match the rest of the frame. The hairline may fail to blend, and the face may flicker when the head turns.</p>
+      <p><strong>Teeth and the inner mouth.</strong> Teeth may blur into a single block or change shape between frames, and the tongue or inner mouth may be missing or smeared. Watch sounds that need a clear mouth shape, such as p, b, and m, and see whether the lips actually close.</p>
+      <p><strong>Blinking, lighting, and hands.</strong> Irregular blinking, a fixed gaze, and lighting that does not match the neck or background are long-standing signs. In fully generated video, extra fingers or smeared hands are also common, though less useful on a simple face-swap.</p>
+      <p><strong>Audio sync and a voice that is too perfect.</strong> Official guidance flags choppy speech, odd pauses, and sound that is out of sync with the mouth. A cloned voice can also sound too clean, with no breath, no room echo, or background noise that cuts out when the person speaks.</p>
+      <p><strong>Context checks.</strong> CISA, working with the NSA and FBI, advises checking the source and whether the event, date, and location actually line up. Check whether the clip came from an official account or a verified newsroom, and reverse-search a still with <a href="https://images.google.com">Google Images</a> or <a href="https://lens.google.com">Google Lens</a>.</p>
+      <p><strong>Provenance, labels, and detectors.</strong> <a href="https://www.contentauthenticity.org/how-it-works">Content Credentials</a>, the C2PA standard, can record how a file was made and whether it was flagged as AI-generated. Inspect a file at the Content Authenticity Initiative's <a href="https://verify.contentauthenticity.org">verification site</a>. Credentials can be stripped when a clip is screenshotted or re-uploaded, and a missing label is not proof that a clip is real. YouTube, Meta, and TikTok also add AI labels for realistic generated or altered media. Automated detectors can miss new fakes, raise false alarms, and lose accuracy after compression. A 2026 review found very high lab scores can drop into the mid-50s to mid-70s on more realistic data. Treat a detector result as one clue, not a verdict. If you are still unsure, do not share the clip as fact.</p>
+
+      <h2 style="color:var(--text)">Consent and the law</h2>
+      <p>This is not legal advice, and the rules vary by place. In the United States, the TAKE IT DOWN Act (Public Law 119-12), signed on May 19, 2025, makes it a federal crime to publish nonconsensual intimate images, including AI-generated "digital forgeries," of an identifiable person in specified circumstances. Many states and other countries have similar laws.</p>
+      <p>Covered platforms must offer a way to request removal and, after a valid notice, take the material and known identical copies down as soon as possible, and no later than 48 hours. That duty has been in effect since May 19, 2026, and the FTC enforces it. If a platform fails, or has no way to request removal, report it at <a href="https://takeitdown.ftc.gov/">TakeItDown.ftc.gov</a>.</p>
+      <p>Impersonation can also be illegal. The FTC's Impersonation Rule prohibits impersonating the government or a business, including with AI voice cloning. Not every clip that uses a public figure's likeness is automatically a crime, especially in parody, but nonconsensual intimate deepfakes and deceptive impersonation are treated seriously.</p>
+
+      <h2 style="color:var(--text)">Where BuildStack draws the line</h2>
+      <p>BuildStack is a ranked directory of real AI tools, edited by Sampson Brueher. We rank creative <a href="/category/video">video</a>, <a href="/category/voice">voice</a>, and <a href="/category/images">image</a> tools for legitimate uses: filmmaking, dubbing, avatars people have agreed to, and everyday production work. See our current picks for <a href="/best/ai-video-generator">AI video generators</a>, <a href="/best/ai-voice-generator">AI voice generators</a>, and <a href="/best/ai-image-generator">AI image generators</a>. Featured listings do not change those ranks. See <a href="/methodology">how we rank</a>.</p>
+      <p>We do not list tools whose main purpose is face-swapping real people. A general workbench or a hosted video model may show up when it has ordinary creative uses. A product whose main draw is putting someone else's face onto footage does not.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>
+  <section class="section" id="sources">
+    <h2>Sources</h2>
+    <div class="panel prose">
+      <ol class="clean">
+        <li>U.S. Department of Homeland Security, "<a href="https://www.dhs.gov/sites/default/files/publications/increasing_threats_of_deepfake_identities_0.pdf">Increasing Threat of Deepfake Identities</a>" (signs that can help identify fake images, video, and audio).</li>
+        <li>U.S. Department of Homeland Security, Science and Technology Directorate, "<a href="https://www.dhs.gov/sites/default/files/2025-01/25_0110_st_impacts_of_adversarial_generative_ai_on_homeland_security_0.pdf">Impacts of Adversarial Use of Generative AI on Homeland Security</a>," January 2025, Appendix C (heuristics for identifying deepfakes).</li>
+        <li>National Security Agency, Federal Bureau of Investigation, and Cybersecurity and Infrastructure Security Agency, "<a href="https://media.defense.gov/2023/Sep/12/2003298925/-1/-1/0/CSI-DEEPFAKE-THREATS.PDF">Contextualizing Deepfake Threats to Organizations</a>," September 12, 2023. See also the <a href="https://www.cisa.gov/news-events/alerts/2023/09/12/nsa-fbi-and-cisa-release-cybersecurity-information-sheet-deepfake-threats">CISA announcement</a>.</li>
+        <li>Coalition for Content Provenance and Authenticity, "<a href="https://c2pa.org/faqs/">FAQs</a>."</li>
+        <li>Content Authenticity Initiative, "<a href="https://www.contentauthenticity.org/how-it-works">How it works</a>," and the <a href="https://verify.contentauthenticity.org">Content Credentials verification tool</a>.</li>
+        <li>OpenAI, "<a href="https://openai.com/index/creating-with-sora-safely/">Creating with Sora safely</a>," March 23, 2026 (public-figure blocks and C2PA metadata on Sora videos).</li>
+        <li>OpenAI Help Center, "<a href="https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation">What to know about the Sora discontinuation</a>" (app discontinued April 26, 2026; API discontinued September 24, 2026).</li>
+        <li>Google Cloud, "<a href="https://cloud.google.com/vertex-ai/generative-ai/docs/video/responsible-ai-and-usage-guidelines">Responsible AI for Veo</a>" (rejects photorealistic representations of prominent people).</li>
+        <li>Kling AI, "<a href="https://kling.ai/docs/community-policy">Community Guidelines</a>," effective September 8, 2026 (likeness rights and a ban on impersonation).</li>
+        <li>YouTube, "<a href="https://www.youtube.com/howyoutubeworks/ai/">How Creators Use AI for Content Creation</a>" (disclosure and labels for realistic or meaningfully altered AI content).</li>
+        <li>Meta Transparency Center, "<a href="https://transparency.meta.com/en-us/governance/tracking-impact/labeling-ai-content">Labeling AI Content</a>," updated February 19, 2025 ("AI Info" labels).</li>
+        <li>TikTok Newsroom, "<a href="https://newsroom.tiktok.com/en-us/more-ways-to-spot-shape-and-understand-ai-generated-content">More ways to spot, shape and understand AI-generated content</a>," November 24, 2025 (creator labels, detection, and C2PA).</li>
+        <li>TAKE IT DOWN Act, <a href="https://www.govinfo.gov/content/pkg/PLAW-119publ12/html/PLAW-119publ12.htm">Public Law 119-12</a>, signed May 19, 2025. See also <a href="https://www.congress.gov/bill/119th-congress/senate-bill/146">Congress.gov</a> and the Congressional Research Service legal sidebar, "<a href="https://www.congress.gov/crs-product/LSB11314">The TAKE IT DOWN Act: A Federal Law Prohibiting the Nonconsensual Publication of Intimate Images</a>," May 20, 2025.</li>
+        <li>Federal Trade Commission, "<a href="https://takeitdown.ftc.gov/">TakeItDown.ftc.gov</a>" (platform notice-and-removal and 48-hour duty).</li>
+        <li>Federal Trade Commission, "<a href="https://www.federalregister.gov/documents/2024/03/01/2024-04335/trade-regulation-rule-on-impersonation-of-government-and-businesses">Trade Regulation Rule on Impersonation of Government and Businesses</a>," <em>Federal Register</em>, March 1, 2024.</li>
+        <li>Rahman, Hasan, and Mohammed, "<a href="https://doi.org/10.1145/3595353.3595882">Why Do Facial Deepfake Detectors Fail?</a>," Association for Computing Machinery, 2023.</li>
+        <li>"<a href="https://doi.org/10.30574/wjarr.2026.30.2.1387">Beyond benchmark accuracy: Evaluating deepfake detection tools for digital forensic admissibility through a systematic review</a>," <em>World Journal of Advanced Research and Reviews</em>, 2026 (reported accuracy falling to about 54% to 75% on out-of-distribution data).</li>
+      </ol>
+    </div>
+  </section>`
+  return c.html(layout({
+    title,
+    description: DEEPFAKE_DESC,
+    path: DEEPFAKE_PATH,
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: DEEPFAKE_H1,
+        description: DEEPFAKE_DESC,
+        url: `${SITE}${DEEPFAKE_PATH}`,
+        datePublished: DEEPFAKE_PUBLISHED,
+        dateModified: PD,
+        author: { '@type': 'Person', name: 'Sampson Brueher', jobTitle: 'editor' },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Video', '/category/video'], [DEEPFAKE_H1, DEEPFAKE_PATH]])],
     },
   }))
 })
