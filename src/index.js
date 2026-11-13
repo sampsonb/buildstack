@@ -429,6 +429,8 @@ ul.clean { padding-left: 1.1rem; }
 .checks ol { margin: 0; padding-left: 1.3rem; }
 .checks li { margin: .3rem 0; }
 .tells { margin: 1.2rem 0; }
+.cases { padding-left: 1.2rem; }
+.cases li { margin: .55rem 0; }
 .tells img { display: block; width: 100%; max-width: 100%; height: auto; border-radius: var(--radius); background: var(--panel); }
 .tells figcaption { margin: .45rem 0 0; color: var(--muted); font-size: .82rem; }
 .strip { margin: 1.2rem 0; }
@@ -3499,7 +3501,7 @@ const DEEPFAKE_PATH = '/guides/how-celebrity-deepfakes-are-made'
 const DEEPFAKE_H1 = 'How viral celebrity deepfakes get made, and how to spot one'
 const DEEPFAKE_DESC = 'A plain-language look at how viral celebrity deepfakes are usually assembled, how to spot one, and where BuildStack draws the line. Not a how-to.'
 const DEEPFAKE_PUBLISHED = '2026-11-13'
-const DEEPFAKE_READ = '6 min read'
+const DEEPFAKE_READ = '7 min read'
 
 function deepfakeFaq() {
   return [
@@ -3543,6 +3545,12 @@ const DEEPFAKE_SOURCES = [
   'TAKE IT DOWN Act, <a href="https://www.govinfo.gov/content/pkg/PLAW-119publ12/html/PLAW-119publ12.htm">Public Law 119-12</a>, signed May 19, 2025. See also <a href="https://www.congress.gov/bill/119th-congress/senate-bill/146">Congress.gov</a> and the Congressional Research Service legal sidebar, "<a href="https://www.congress.gov/crs-product/LSB11314">The TAKE IT DOWN Act: A Federal Law Prohibiting the Nonconsensual Publication of Intimate Images</a>," May 20, 2025.',
   'Federal Trade Commission, "<a href="https://takeitdown.ftc.gov/">TakeItDown.ftc.gov</a>" (platform notice-and-removal and 48-hour duty).',
   'Federal Trade Commission, "<a href="https://www.federalregister.gov/documents/2024/03/01/2024-04335/trade-regulation-rule-on-impersonation-of-government-and-businesses">Trade Regulation Rule on Impersonation of Government and Businesses</a>," <em>Federal Register</em>, March 1, 2024.',
+  'Reuters, "<a href="https://www.reuters.com/technology/taylor-swift-searches-blocked-x-after-fake-explicit-images-spread-2024-01-28/">Taylor Swift searches blocked on X after fake explicit images spread</a>," January 28, 2024.',
+  'Federal Communications Commission, "<a href="https://www.fcc.gov/document/fcc-issues-6m-fine-election-interference-deepfake-robocalls">FCC Fines Man Behind Election Interference Scheme $6 Million for Sending Illegal Robocalls That Used Deepfake Generative AI Technology</a>," September 26, 2024. See also the <a href="https://www.fcc.gov/document/fcc-eb-settles-lingo-transmitting-illegal-robocalls">Lingo Telecom consent decree</a> ($1 million penalty), August 21, 2024.',
+  'Associated Press, "<a href="https://apnews.com/article/ai-robocalls-new-hampshire-biden-kramer-e87ef8848a2a6515202535a6e800da07">New Hampshire jury acquits consultant behind AI robocalls mimicking Biden on all charges</a>," June 13, 2025.',
+  'The Washington Post, "<a href="https://www.washingtonpost.com/entertainment/2023/10/03/tom-hanks-ai-ad-deepfake/">Celebrities warn followers not to be duped by AI deepfakes</a>," October 3, 2023.',
+  'Fortune, "<a href="https://fortune.com/2023/10/04/mrbeast-jimmy-donaldson-tom-hanks-subject-ai-scams-false-advertising-deepfakes/">MrBeast and Tom Hanks used in AI scam adverts</a>," October 4, 2023 (TikTok removed the MrBeast ad and account).',
+  'Variety, "<a href="https://variety.com/2023/film/news/scarlett-johansson-legal-action-ai-app-ad-likeness-1235773489/">Scarlett Johansson Takes Legal Action Against AI App That Ripped Off Her Likeness in Advertisement</a>," November 1, 2023.',
   'Rahman, Hasan, and Mohammed, "<a href="https://doi.org/10.1145/3595353.3595882">Why Do Facial Deepfake Detectors Fail?</a>," Association for Computing Machinery, 2023.',
   '"<a href="https://doi.org/10.30574/wjarr.2026.30.2.1387">Beyond benchmark accuracy: Evaluating deepfake detection tools for digital forensic admissibility through a systematic review</a>," <em>World Journal of Advanced Research and Reviews</em>, 2026 (reported accuracy falling to about 54% to 75% on out-of-distribution data).',
 ]
@@ -3575,7 +3583,15 @@ app.get(DEEPFAKE_PATH, (c) => {
   </section>
   <section class="section">
     <div class="article" id="how-made">
-      <p><strong>The viral celebrity clip in your feed probably did not come out of a film studio.</strong> Most follow one of four routes, or a mix of them: a face pasted onto real footage, a still photo brought to life, a cloned voice synced to a moving mouth, or a video app in the browser. Here is how each one works, in plain terms. Then the useful part: how to catch one.</p>
+      <p><strong>The viral celebrity clip in your feed probably did not come out of a film studio.</strong> Most follow one of four routes, or a mix of them: a face pasted onto real footage, a still photo brought to life, a cloned voice synced to a moving mouth, or a video app in the browser. Below: a few famous cases, how each route works in plain terms, and then the useful part: how to catch one.</p>
+
+      <h2 id="cases">Famous cases</h2>
+      <ul class="cases">
+        <li><strong>Taylor Swift, January 2024.</strong> Fake explicit AI images of the singer spread on X, and one was viewed 47 million times. X temporarily blocked searches for her name, and the White House called the images "alarming." <a href="https://www.reuters.com/technology/taylor-swift-searches-blocked-x-after-fake-explicit-images-spread-2024-01-28/" rel="noopener noreferrer">Reuters</a></li>
+        <li><strong>The fake Biden robocall, January 2024.</strong> Two days before New Hampshire's presidential primary, thousands of voters got robocalls in an AI imitation of President Biden's voice urging them to skip the vote. The FCC fined the consultant behind them, Steve Kramer, $6 million, and the carrier that delivered the calls agreed to a $1 million penalty. A state jury acquitted Kramer of voter suppression and impersonation charges in June 2025. <a href="https://www.fcc.gov/document/fcc-issues-6m-fine-election-interference-deepfake-robocalls" rel="noopener noreferrer">FCC</a>, <a href="https://apnews.com/article/ai-robocalls-new-hampshire-biden-kramer-e87ef8848a2a6515202535a6e800da07" rel="noopener noreferrer">AP</a></li>
+        <li><strong>Tom Hanks, Gayle King, and MrBeast, October 2023.</strong> Within days of each other, all three warned followers about fake ads using AI versions of them: Hanks for a dental plan, King for a weight-loss product she said she had never used, and MrBeast for a bogus iPhone giveaway on TikTok. TikTok said it removed that ad and account within hours. <a href="https://www.washingtonpost.com/entertainment/2023/10/03/tom-hanks-ai-ad-deepfake/" rel="noopener noreferrer">The Washington Post</a>, <a href="https://fortune.com/2023/10/04/mrbeast-jimmy-donaldson-tom-hanks-subject-ai-scams-false-advertising-deepfakes/" rel="noopener noreferrer">Fortune</a></li>
+        <li><strong>Scarlett Johansson, October 2023.</strong> An AI image app ran an ad on X that opened with a real behind-the-scenes clip of her, then switched to AI-generated images and an imitation of her voice. She took legal action, and the ad soon disappeared. <a href="https://variety.com/2023/film/news/scarlett-johansson-legal-action-ai-app-ad-likeness-1235773489/" rel="noopener noreferrer">Variety</a></li>
+      </ul>
 
       <h2>Four ways the fakes get made</h2>
       <p><strong>Face-swap puts a new face on real footage.</strong> This is the classic. Software lifts a face from photos or video of one person and pastes it onto existing footage of someone else. The body, the room, and the crowd are all real, so the clip can pass for a real event even though the face is not.</p>
@@ -3687,7 +3703,7 @@ app.get(DEEPFAKE_PATH, (c) => {
           { '@type': 'ImageObject', url: `${SITE}/guides/deepfake-og.jpg`, width: 1200, height: 630 },
           { '@type': 'ImageObject', url: `${SITE}/guides/deepfake-tells.jpg`, width: 1600, height: 900, caption: 'Five common tells. Illustration of an invented person, not a real individual.' },
         ],
-        timeRequired: 'PT6M',
+        timeRequired: 'PT7M',
       }, {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
