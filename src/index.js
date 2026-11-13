@@ -3574,8 +3574,22 @@ app.get(DEEPFAKE_PATH, (c) => {
     </figure>
   </section>
   <section class="section">
-    <div class="article">
-      <p><strong>Deepfake detectors that score near-perfect in the lab can fall to between the mid-50s and mid-70s percent accuracy on realistic video,</strong> a 2026 systematic review found. At the low end, that is close to a coin flip. So when a clip of a famous person saying or doing something shocking starts flying around, an app cannot answer "is this real?" for you. This guide explains, at a high level, how those clips usually get made and what to check before you share one.</p>
+    <div class="article" id="how-made">
+      <p><strong>The viral celebrity clip in your feed probably did not come out of a film studio.</strong> Most follow one of four routes, or a mix of them: a face pasted onto real footage, a still photo brought to life, a cloned voice synced to a moving mouth, or a video app in the browser. Here is how each one works, in plain terms. Then the useful part: how to catch one.</p>
+
+      <h2>Four ways the fakes get made</h2>
+      <p><strong>Face-swap puts a new face on real footage.</strong> This is the classic. Software lifts a face from photos or video of one person and pastes it onto existing footage of someone else. The body, the room, and the crowd are all real, so the clip can pass for a real event even though the face is not.</p>
+      <p><strong>Image-to-video makes a still photo move.</strong> A model is asked to animate a single picture, as if the person had been filmed. People often run models like this inside ComfyUI, a general creative workbench for images and video, not a deepfake product. What matters is the choice to animate a real person's likeness, not the workbench.</p>
+      <p><strong>Voice cloning and lip-sync put words in their mouth.</strong> A voice model can imitate how someone sounds, and a lip-sync or talking-head tool can match a mouth to that audio. Used with consent, they power dubbing and avatars. Used without consent, they make a real person say things they never said. For legitimate tools we already rank, see <a href="/best/ai-voice-generator">AI voice generators</a> and <a href="/best/ai-video-generator">AI video generators</a>.</p>
+      <p><strong>Hosted video apps generate the whole clip in a browser, and the big ones push back.</strong> Google's <a href="/tool/veo-3-1">Veo</a> is built to reject photorealistic depictions of prominent people. While it was available, OpenAI's Sora also blocked depictions of public figures, except through a consent-based character feature. OpenAI discontinued the Sora app on April 26, 2026, and the Sora API on September 24, 2026. <a href="/tool/kling">Kling</a> requires users to respect likeness rights and prohibits impersonation. Some smaller sites do not, which is one reason these clips keep spreading.</p>
+    </div>
+    ${likeness.length ? `<div class="strip" id="likeness-rules">
+      <h3>Mainstream video tools with likeness rules</h3>
+      <div class="grid">${likeness.map((x) => toolCard(x.t).replace('</article>', `<p class="note">${esc(x.note)} <a href="${esc(x.src)}" rel="noopener noreferrer">${esc(x.srcName)}</a></p></article>`)).join('')}</div>
+    </div>` : ''}
+    <div class="article" id="catch">
+      <h2>Now the useful part: how to catch one</h2>
+      <p><strong>Do not count on an app to do it for you.</strong> Deepfake detectors that score near-perfect in the lab can fall to between the mid-50s and mid-70s percent accuracy on realistic video, a 2026 systematic review found. At the low end, that is close to a coin flip. So when a clip of a famous person saying or doing something shocking starts flying around, these checks matter more than any app.</p>
 
       <div class="checks" id="checks">
         <h2>6 checks before you share</h2>
@@ -3597,19 +3611,6 @@ app.get(DEEPFAKE_PATH, (c) => {
         <figcaption>Five common tells. Illustration of an invented person, not a real individual.</figcaption>
       </figure>
 
-      <h2>Four common routes, in plain terms</h2>
-      <p>Most viral celebrity fakes follow one of four paths, or a mix of them.</p>
-      <p><strong>Face-swap is the classic method.</strong> Software takes a face from photos or video of one person and pastes it onto existing footage of someone else. Tools in this category include DeepFaceLab and FaceFusion. Because the body and background already exist, the result can look like a real event even when the face is not.</p>
-      <p><strong>Image-to-video starts with a still photo.</strong> A model is asked to animate that picture, as if the person had been filmed. People often run models like this inside a power-user workbench such as ComfyUI, a general creative workbench for images and video, not a deepfake product. What matters is the choice to animate a real person's likeness, not the workbench.</p>
-      <p><strong>Hosted video apps do the work in a browser.</strong> Google's <a href="/tool/veo-3-1">Veo</a> is built to reject photorealistic depictions of prominent people. While it was available, OpenAI's Sora also blocked depictions of public figures, except through a consent-based character feature. OpenAI discontinued the Sora app on April 26, 2026, and the Sora API on September 24, 2026. <a href="/tool/kling">Kling</a> requires users to respect likeness rights and prohibits impersonation. The biggest apps generally try to block videos of real celebrities. Some smaller sites do not.</p>
-    </div>
-    ${likeness.length ? `<div class="strip" id="likeness-rules">
-      <h3>Mainstream video tools with likeness rules</h3>
-      <div class="grid">${likeness.map((x) => toolCard(x.t).replace('</article>', `<p class="note">${esc(x.note)} <a href="${esc(x.src)}" rel="noopener noreferrer">${esc(x.srcName)}</a></p></article>`)).join('')}</div>
-    </div>` : ''}
-    <div class="article">
-      <p><strong>Voice cloning and lip-sync handle the soundtrack.</strong> A voice model can imitate how someone sounds, and a lip-sync or talking-head tool can match a mouth to that audio. Used with consent, they power dubbing and avatars. Used without consent, they can put words in a real person's mouth. For legitimate tools we already rank, see <a href="/best/ai-voice-generator">AI voice generators</a> and <a href="/best/ai-video-generator">AI video generators</a>.</p>
-
       <h2>How to spot one, in more detail</h2>
       <p>Newer fakes are getting harder to catch by eye, and no single tell is proof.</p>
       <p><strong>Face edges and hairline.</strong> Homeland Security guidance includes watching for a change in skin tone near the edge of the face, double edges, and blurring on the face that does not match the rest of the frame. The hairline may fail to blend, and the face may flicker when the head turns.</p>
@@ -3627,7 +3628,6 @@ app.get(DEEPFAKE_PATH, (c) => {
       <h2>Where BuildStack draws the line</h2>
       <p>BuildStack is a free ranked directory of AI tools, edited by <a href="/about">Sampson Brueher</a>. We rank creative <a href="/category/video">video</a>, <a href="/category/voice">voice</a>, and <a href="/category/images">image</a> tools for legitimate uses: filmmaking, dubbing, avatars people have agreed to, and everyday production work. See our current picks for <a href="/best/ai-video-generator">AI video generators</a>, <a href="/best/ai-voice-generator">AI voice generators</a>, and <a href="/best/ai-image-generator">AI image generators</a>. Ranks are not for sale. See <a href="/methodology">how we rank</a>.</p>
       <p>We do not list tools whose main purpose is face-swapping real people. A general workbench or a hosted video model may show up when it has ordinary creative uses. A product whose main draw is putting someone else's face onto footage does not.</p>
-      <p>This guide is not a how-to. We leave out tools, settings, and filter workarounds on purpose.</p>
     </div>
   </section>
   <section class="section" id="find">
@@ -3656,6 +3656,9 @@ app.get(DEEPFAKE_PATH, (c) => {
         </ol>
       </div>
     </details>
+  </section>
+  <section class="section">
+    <p class="muted">This guide is not a how-to. We leave out tools, settings, and filter workarounds on purpose.</p>
   </section>`
   return c.html(layout({
     title,

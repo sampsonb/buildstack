@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "test": "node --test test/search.test.js test/deepfake-guide.test.js test/fable-review.test.js test/about.test.js test/deepfake-tells.test.js"
+    "test": "node --test test/search.test.js test/deepfake-guide.test.js test/fable-review.test.js test/about.test.js test/deepfake-tells.test.js test/deepfake-order.test.js"
   },
   "dependencies": {
     "hono": "^4.7.0"

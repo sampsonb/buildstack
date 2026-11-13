@@ -155,9 +155,9 @@ test('deepfake guide first screen and structure', async () => {
   assert.match(html, /<figure class="hero-art capped">/)
   assert.match(html, /\.article \{ max-width: 68ch; font-size: 17px;/)
   assert.match(html, /<p class="byline-note">BuildStack is a free ranked directory of AI tools\. Ranks aren't for sale\.<\/p>/)
-  const article = html.slice(html.indexOf('<div class="article">'))
+  const article = html.slice(html.indexOf('<div class="article"'))
+  assert.ok(article.indexOf('did not come out of a film studio') < 400) // the hook opens the article
   assert.ok(article.indexOf('mid-50s and mid-70s') < article.indexOf('<div class="checks"'))
-  assert.ok(article.indexOf('mid-50s and mid-70s') < 400)
   const checks = html.match(/<div class="checks" id="checks">([\s\S]*?)<\/div>/)[1]
   assert.match(checks, /<h2>6 checks before you share<\/h2>/)
   assert.equal((checks.match(/<li>/g) || []).length, 6)

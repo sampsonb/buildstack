@@ -11,7 +11,7 @@ test('deepfake guide shows the five-tells figure right after the 6 checks box', 
   assert.equal(html.includes('\u2014') || html.includes('\u2013'), false)
   const checks = html.indexOf('<h2>6 checks before you share</h2>')
   const fig = html.indexOf('<figure class="tells" id="tells">')
-  const routes = html.indexOf('<h2>Four common routes, in plain terms</h2>')
+  const routes = html.indexOf('<h2>How to spot one, in more detail</h2>')
   assert.ok(checks > 0 && fig > checks && routes > fig, 'figure sits between the checks box and the next section')
   const block = html.slice(fig, html.indexOf('</figure>', fig))
   assert.match(block, /<source type="image\/webp" srcset="\/guides\/deepfake-tells\.webp"\/>/)
