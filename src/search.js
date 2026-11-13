@@ -4,6 +4,20 @@ const CLOSED_CLASS = new Set([
 
 const CATEGORY_SLUGS = ['coding', 'writing', 'images', 'video', 'agents', 'research', 'voice']
 
+const HYPHEN_PREFIXES = new Set(['pre', 'post', 'non', 'mid', 'anti', 'sub', 'multi', 'over', 'under', 'auto'])
+
+const LEMMA_GROUPS = [
+  ['edit', 'editor', 'editing', 'edits', 'edited'],
+]
+
+const JOB_HINTS = [
+  { any: ['blog', 'blogs'], add: ['write'], category: 'writing' },
+]
+
+const LIGHT_VERBS = new Set(['write', 'make', 'create', 'build', 'get', 'use', 'find'])
+
+const ACTION_STEMS = new Set(['transcribe', 'edit'])
+
 function isInflection(stem, word) {
   if (word === stem) return true
   if (stem.length < 3) return false
@@ -19,12 +33,36 @@ function isInflection(stem, word) {
   return false
 }
 
+function lemmaRoot(word) {
+  for (const group of LEMMA_GROUPS) {
+    if (group.includes(word)) return group[0]
+  }
+  return null
+}
+
 function formsMatch(left, right) {
-  return isInflection(left, right) || isInflection(right, left)
+  if (isInflection(left, right) || isInflection(right, left)) return true
+  const a = lemmaRoot(left)
+  const b = lemmaRoot(right)
+  return Boolean(a && a === b)
 }
 
 function rawWords(value) {
-  return String(value ?? '').toLowerCase().match(/[a-z0-9]+/g) || []
+  const text = String(value ?? '').toLowerCase()
+  const tokens = text.match(/[a-z0-9]+(?:-[a-z0-9]+)*/g) || []
+  const words = []
+  for (const token of tokens) {
+    if (!token.includes('-')) {
+      words.push(token)
+      continue
+    }
+    const parts = token.split('-')
+    for (let i = 0; i < parts.length; i++) {
+      if (i === 0 && HYPHEN_PREFIXES.has(parts[0])) continue
+      words.push(parts[i])
+    }
+  }
+  return words
 }
 
 function camelParts(piece) {
@@ -117,11 +155,54 @@ function compact(value) {
   return String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '')
 }
 
+function expandTerms(terms) {
+  const seen = new Set(terms)
+  const added = []
+  const categories = []
+  for (const hint of JOB_HINTS) {
+    const hit = hint.any.some((key) => terms.some((term) => formsMatch(term, key)))
+    if (!hit) continue
+    for (const extra of hint.add || []) {
+      if (!seen.has(extra)) {
+        seen.add(extra)
+        added.push(extra)
+      }
+    }
+    if (hint.category) categories.push(hint.category)
+  }
+  return { terms: [...terms, ...added], category: categories[0] || null }
+}
+
+function dropLightVerbs(terms, intent) {
+  const heavy = terms.filter((term) => !LIGHT_VERBS.has(term))
+  if (!heavy.length) return terms
+  const kept = []
+  for (const term of terms) {
+    if (!LIGHT_VERBS.has(term)) {
+      kept.push(term)
+      continue
+    }
+    const family = categorySlug(term)
+    if (family && intent && intent !== family) continue
+    if (!family && intent) continue
+    kept.push(term)
+  }
+  return kept.length ? kept : terms
+}
+
+function isActionTerm(term) {
+  if (ACTION_STEMS.has(term)) return true
+  return [...ACTION_STEMS].some((stem) => formsMatch(term, stem) || lemmaRoot(term) === stem)
+}
+
 export function rankTools(list, query) {
   const ranked = [...list].sort((a, b) => a.rank - b.rank)
-  const terms = queryTerms(query)
+  const expanded = expandTerms(queryTerms(query))
+  const terms = expanded.terms
   if (!terms.length) return ranked
-  const intent = queryIntent(list, terms)
+  const intent = expanded.category || queryIntent(list, terms)
+  const scoredTerms = dropLightVerbs(terms, intent)
+  const actions = scoredTerms.filter(isActionTerm)
   const full = compact(query)
   const rows = []
   for (const tool of ranked) {
@@ -129,7 +210,7 @@ export function rankTools(list, query) {
     const hay = [tool.name, tool.tagline, tool.description, tool.category, best, tool.pricingNote || ''].join(' ')
     let score = 0
     let specific = 0
-    for (const term of terms) {
+    for (const term of scoredTerms) {
       const name = textHit(term, tool.name, true)
       const bestHit = textHit(term, best)
       const category = textHit(term, tool.category)
@@ -143,8 +224,9 @@ export function rankTools(list, query) {
     if (!score) continue
     const exact = Boolean(full) && full === compact(tool.name)
     const band = exact ? 0 : (intent && tool.category === intent ? 1 : 2)
-    rows.push({ tool, score, specific, band })
+    const job = actions.length ? (actions.some((term) => textHit(term, hay, true)) ? 1 : 0) : 1
+    rows.push({ tool, score, specific, band, job })
   }
-  rows.sort((a, b) => a.band - b.band || b.specific - a.specific || b.score - a.score || a.tool.rank - b.tool.rank)
+  rows.sort((a, b) => a.band - b.band || b.job - a.job || b.specific - a.specific || b.score - a.score || a.tool.rank - b.tool.rank)
   return rows.map((row) => row.tool)
 }

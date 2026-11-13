@@ -33,6 +33,11 @@ test('blog paraphrases lead with writing tools', () => {
   assert.ok(rankTools(tools, 'write a blog post').length < tools.length / 2)
 })
 
+test('blog post and React app lead with the expected top 3', () => {
+  assert.deepEqual(lead('blog post').map((tool) => tool.slug), ['claude', 'grammarly', 'chatgpt'])
+  assert.deepEqual(lead('React app').map((tool) => tool.slug), ['v0', 'lovable', 'bolt'])
+})
+
 test('draft a blog leads with writing tools', () => {
   const top = lead('draft a blog')
   assert.ok(top.every((tool) => tool.category === 'writing'), top.map((tool) => tool.name).join(', '))
