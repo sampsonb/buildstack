@@ -240,8 +240,15 @@ function searchTools(q) {
   return rankTools(tools(), q)
 }
 
-function layout({ title, description, path, body, jsonLd, robots }) {
+function layout({ title, description, path, body, jsonLd, robots, shareImage }) {
   const url = SITE + path
+  const share = shareImage || {
+    url: `${SITE}/og.png`,
+    type: 'image/png',
+    width: 1200,
+    height: 630,
+    alt: 'BuildStack. Ranked AI tools. Search by use case.',
+  }
   const ld = jsonLd || {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -268,16 +275,16 @@ ${robots ? `<meta name="robots" content="${esc(robots)}"/>
 <meta property="og:title" content="${esc(title)}"/>
 <meta property="og:description" content="${esc(description)}"/>
 <meta property="og:url" content="${esc(url)}"/>
-<meta property="og:image" content="${SITE}/og.png"/>
-<meta property="og:image:type" content="image/png"/>
-<meta property="og:image:width" content="1200"/>
-<meta property="og:image:height" content="630"/>
-<meta property="og:image:alt" content="BuildStack. Ranked AI tools. Search by use case."/>
+<meta property="og:image" content="${esc(share.url)}"/>
+<meta property="og:image:type" content="${esc(share.type)}"/>
+<meta property="og:image:width" content="${share.width}"/>
+<meta property="og:image:height" content="${share.height}"/>
+<meta property="og:image:alt" content="${esc(share.alt)}"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="${esc(title)}"/>
 <meta name="twitter:description" content="${esc(description)}"/>
-<meta name="twitter:image" content="${SITE}/og.png"/>
-<meta name="twitter:image:alt" content="BuildStack. Ranked AI tools. Search by use case."/>
+<meta name="twitter:image" content="${esc(share.url)}"/>
+<meta name="twitter:image:alt" content="${esc(share.alt)}"/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32"/>
 <link rel="alternate" type="application/json" href="/tools.json"/>
@@ -351,6 +358,9 @@ a:hover { text-decoration: underline; }
 }
 .prose { line-height: 1.6; color: var(--muted); }
 .prose strong { color: var(--text); }
+.hero-art { margin: 1rem 0 0; }
+.hero-art img { width: 100%; height: auto; border-radius: var(--radius); display: block; background: var(--panel); }
+.hero-art figcaption { margin: .45rem 0 0; color: var(--muted); font-size: .82rem; }
 ul.clean { padding-left: 1.1rem; }
 </style>
 </head>
@@ -369,7 +379,7 @@ ul.clean { padding-left: 1.1rem; }
   ${body}
   <footer class="footer">
     <div>${NAME} is a ranked directory of real AI tools. Data also at <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a>, and <a href="/tools.json">/tools.json</a>.</div>
-    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="/methodology">How we rank</a> · <a href="/guides/how-celebrity-deepfakes-are-made">How celebrity deepfakes get made</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/best/ai-image-generator">AI image generators</a> · <a href="/best/ai-video-editor-for-youtube">AI video editors for YouTube</a> · <a href="/best/ai-video-generator">AI video generators</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
+    <div style="margin-top:.4rem">Contact: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="https://itsbuildstack.substack.com">Weekly write-up on Substack</a> · <a href="/methodology">How we rank</a> · <a href="/guides/how-celebrity-deepfakes-are-made">How celebrity deepfakes get made</a> · <a href="/alternatives/cursor">Cursor alternatives</a> · <a href="/best/ai-coding-agent-for-beginners">AI coding agents for beginners</a> · <a href="/best/ai-research-assistant">AI research assistants</a> · <a href="/best/free-ai-tools">Free AI tools</a> · <a href="/best/ai-voice-generator">AI voice generators</a> · <a href="/best/ai-coding-assistant">AI coding assistants</a> · <a href="/best/ai-agent-builder">AI agent builders</a> · <a href="/best/ai-tools-for-small-business">AI tools for small business</a> · <a href="/best/ai-transcription-tool">AI transcription tools</a> · <a href="/best/ai-writing-tool">AI writing tools</a> · <a href="/best/ai-image-generator">AI image generators</a> · <a href="/best/ai-video-editor-for-youtube">AI video editors for YouTube</a> · <a href="/best/ai-video-generator">AI video generators</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="/robots.txt">robots.txt</a> · Hosted on Cloudflare</div>
   </footer>
 </div>
 <script>
@@ -544,6 +554,7 @@ app.get('/llms.txt', (c) => {
     `How rankings work: ${SITE}/methodology`,
     `Get featured: ${SITE}/get-featured`,
     `Contact / newsletter From: buildstack@tier11.com`,
+    `Weekly write-up on Substack: https://itsbuildstack.substack.com`,
     ``,
     `## Categories`,
     ...Object.entries(CATEGORIES).map(([k, v]) => `- ${v.label}: ${SITE}/category/${k}`),
@@ -783,6 +794,7 @@ app.get('/', (c) => {
         <button type="submit">Subscribe</button>
         <div class="notice" style="flex-basis:100%"></div>
       </form>
+      <p class="muted" style="margin:.75rem 0 0"><a href="https://itsbuildstack.substack.com">Weekly write-up on Substack</a></p>
     </div>
   </section>`
   return c.html(layout({
@@ -814,6 +826,7 @@ app.get('/', (c) => {
         url: `${SITE}/`,
         logo: `${SITE}/favicon.png`,
         email: 'buildstack@tier11.com',
+        sameAs: ['https://itsbuildstack.substack.com'],
       }, {
         '@type': 'FAQPage',
         '@id': `${SITE}/#faq`,
@@ -3434,6 +3447,13 @@ app.get(DEEPFAKE_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
     <h1>${esc(DEEPFAKE_H1)}</h1>
     <p class="muted">Published ${DEEPFAKE_PUBLISHED} · Sampson Brueher, editor</p>
+    <figure class="hero-art">
+      <picture>
+        <source type="image/webp" srcset="/guides/deepfake-hero.webp"/>
+        <img src="/guides/deepfake-hero.jpg" width="1280" height="720" alt="Illustration: an invented face, half photographic and half digital wireframe" fetchpriority="high" decoding="async"/>
+      </picture>
+      <figcaption>AI-generated illustration. Not a real person.</figcaption>
+    </figure>
   </section>
   <section class="section">
     <div class="panel prose">
@@ -3500,6 +3520,13 @@ app.get(DEEPFAKE_PATH, (c) => {
     title,
     description: DEEPFAKE_DESC,
     path: DEEPFAKE_PATH,
+    shareImage: {
+      url: `${SITE}/guides/deepfake-og.jpg`,
+      type: 'image/jpeg',
+      width: 1200,
+      height: 630,
+      alt: 'Illustration: an invented face, half photographic and half digital wireframe',
+    },
     body,
     jsonLd: {
       '@context': 'https://schema.org',
@@ -3512,6 +3539,7 @@ app.get(DEEPFAKE_PATH, (c) => {
         dateModified: PD,
         author: { '@type': 'Person', name: 'Sampson Brueher', jobTitle: 'editor' },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        image: { '@type': 'ImageObject', url: `${SITE}/guides/deepfake-og.jpg`, width: 1200, height: 630 },
       }, {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
