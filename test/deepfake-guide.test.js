@@ -13,7 +13,7 @@ test('deepfake explainer is published with metadata, FAQ, sources, and listings'
   assert.equal(html.includes('\u2014') || html.includes('\u2013'), false)
   assert.match(html, /<h1>How viral celebrity deepfakes get made, and how to spot one<\/h1>/)
   assert.match(html, /<meta name="description" content="A plain-language look at how viral celebrity deepfakes are usually assembled, how to spot one, and where BuildStack draws the line. Not a how-to."\/>/)
-  assert.match(html, /By Sampson Brueher, editor/)
+  assert.match(html, /By <a href="\/about">Sampson Brueher, editor<\/a>/)
   assert.match(html, /Nov 13, 2026 · 6 min read/)
   assert.match(html, /<h2>FAQ<\/h2>/)
   assert.equal(html.includes('Is ComfyUI a deepfake tool?'), false)

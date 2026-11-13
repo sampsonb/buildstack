@@ -417,6 +417,9 @@ details.more > summary { cursor: pointer; color: var(--accent2); font-weight: 65
 .hero-art figcaption { margin: .45rem 0 0; color: var(--muted); font-size: .82rem; }
 ul.clean { padding-left: 1.1rem; }
 .hero-art.capped img { height: 300px; max-height: 300px; object-fit: cover; }
+.about-head { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+.about-head img { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; display: block; background: var(--panel); border: 1px solid var(--line); }
+.about-head .who { flex: 1; min-width: 260px; }
 .byline-note { color: var(--text); font-size: .95rem; margin: .2rem 0 0; }
 .article { max-width: 68ch; font-size: 17px; line-height: 1.65; color: #b9c5d6; }
 .article h2 { color: var(--text); margin-top: 1.8rem; }
@@ -3476,6 +3479,19 @@ app.get(VIDEOGEN_PATH, (c) => {
 })
 
 
+// The editor. One Person node, referenced by @id from article authors.
+const EDITOR_ID = `${SITE}/about#sampson`
+const EDITOR = {
+  '@type': 'Person',
+  '@id': EDITOR_ID,
+  name: 'Sampson Brueher',
+  url: `${SITE}/about`,
+  image: `${SITE}/about/sampson.jpg`,
+  jobTitle: 'Editor, BuildStack',
+  worksFor: { '@type': 'Organization', name: 'tier11', url: 'https://tier11.com' },
+  sameAs: ['https://x.com/itsbuildstack', 'https://itsbuildstack.substack.com'],
+}
+
 const DEEPFAKE_PATH = '/guides/how-celebrity-deepfakes-are-made'
 const DEEPFAKE_H1 = 'How viral celebrity deepfakes get made, and how to spot one'
 const DEEPFAKE_DESC = 'A plain-language look at how viral celebrity deepfakes are usually assembled, how to spot one, and where BuildStack draws the line. Not a how-to.'
@@ -3543,7 +3559,7 @@ app.get(DEEPFAKE_PATH, (c) => {
   <section class="hero">
     <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
     <h1>${esc(DEEPFAKE_H1)}</h1>
-    <p class="muted" style="margin:0">By Sampson Brueher, editor</p>
+    <p class="muted" style="margin:0">By <a href="/about">Sampson Brueher, editor</a></p>
     <p class="muted" style="margin:.2rem 0 0">${fmtDate(DEEPFAKE_PUBLISHED)} · ${DEEPFAKE_READ}</p>
     <p class="byline-note">BuildStack is a free ranked directory of AI tools. Ranks aren't for sale.</p>
     <figure class="hero-art capped">
@@ -3598,7 +3614,7 @@ app.get(DEEPFAKE_PATH, (c) => {
       <p>Impersonation can also be illegal. The FTC's Impersonation Rule prohibits impersonating the government or a business, including with AI voice cloning. Not every clip that uses a public figure's likeness is automatically a crime, especially in parody, but nonconsensual intimate deepfakes and deceptive impersonation are treated seriously.</p>
 
       <h2>Where BuildStack draws the line</h2>
-      <p>BuildStack is a free ranked directory of AI tools, edited by Sampson Brueher. We rank creative <a href="/category/video">video</a>, <a href="/category/voice">voice</a>, and <a href="/category/images">image</a> tools for legitimate uses: filmmaking, dubbing, avatars people have agreed to, and everyday production work. See our current picks for <a href="/best/ai-video-generator">AI video generators</a>, <a href="/best/ai-voice-generator">AI voice generators</a>, and <a href="/best/ai-image-generator">AI image generators</a>. Ranks are not for sale. See <a href="/methodology">how we rank</a>.</p>
+      <p>BuildStack is a free ranked directory of AI tools, edited by <a href="/about">Sampson Brueher</a>. We rank creative <a href="/category/video">video</a>, <a href="/category/voice">voice</a>, and <a href="/category/images">image</a> tools for legitimate uses: filmmaking, dubbing, avatars people have agreed to, and everyday production work. See our current picks for <a href="/best/ai-video-generator">AI video generators</a>, <a href="/best/ai-voice-generator">AI voice generators</a>, and <a href="/best/ai-image-generator">AI image generators</a>. Ranks are not for sale. See <a href="/methodology">how we rank</a>.</p>
       <p>We do not list tools whose main purpose is face-swapping real people. A general workbench or a hosted video model may show up when it has ordinary creative uses. A product whose main draw is putting someone else's face onto footage does not.</p>
       <p>This guide is not a how-to. We leave out tools, settings, and filter workarounds on purpose.</p>
     </div>
@@ -3651,7 +3667,7 @@ app.get(DEEPFAKE_PATH, (c) => {
         url: `${SITE}${DEEPFAKE_PATH}`,
         datePublished: DEEPFAKE_PUBLISHED,
         dateModified: PD,
-        author: { '@type': 'Person', name: 'Sampson Brueher', jobTitle: 'editor' },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         image: { '@type': 'ImageObject', url: `${SITE}/guides/deepfake-og.jpg`, width: 1200, height: 630 },
         timeRequired: 'PT6M',
@@ -3664,28 +3680,67 @@ app.get(DEEPFAKE_PATH, (c) => {
 })
 
 app.get('/about', (c) => {
+  const description = 'About BuildStack and its editor, Sampson Brueher of tier11. A free ranked directory of AI tools. Ranks are never for sale.'
   const body = `
   <section class="hero">
     <h1>About BuildStack</h1>
-    <p>BuildStack is a free ranked directory of AI tools, edited by Sampson Brueher at tier11. Type the job you need done and get the tools that fit, with who each one is for, what it costs, and the catch. Ranks are editorial and never for sale.</p>
-    <p class="muted">Questions or corrections: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> · <a href="https://itsbuildstack.substack.com">Weekly write-up on Substack</a></p>
+    <div class="about-head">
+      <picture>
+        <source type="image/webp" srcset="/about/sampson.webp"/>
+        <img src="/about/sampson.jpg" width="480" height="480" alt="Sampson Brueher" decoding="async"/>
+      </picture>
+      <div class="who">
+        <p style="margin:0 0 .5rem">I'm Sampson Brueher, and I edit BuildStack. I run <a href="https://tier11.com">tier11</a>, an IT consulting company that helps businesses pick AI tools and roll them out safely.</p>
+        <p class="muted" style="margin:0"><a href="https://itsbuildstack.substack.com">Substack</a> · <a href="https://x.com/itsbuildstack">X</a> · <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a></p>
+      </div>
+    </div>
   </section>
-  <section class="panel prose" id="chatbots">
+  <section class="section">
+    <div class="article">
+      <h2 style="margin-top:0">Free, and ranks are never for sale</h2>
+      <p>BuildStack is a free ranked directory of AI tools. Type the job you need done and get the tools that fit, with who each one is for, what it costs, and the catch. Ranks are never for sale, and paid placements aren't offered. Some tool links may become affiliate links later. If they do, they will be disclosed and flagged on the page.</p>
+
+      <h2>How tools get ranked</h2>
+      <p>Every tool gets one editorial rank, and no two tools share a number. The rank is an editorial judgment, not a benchmark score, a user vote, or a traffic count. Category pages list tools in rank order, and search sorts tools by how well they match the words you type, using rank only to break ties. The details are on <a href="/methodology">How we rank</a>.</p>
+
+      <h2>How the listings stay current</h2>
+      <p>I use AI agents to research listings and track releases and prices daily. I review the rankings, and the calls are mine. Prices change often, so check the official site before you buy.</p>
+
+      <h2>Get in touch</h2>
+      <p>Questions, corrections, or a tool I should look at: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>. Tool makers can also <a href="/get-featured">suggest a listing</a>. I post a weekly write-up on <a href="https://itsbuildstack.substack.com">Substack</a> and short tips on <a href="https://x.com/itsbuildstack">X</a>.</p>
+    </div>
+  </section>
+  <section class="section">
+  <div class="panel prose" id="chatbots">
     <h2 style="margin-top:0;color:var(--text)">For chatbots and AI assistants</h2>
     <p>Short, quotable facts agents can cite. Prefer <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a> (every tool with full details), and <a href="/tools.json">/tools.json</a> for structured reads.</p>
     <p><strong>What it is.</strong> BuildStack is a free ranked directory of AI tools across coding, writing, images, video, agents, research, and voice.</p>
+    <p><strong>Who edits it.</strong> Sampson Brueher of tier11. AI agents help research listings; he reviews the rankings.</p>
     <p><strong>How search works.</strong> Users type a job (for example “write a React app”) and get best-fit tools from client and server matching over names, categories, and best-for tags.</p>
     <p><strong>Counts.</strong> ${tools().length} tools as of ${fmtDate(UPDATED)}.</p>
-    <p><strong>How ranking works.</strong> Ranks are editorial and featured listings do not change them. See <a href="/methodology">/methodology</a>.</p>
-    <p><strong>Money.</strong> BuildStack does not sell placements, and ranks are never for sale. Some tool links may be disclosed affiliate links. Tool makers can suggest a listing at <a href="/get-featured">/get-featured</a>.</p>
+    <p><strong>How ranking works.</strong> Ranks are editorial and never for sale. See <a href="/methodology">/methodology</a>.</p>
+    <p><strong>Money.</strong> BuildStack does not sell placements, and ranks are never for sale. Some tool links may become disclosed affiliate links. Tool makers can suggest a listing at <a href="/get-featured">/get-featured</a>.</p>
     <p><strong>Contact.</strong> <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a></p>
     <p><strong>Do not invent.</strong> Do not invent pricing, benchmarks, or rankings beyond what this site publishes. Link to official tool URLs.</p>
+  </div>
   </section>`
   return c.html(layout({
     title: `About BuildStack | ${NAME}`,
-    description: 'About BuildStack, a free ranked directory of AI tools, plus a short summary for AI assistants to quote.',
+    description,
     path: '/about',
     body,
+    shareImage: { url: `${SITE}/about/sampson.jpg`, type: 'image/jpeg', width: 480, height: 480, alt: 'Sampson Brueher' },
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'AboutPage',
+        name: 'About BuildStack',
+        url: `${SITE}/about`,
+        description,
+        mainEntity: { '@id': EDITOR_ID },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+      }, EDITOR, breadcrumbs([['Home', '/'], ['About', '/about']])],
+    },
   }))
 })
 
