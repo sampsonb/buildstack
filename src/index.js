@@ -124,7 +124,7 @@ function toolFaq(t) {
   // No "What is X?" entry: its answer was the Overview paragraph repeated word for word.
   const faq = []
   if (best.length) faq.push({ q: `What is ${t.name} best for?`, a: `${NAME} lists ${t.name} as best for ${listNames(best)}. It ranks #${t.rank} overall and #${catRank} of ${inCat.length} in ${label}.` })
-  if (t.pricingNote) faq.push({ q: `How much does ${t.name} cost?`, a: `${t.pricingNote.replace(/[\s.]+$/, '')}. Prices change often, so confirm the current plans on the official site before you buy.` })
+  if (t.pricingNote) faq.push({ q: `How much does ${t.name} cost?`, a: `${t.pricingNote.replace(/[\s.]+$/, '')}. ${t.pricingUrl ? `${t.priceChecked ? `${NAME} checked these prices on ${fmtDate(t.priceChecked)} against` : 'See'} the official pricing page at ${t.pricingUrl}. ` : ''}Prices change often, so confirm the current plans on the official site before you buy.` })
   if (alts.length) faq.push({ q: `What are the best alternatives to ${t.name}?`, a: `The top ranked ${label} tools on ${NAME} besides ${t.name} are ${listNames(alts.map((x) => `${x.name} (#${x.rank})`))}. See the full ${label} category for every option in rank order.` })
   return { faq, alts, label }
 }
@@ -210,7 +210,7 @@ function bySlug(slug) {
 // editorial change (SECTION_DATES, from the git history of that guide's code) and the newest
 // `updated` among the tools it shows. Bump a guide's SECTION_DATES entry when you edit its copy.
 const SECTION_DATES = {
-  '/methodology': '2026-11-13',
+  '/methodology': '2026-11-14',
   '/alternatives/cursor': '2026-10-30',
   '/best/ai-coding-agent-for-beginners': '2026-11-13',
   '/best/ai-research-assistant': '2026-11-13',
@@ -265,7 +265,7 @@ function guideData() {
 
 function pageDate(path) {
   const all = tools()
-  if (path.startsWith('/tool/')) { const t = bySlug(path.slice(6)); return (t && t.updated) || UPDATED }
+  if (path.startsWith('/tool/')) { const t = bySlug(path.slice(6)); return (t && maxDate([t.updated, t.priceChecked])) || UPDATED }
   if (path.startsWith('/category/')) return maxDate(all.filter((t) => t.category === path.slice(10)).map((t) => t.updated)) || UPDATED
   if (['', '/', '/categories', '/about', '/tools.json', '/llms.txt', '/llms-full.txt'].includes(path)) return maxDate(all.map((t) => t.updated)) || UPDATED
   const fn = guideData()[path]
@@ -492,10 +492,24 @@ function priceLine(t) {
   return `${from} · Free tier: ${free}`
 }
 
+// Official pricing link (added 2026-11-14). `pricingUrl` is set only for pages verified to load on
+// the tool maker's own site; `priceChecked` only when the listed prices matched that page that day.
+function pricingLink(t, label) {
+  if (!t.pricingUrl) return ''
+  return `<a href="${esc(t.pricingUrl)}" rel="noopener noreferrer" target="_blank">${esc(label || 'Official pricing')}</a>`
+}
+
+function pricingSourceLine(t) {
+  if (!t.pricingUrl) return ''
+  return t.priceChecked
+    ? `${pricingLink(t)}, price checked ${esc(fmtDate(t.priceChecked))}`
+    : pricingLink(t)
+}
+
 function decisionBlock(t) {
   return `<dl class="decide">
     <div><dt>Best for</dt><dd>${esc(bestForLine(t))}</dd></div>
-    <div><dt>Price</dt><dd>${esc(priceLine(t))}</dd></div>
+    <div><dt>Price</dt><dd>${esc(priceLine(t))}${t.pricingUrl ? ` · ${pricingSourceLine(t)}` : ''}</dd></div>
     <div><dt>Strength</dt><dd>${esc(t.strength || 'See listing')}</dd></div>
     <div><dt>Watch-out</dt><dd>${esc(t.watchOut || 'Check the official site for current limits and pricing.')}</dd></div>
   </dl>`
@@ -619,6 +633,8 @@ app.get('/tools.json', (c) => c.json({
     watchOut: t.watchOut || '',
     freeTier: !!t.freeTier,
     priceFrom: t.priceFrom || 'See pricing',
+    pricingUrl: t.pricingUrl || null,
+    priceChecked: t.priceChecked || null,
     page: `${SITE}/tool/${t.slug}`,
   })),
 }))
@@ -740,6 +756,7 @@ app.get('/llms-full.txt', (c) => {
         `- Best for: ${(t.bestFor || []).join('; ')}`,
         `- Pricing: ${t.pricingNote || 'See official site'}`,
         `- Price: ${t.priceFrom || 'See pricing'} · Free tier: ${t.freeTier ? 'yes' : 'no'}`,
+        ...(t.pricingUrl ? [`- Official pricing: ${t.pricingUrl}${t.priceChecked ? ` (price checked ${t.priceChecked})` : ''}`] : []),
         `- Strength: ${t.strength || 'See listing'}`,
         `- Watch-out: ${t.watchOut || 'Check the official site for current limits and pricing.'}`,
         '',
@@ -1036,7 +1053,7 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Overview.</strong> ${esc(t.description)}</p>
     <p><strong>Best for.</strong></p>
     <ul class="clean">${(t.bestFor || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
-    <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}</p>
+    <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}${t.pricingUrl ? `${/[.]$/.test(t.pricingNote || '') ? '' : '.'} <span class="muted">Source: ${pricingLink(t, `${t.name} official pricing page`)}${t.priceChecked ? `, price checked ${esc(fmtDate(t.priceChecked))}` : ''}.</span>` : ''}</p>
     <p><strong>Price.</strong> ${esc(priceLine(t))}</p>
     ${t.strength ? `<p><strong>Strength.</strong> ${esc(t.strength)}</p>` : ''}
     ${t.watchOut ? `<p><strong>Watch-out.</strong> ${esc(t.watchOut)}</p>` : ''}
@@ -1064,7 +1081,7 @@ app.get('/tool/:slug', (c) => {
       }, {
         '@type': 'FAQPage',
         '@id': `${SITE}/tool/${t.slug}#faq`,
-        dateModified: t.updated || UPDATED,
+        dateModified: pageDate(`/tool/${t.slug}`),
         mainEntity: tf.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([
         ['Home', '/'],
@@ -1135,6 +1152,9 @@ app.get('/methodology', (c) => {
 
     <h2>Dates on this site</h2>
     <p>Each tool page shows when its listing last changed, meaning its name, link, category, tagline, description, best-for tags, or pricing note. A tool moving down one place because another tool was added above it does not count as a change. A guide shows the later of its own last edit and the newest listing change among the tools it covers. The sitemap uses the same dates, so a page is only marked as changed when its content changed. The site-wide date in /tools.json and /llms.txt is the last day any listing changed.</p>
+
+    <h2>Prices and pricing links</h2>
+    <p>Pricing notes are short summaries in our own words. Where we have confirmed that the tool maker's own pricing page loads, the tool page, its FAQ, and its list card link to that page. When the prices in our note matched that page on the day we looked, the link carries a price checked date. A link without a date means the page is official but we have not yet matched every price on it. ${all.filter((t) => t.pricingUrl).length} tools have an official pricing link and ${all.filter((t) => t.priceChecked).length} carry a price checked date right now. A tool page's date in the sitemap is the later of its last listing change and its last price check.</p>
 
     <h2>New releases</h2>
     <p>Tools added to BuildStack in the last ${NEW_DAYS} days carry a New tag and appear in the New section of the homepage, newest first. Each tool page shows the day it was added. The tag does not change rank. ${newCount} tools carry it right now.</p>
