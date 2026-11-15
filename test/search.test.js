@@ -211,7 +211,7 @@ function assertDecisionBlock(html, slug) {
   const card = cardChunk(html, slug)
   const tool = tools.find((item) => item.slug === slug)
   assert.match(card, />Best for<\/dt>/)
-  assert.match(card, />Price<\/dt>/)
+  assert.ok(/>Price<\/dt>/.test(card) || card.includes('<div class="shelfedge">'), `${slug}: no price row or price tag`)
   assert.match(card, />Strength<\/dt>/)
   assert.match(card, />Watch-out<\/dt>/)
   assert.equal(card.includes(tool.strength), true, slug)

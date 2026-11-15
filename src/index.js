@@ -434,6 +434,23 @@ details.more > summary { cursor: pointer; color: var(--accent2); font-weight: 65
 .decide div { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr); gap: .35rem; align-items: start; }
 .decide dt { margin: 0; color: var(--muted); font-weight: 650; }
 .decide dd { margin: 0; color: var(--text); }
+.card:has(.shelfedge) { display: flex; flex-direction: column; }
+.card:has(.shelfedge) .decide { margin-bottom: .9rem; }
+.shelfedge { display: flex; flex-wrap: wrap; gap: .5rem; align-items: stretch; margin: auto -1.05rem -1rem; padding: .65rem 1.05rem .75rem; background: var(--panel2); border-top: 1px solid var(--line); border-radius: 0 0 var(--radius) var(--radius); }
+.ptag { flex: 0 0 auto; background: #ffdd3c; color: #1a1600; border-radius: 3px; padding: .35rem .65rem .45rem; display: flex; flex-direction: column; justify-content: center; min-width: 5.5rem; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+.ptag .pfrom { font-size: .7rem; font-weight: 700; line-height: 1.1; }
+.ptag b { font-size: 1.55rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.ptag b small { font-size: .8rem; font-weight: 700; letter-spacing: 0; }
+.ptag b.txt { font-size: 1rem; line-height: 1.15; max-width: 14rem; }
+.ptag .pfree { font-size: .75rem; font-weight: 650; margin-top: .25rem; }
+.pcheck { flex: 1 1 8rem; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: .15rem; font-size: .78rem; line-height: 1.35; color: var(--muted); padding: .35rem .65rem; border-radius: 3px; background: var(--bg); border: 1px solid var(--line); }
+.pcheck strong { color: var(--text); font-weight: 700; }
+.pcheck.missing { background: transparent; border: 1.5px dashed #7d8ba0; }
+.shelfedge.big { display: inline-flex; margin: 0 0 1.25rem; padding: .7rem; border: 1px solid var(--line); border-radius: 10px; }
+.shelfedge.big .ptag { min-width: 8.5rem; padding: .5rem .8rem .55rem; }
+.shelfedge.big .ptag b { font-size: 2.1rem; }
+.shelfedge.big .ptag b.txt { font-size: 1.2rem; }
+.shelfedge.big .pcheck { flex: 0 1 auto; font-size: .86rem; padding: .5rem .8rem; }
 @media (max-width: 420px) {
   .decide { font-size: .78rem; }
   .decide div { grid-template-columns: 5.3rem minmax(0, 1fr); gap: .3rem; }
@@ -537,10 +554,33 @@ function pricingSourceLine(t) {
     : pricingLink(t)
 }
 
-function decisionBlock(t) {
+// Price tag (redesign phase 2). A "from $20/mo" price splits into amount and unit; anything
+// else (API rates, "See pricing", "Discontinued") is shown as written. The checked panel is
+// solid only when priceChecked is set; otherwise it is dashed and says the price is not yet checked.
+function priceParts(t) {
+  const raw = String(t.priceFrom || '').trim()
+  const m = raw.match(/^from (\$[\d.,]+|[\d.,]+ euros)(\/[a-z]+)$/i)
+  if (m) return { from: true, amount: m[1], unit: m[2] }
+  if (/^free$/i.test(raw)) return { amount: 'Free', unit: '' }
+  return { text: raw || 'See pricing' }
+}
+
+function priceTag(t, big) {
+  const p = priceParts(t)
+  const head = p.text
+    ? `<b class="txt">${esc(p.text)}</b>`
+    : `${p.from ? '<span class="pfrom">From</span>' : ''}<b>${esc(p.amount)}${p.unit ? `<small>${esc(p.unit)}</small>` : ''}</b>`
+  const free = typeof t.freeTier === 'boolean' ? `<span class="pfree">Free tier: ${t.freeTier ? 'yes' : 'no'}</span>` : ''
+  const check = t.priceChecked && t.pricingUrl
+    ? `<div class="pcheck"><strong>Price checked ${esc(fmtDate(t.priceChecked))}</strong>${pricingLink(t)}</div>`
+    : `<div class="pcheck missing"><strong>Price not yet checked</strong>${t.pricingUrl ? pricingLink(t) : '<span>We will date it once we confirm it</span>'}</div>`
+  return `<div class="shelfedge${big ? ' big' : ''}"><div class="ptag">${head}${free}</div>${check}</div>`
+}
+
+function decisionBlock(t, noPrice) {
   return `<dl class="decide">
     <div><dt>Best for</dt><dd>${esc(bestForLine(t))}</dd></div>
-    <div><dt>Price</dt><dd>${esc(priceLine(t))}${t.pricingUrl ? ` · ${pricingSourceLine(t)}` : ''}</dd></div>
+    ${noPrice ? '' : `<div><dt>Price</dt><dd>${esc(priceLine(t))}${t.pricingUrl ? ` · ${pricingSourceLine(t)}` : ''}</dd></div>`}
     <div><dt>Strength</dt><dd>${esc(t.strength || 'See listing')}</dd></div>
     <div><dt>Watch-out</dt><dd>${esc(t.watchOut || 'Check the official site for current limits and pricing.')}</dd></div>
   </dl>`
@@ -583,7 +623,7 @@ function toolCardAt(t, pos, kind) {
     <div class="meta">${badge}<span class="rankline">${esc(rankLine(t, pos, kind))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}${t.featured ? '<span class="tag feat">Featured</span>' : ''}</div>
     <h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3>
     <p class="muted" style="margin:0;font-size:.92rem">${esc(t.tagline)}</p>
-    ${decisionBlock(t)}
+    ${decisionBlock(t, kind === 'fit')}${kind === 'fit' ? priceTag(t) : ''}
   </article>`
 }
 
@@ -1088,6 +1128,7 @@ app.get('/tool/:slug', (c) => {
     <div class="meta"><a class="rank" href="/category/${esc(t.category)}">${esc(catChip(t))}</a><span class="rankline">${esc(overallPlace(t))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}</div>
     <h1>${esc(t.name)}</h1>
     <p>${esc(t.tagline)}</p>
+    ${priceTag(t, true)}
     <p>
       <a class="btn" href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">Visit ${esc(t.name)}</a>
     </p>
