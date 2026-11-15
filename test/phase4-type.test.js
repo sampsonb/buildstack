@@ -11,7 +11,7 @@ async function get(path) {
 }
 const pages = ['/', '/?q=write%20blog%20posts', '/tool/claude', '/best/ai-coding-assistant', '/alternatives/cursor', '/category/coding', '/categories', '/guides/how-celebrity-deepfakes-are-made', '/about', '/methodology']
 
-test('font: self-hosted Archivo file exists, preloaded once, swap, with a matched fallback', async () => {
+test('font: self-hosted Archivo file exists, swap, matched fallback, not preloaded (preload delayed first paint on slow mobile)', async () => {
   const f = new URL('../public/fonts/archivo-v1.woff2', import.meta.url)
   assert.ok(existsSync(f))
   assert.equal(readFileSync(f).subarray(0, 4).toString('latin1'), 'wOF2')
@@ -20,7 +20,7 @@ test('font: self-hosted Archivo file exists, preloaded once, swap, with a matche
   for (const p of pages) {
     const { status, html } = await get(p)
     assert.equal(status, 200, p)
-    assert.equal((html.match(/<link rel="preload" href="\/fonts\/archivo-v1\.woff2" as="font" type="font\/woff2" crossorigin\/>/g) || []).length, 1, p)
+    assert.equal(html.includes('rel="preload"'), false, `${p}: no font preload`)
     assert.ok(/@font-face \{ font-family: "Archivo"; src: url\("\/fonts\/archivo-v1\.woff2"\) format\("woff2"\);[^}]*font-display: swap;/.test(html), p)
     assert.ok(/@font-face \{ font-family: "Archivo Fallback";[^}]*size-adjust:/.test(html), p)
     assert.ok(html.includes('--font: "Archivo", "Archivo Fallback",'), p)

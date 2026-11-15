@@ -348,7 +348,6 @@ ${robots ? `<meta name="robots" content="${esc(robots)}"/>
 <meta name="twitter:description" content="${esc(description)}"/>
 <meta name="twitter:image" content="${esc(share.url)}"/>
 <meta name="twitter:image:alt" content="${esc(share.alt)}"/>
-<link rel="preload" href="/fonts/archivo-v1.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32"/>
 <link rel="alternate" type="application/json" href="/tools.json"/>
