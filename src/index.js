@@ -299,8 +299,48 @@ function searchResultsHtml(results) {
   if (!results.length) return '<p class="muted">No matches. Try a broader phrase.</p>'
   const top = results.slice(0, SEARCH_TOP)
   const rest = results.slice(SEARCH_TOP)
-  return `<div class="grid">${top.map((t, i) => toolCardAt(t, i + 1, 'fit')).join('')}</div>${rest.length ? `
-    <details class="more"><summary>Show all ${results.length} results</summary><div class="grid">${rest.map((t, i) => toolCardAt(t, SEARCH_TOP + i + 1, 'fit')).join('')}</div></details>` : ''}`
+  return `<div class="rows">${top.map((t, i) => toolCardAt(t, i + 1, 'fit')).join('')}</div>${rest.length ? `
+    <details class="more"><summary>Show all ${results.length} results</summary><div class="rows">${rest.map((t, i) => toolCardAt(t, SEARCH_TOP + i + 1, 'fit')).join('')}</div></details>` : ''}`
+}
+
+// Results header, free-tier filter, and related searches (redesign phase 5). The filter is a
+// query parameter on the noindex results page; the canonical stays the plain ?q= URL.
+// Related searches are fixed per category (four each, three shown) and each was checked to return
+// that category first.
+const RELATED_SEARCHES = {
+  writing: ['write blog posts', 'edit and polish prose', 'write marketing copy', 'write an essay'],
+  coding: ['write a react app', 'refactor code', 'review pull requests', 'code editor'],
+  research: ['research with citations', 'summarize papers', 'search the web', 'research papers'],
+  images: ['generate images', 'edit photos', 'make a logo', 'design graphics'],
+  video: ['make short videos', 'edit youtube videos', 'add captions to video', 'generate a video'],
+  voice: ['voiceover for a podcast', 'transcribe a meeting', 'text to speech', 'clone a voice'],
+  agents: ['automate workflows', 'automate email', 'build an app', 'build an ai agent'],
+}
+function relatedSearches(q, top) {
+  const want = String(q || '').trim().toLowerCase()
+  const cat = top && RELATED_SEARCHES[top.category] ? top.category : ''
+  const list = (cat ? RELATED_SEARCHES[cat] : Object.values(RELATED_SEARCHES).map((x) => x[0]))
+    .filter((x) => x !== want).slice(0, 3)
+  const links = list.map((x) => `<a href="/?q=${encodeURIComponent(x)}">${esc(x)}</a>`)
+  const joined = links.length > 1 ? `${links.slice(0, -1).join(', ')} or ${links[links.length - 1]}` : links.join('')
+  const browse = cat ? `, or browse <a href="/category/${cat}">all ${tools().filter((t) => t.category === cat).length} ${esc(CATEGORIES[cat].label)} tools</a>` : ', or <a href="/categories">browse every category</a>'
+  return `<section class="section" id="related"><h2>Related searches</h2><p class="related">Not quite it? Try ${joined}${browse}.</p></section>`
+}
+function resultsBlock(q, results, free) {
+  const shown = free ? results.filter((t) => t.freeTier === true) : results
+  const base = `/?q=${encodeURIComponent(q)}`
+  const filter = results.length ? `<nav class="filters" aria-label="Narrow results"><a href="${free ? base : `${base}&amp;free=1`}"${free ? ' aria-current="true"' : ''}>Free tier only${free ? '<span class="sr-only"> (on; select to show all)</span>' : ''}</a><a href="/">Clear search</a></nav>` : ''
+  const count = results.length
+    ? `<p>${free ? `${shown.length} of ${results.length} matches have a free tier` : `${results.length} matching tools`}, ranked from ${tools().length}. The number is fit for this job, not overall rank.</p>`
+    : ''
+  const list = free && !shown.length
+    ? `<p class="muted">None of the ${results.length} matches has a free tier. <a href="${base}">Show all ${results.length}</a>.</p>`
+    : searchResultsHtml(shown)
+  return `<section class="section results"><h1>Best fit for “${esc(q)}”</h1>
+    <div class="rmeta">${count}${filter}</div>
+    <h2 class="sr-only">Ranked results</h2>
+    ${list}</section>
+  ${relatedSearches(q, shown[0] || results[0])}`
 }
 
 function layout({ title, description, path, body, jsonLd, robots, shareImage }) {
@@ -528,6 +568,72 @@ ul.clean { padding-left: 1.1rem; }
 .strip h3 { color: var(--ink); font-size: 1.1rem; margin: 0 0 .6rem; }
 .strip .note { font-size: .86rem; margin: .55rem 0 0; color: var(--ink-3); }
 details.sources > summary { cursor: pointer; font-size: 1.3rem; font-weight: 750; color: var(--ink); margin-bottom: .9rem; }
+.qbar { padding: 1.5rem 0 .5rem; }
+.results { padding-top: 1rem; }
+.results h1 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); line-height: 1.1; letter-spacing: -.025em; margin: 0 0 .6rem; }
+.rmeta { display: flex; flex-wrap: wrap; gap: .6rem 1.5rem; align-items: center; justify-content: space-between; color: var(--ink-2); font-size: .92rem; margin: 0 0 .75rem; }
+.rmeta p { margin: 0; max-width: 60ch; }
+.filters { display: flex; gap: .5rem; flex-wrap: wrap; }
+.filters a { border: 1px solid var(--rail-line); border-radius: 6px; padding: .35rem .75rem; min-height: 2.4rem; display: inline-flex; align-items: center; text-decoration: none; background: #fff; font-size: .9rem; color: var(--ink); }
+.filters a:hover { border-color: var(--ink); color: var(--ink); }
+.filters a[aria-current="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.rows { display: grid; }
+.rows .card { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); column-gap: 1.5rem; align-items: start; border: 0; border-top: 1px solid var(--rule); border-radius: 0; box-shadow: none; background: transparent; padding: 1.75rem 0 0; margin: 0 0 1.75rem; }
+.rows .card:hover { border-color: var(--rule); }
+.rows .card > * { grid-column: 2; }
+.rows .card .meta { display: contents; }
+.rows .card .meta .rankline, .rows .card .meta .tag { grid-column: 2; justify-self: start; margin: 0 0 .2rem; }
+.rows .card .pos { grid-column: 1; grid-row: 1 / span 3; justify-self: end; background: none; color: var(--ink); font-size: 3rem; line-height: .85; height: auto; min-width: 0; padding: 0; margin: 0; border-radius: 0; font-weight: 820; font-stretch: 72%; font-variation-settings: "wdth" 72; letter-spacing: -.02em; }
+.results > .rows > .card:first-child .pos { font-size: 4.75rem; }
+.rows .card h3 { font-size: 1.6rem; margin: 0 0 .15rem; letter-spacing: -.02em; }
+.results > .rows > .card:first-child h3 { font-size: 2.1rem; }
+.rows .card > p.muted { font-size: 1rem !important; color: var(--ink-2); }
+.rows .decide { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem 1.75rem; font-size: .95rem; line-height: 1.45; margin: .9rem 0 0; max-width: 60rem; }
+.rows .decide div { display: block; }
+.rows .decide dt { font-size: .8rem; letter-spacing: .02em; margin: 0 0 .15rem; }
+.rows .card .shelfedge { grid-column: 1 / -1; margin: 1.1rem 0 0; border-radius: 0; }
+.related { font-size: 1.02rem; }
+.crumb { font-size: .88rem; color: var(--ink-3); margin: 1.25rem 0 0; }
+.crumb a { color: var(--ink-2); }
+.hero:has(> .placard) { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "main plac"; column-gap: 2rem; align-items: end; padding: 1rem 0 1.5rem; border-bottom: 2px solid var(--ink); }
+.placard { grid-area: plac; display: flex; flex-direction: column; align-items: flex-end; gap: .3rem; text-align: right; margin: 0; }
+.placard a.rank { font-size: clamp(2.1rem, 4.6vw, 3.4rem); line-height: .95; font-weight: 820; margin: 0; letter-spacing: -.02em; text-decoration: underline; text-decoration-color: var(--brand); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+.placard .rankline { margin: 0; font-size: .92rem; color: var(--ink-2); }
+.th-main { grid-area: main; }
+.th-main h1 { font-size: clamp(2.4rem, 6vw, 4rem); line-height: 1; letter-spacing: -.035em; margin: 0; }
+.th-main .one { font-size: 1.2rem; color: var(--ink-2); margin: .55rem 0 0; max-width: 46ch; }
+.bestfor { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.bestfor li { background: var(--rail); color: var(--ink); border-radius: 4px; padding: .25rem .6rem; font-size: .9rem; }
+.toolgrid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-areas: "main side"; column-gap: 3rem; align-items: start; margin-top: 2rem; }
+.toolmain { grid-area: main; min-width: 0; }
+.side { grid-area: side; }
+.side .shelfedge.big { display: flex; flex-direction: column; margin: 0; width: 100%; border-radius: 6px; }
+.side .shelfedge.big .pcheck { flex: 0 0 auto; }
+.plan h2 { font-size: 1.05rem; margin: 1.25rem 0 .35rem; }
+.plan p { margin: 0; font-size: .95rem; line-height: 1.55; color: var(--ink-2); }
+.visit { margin: 1.25rem 0 0; }
+.facts-list { list-style: none; padding: 0; margin: 1.25rem 0 0; font-size: .9rem; color: var(--ink-2); border-top: 1px solid var(--rule); }
+.facts-list li { padding: .55rem 0; border-bottom: 1px solid var(--rule); overflow-wrap: anywhere; }
+.sw { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.sw > div { padding: 1.25rem 1.5rem; }
+.sw > div + div { border-left: 1px solid var(--rule); }
+.sw h2 { font-size: .95rem; letter-spacing: .01em; margin: 0 0 .4rem; }
+.sw p { margin: 0; }
+.toolmain .prose h2 { font-size: 1.45rem; color: var(--ink); margin: 2.25rem 0 .6rem; }
+.toolmain #faq { padding-top: 1rem; }
+@media (max-width: 820px) {
+  .hero:has(> .placard) { grid-template-columns: 1fr; grid-template-areas: "main" "plac"; row-gap: 1rem; }
+  .placard { align-items: flex-start; text-align: left; }
+  .toolgrid { grid-template-columns: 1fr; grid-template-areas: "side" "main"; row-gap: 2rem; margin-top: 1.5rem; }
+  .sw { grid-template-columns: 1fr; }
+  .sw > div + div { border-left: 0; border-top: 1px solid var(--rule); }
+  .rows .card { grid-template-columns: 2.6rem minmax(0, 1fr); column-gap: .9rem; }
+  .rows .card .pos { font-size: 2.3rem; }
+  .results > .rows > .card:first-child .pos { font-size: 3.1rem; }
+  .rows .card h3 { font-size: 1.35rem; }
+  .results > .rows > .card:first-child h3 { font-size: 1.6rem; }
+  .rows .decide { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -926,6 +1032,7 @@ app.get('/', (c) => {
   const PD = pageDate('/')
   const q = c.req.query('q') || ''
   const results = q ? searchTools(q) : tools()
+  const free = c.req.query('free') === '1'
   const featured = tools().filter((t) => t.featured)
   const news = newTools()
   const all = tools()
@@ -990,16 +1097,16 @@ app.get('/', (c) => {
     </div>
   </section>`
   const body = `
-  <section class="hero">
-    <h1>Type the job. Get the best AI tool for it.</h1>
-    <p>${all.length} AI tools, ranked. Every pick shows who it's for, what it costs, and the catch. Free, and ranks can't be bought.</p>
+  <section class="hero${q ? ' qbar' : ''}">
+    ${q ? '' : `<h1>Type the job. Get the best AI tool for it.</h1>
+    <p>${all.length} AI tools, ranked. Every pick shows who it's for, what it costs, and the catch. Free, and ranks can't be bought.</p>`}
     <label class="searchlabel" for="q">Describe the job you need an AI tool for</label>
     <form class="searchbox" action="/" method="get" role="search">
       <input id="q" name="q" value="${esc(q)}" placeholder="e.g. edit a podcast, write a blog post, build an app"/>
       <button type="submit">Find tools</button>
     </form>
   </section>
-  ${q ? `<section class="section"><h2>Best fit for “${esc(q)}”</h2>${searchResultsHtml(results)}</section>` : ''}
+  ${q ? resultsBlock(q, results, free) : ''}
   ${q ? '' : `<p class="muted" style="margin:.9rem 0 0;font-size:.88rem">Last updated: ${fmtDate(PD)} · ${all.length} ranked tools · <a href="/methodology">How we rank</a></p>`}
   <section class="section" id="best-for">
     <h2>Find an AI tool by task</h2>
@@ -1172,38 +1279,54 @@ app.get('/tool/:slug', (c) => {
   const related = tools().filter((x) => x.category === t.category && x.slug !== t.slug).slice(0, 4)
   const tf = toolFaq(t)
   const altLinks = tf.alts.map((x) => `<a href="/tool/${esc(x.slug)}">${esc(x.name)}</a> (#${x.rank})`)
+  const isCost = (f) => f.q.startsWith('How much does ')
+  const cost = tf.faq.find(isCost)
   const faqHtml = `
   <section class="section" id="faq">
     <h2>${esc(t.name)} FAQ</h2>
     <div class="panel prose">
-      ${tf.faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      ${tf.faq.filter((f) => !isCost(f)).map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
       <p>${f.q.startsWith('What are the best alternatives') ? `The top ranked ${esc(tf.label)} tools on ${NAME} besides ${esc(t.name)} are ${listNames(altLinks)}. See the full <a href="/category/${esc(t.category)}">${esc(tf.label)} category</a> for every option in rank order.` : esc(f.a)}</p>`).join('')}
     </div>
   </section>`
+  const catLabel = CATEGORIES[t.category]?.label || t.category
+  // Price shows once in the visible body: the tag plus the FAQ's cost answer, in the side box.
+  // The FAQPage JSON-LD is unchanged and every question in it is still visible on the page.
   const body = `
+  <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/category/${esc(t.category)}">${esc(catLabel)}</a> › <span aria-current="page">${esc(t.name)}</span></nav>
   <section class="hero">
-    <div class="meta"><a class="rank" href="/category/${esc(t.category)}">${esc(catChip(t))}</a><span class="rankline">${esc(overallPlace(t))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}</div>
-    <h1>${esc(t.name)}</h1>
-    <p>${esc(t.tagline)}</p>
-    ${priceTag(t, true)}
-    <p>
-      <a class="btn" href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">Visit ${esc(t.name)}</a>
-    </p>
+    <div class="meta placard"><a class="rank" href="/category/${esc(t.category)}">${esc(catChip(t))}</a><span class="rankline">${esc(overallPlace(t))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}</div>
+    <div class="th-main">
+      <h1>${esc(t.name)}</h1>
+      <p class="one">${esc(t.tagline)}</p>
+      ${(t.bestFor || []).length ? `<ul class="bestfor" aria-label="Best for">${t.bestFor.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
+    </div>
   </section>
-  <section class="section panel prose">
-    <p><strong>Overview.</strong> ${esc(t.description)}</p>
-    <p><strong>Best for.</strong></p>
-    <ul class="clean">${(t.bestFor || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
-    <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}${t.pricingUrl ? `${/[.]$/.test(t.pricingNote || '') ? '' : '.'} <span class="muted">Source: ${pricingLink(t, `${t.name} official pricing page`)}${t.priceChecked ? `, price checked ${esc(fmtDate(t.priceChecked))}` : ''}.</span>` : ''}</p>
-    ${t.strength ? `<p><strong>Strength.</strong> ${esc(t.strength)}</p>` : ''}
-    ${t.watchOut ? `<p><strong>Watch-out.</strong> ${esc(t.watchOut)}</p>` : ''}
-    <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a> · Listing last changed: ${esc(fmtDate(t.updated || UPDATED))}${t.added ? ` · Added to ${NAME}: ${esc(fmtDate(t.added))}` : ''}</p>
-    ${t.affiliate ? '<p class="muted">Affiliate link: we may earn a commission if you use the link on this page.</p>' : ''}
-    ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
-    ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
-  </section>
-  ${faqHtml}
-  ${related.length ? `<section class="section"><h2>More in ${esc(CATEGORIES[t.category]?.label || t.category)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
+  <div class="toolgrid">
+    <aside class="side" aria-label="Price and listing facts">
+      ${priceTag(t, true)}
+      ${cost ? `<div class="plan"><h2>${esc(cost.q)}</h2><p>${esc(cost.a)}</p></div>` : ''}
+      <p class="visit"><a class="btn" href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">Visit ${esc(t.name)}</a></p>
+      <ul class="facts-list">
+        <li>Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a></li>
+        <li>Listing last changed: ${esc(fmtDate(t.updated || UPDATED))}</li>
+        ${t.added ? `<li>Added to ${NAME}: ${esc(fmtDate(t.added))}</li>` : ''}
+        <li>${t.featured ? 'Featured listing. It does not change the rank.' : 'Paid placement: none.'} <a href="/methodology">Ranks are never for sale</a></li>
+      </ul>
+      ${t.affiliate ? '<p class="muted">Affiliate link: we may earn a commission if you use the link on this page.</p>' : ''}
+    </aside>
+    <div class="toolmain">
+      ${t.strength || t.watchOut ? `<div class="sw">${t.strength ? `<div><h2>Strength</h2><p>${esc(t.strength)}</p></div>` : ''}${t.watchOut ? `<div><h2>Watch-out</h2><p>${esc(t.watchOut)}</p></div>` : ''}</div>` : ''}
+      <section class="prose">
+        <h2>What it is</h2>
+        <p>${esc(t.description)}</p>
+        ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
+        ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
+      </section>
+      ${faqHtml}
+    </div>
+  </div>
+  ${related.length ? `<section class="section"><h2>Ranked alternatives in ${esc(catLabel)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
   return c.html(layout({
     title: `${t.name}: ${t.tagline} | ${NAME}`,
     description: toolMetaDescription(t),

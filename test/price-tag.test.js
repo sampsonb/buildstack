@@ -67,11 +67,11 @@ test('every search result card ends on a price tag that matches the data', async
   assert.ok(checked > 0 && missing > 0, 'both tag states covered')
 })
 
-test('every tool page shows one large price tag under the tagline', async () => {
+test('every tool page shows one large price tag in the side box, above the Visit button', async () => {
   for (const t of tools) {
     const { status, html } = await get(`/tool/${t.slug}`)
     assert.equal(status, 200)
-    const hero = html.slice(html.indexOf('<section class="hero">'), html.indexOf('</section>', html.indexOf('<section class="hero">')))
+    const hero = html.slice(html.indexOf('<aside class="side"'), html.indexOf('</aside>'))
     const ts = tags(hero)
     assert.equal(ts.length, 1, t.slug)
     assert.equal(ts[0].big, true, t.slug)

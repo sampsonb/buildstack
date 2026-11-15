@@ -64,11 +64,13 @@ test('home FAQ: folded, and every FAQPage question and answer is still in the HT
   assert.deepEqual(rows, faq.mainEntity.map((q) => [q.name, q.acceptedAnswer.text]))
 })
 
-test('tool pages: Price line gone (the tag shows it), Pricing note kept and still matches JSON-LD', async () => {
+test('tool pages: Price line gone, pricing note shown once (in the price box) and still matches JSON-LD', async () => {
   for (const t of tools) {
     const { html } = await get(`/tool/${t.slug}`)
     assert.equal(html.includes('<strong>Price.</strong>'), false, t.slug)
-    assert.ok(html.includes('<strong>Pricing note.</strong>'), t.slug)
+    const visible = unesc(html.slice(html.indexOf('<body>')).replace(/<script[\s\S]*?<\/script>/g, ''))
+    const note = t.pricingNote.replace(/[\s.]+$/, '')
+    assert.equal(visible.split(note).length - 1, 1, `${t.slug}: pricing note visible once`)
     const ldText = JSON.stringify(ldOf(html))
     assert.ok(ldText.includes(JSON.stringify(t.pricingNote).slice(1, -1)), `${t.slug}: pricing note in JSON-LD`)
     assert.ok(html.includes('class="shelfedge big"'), t.slug)

@@ -65,7 +65,7 @@ test('tool pages: one big rank (place in category) and overall only as small tex
   for (const t of tools) {
     const { status, html } = await get(`/tool/${t.slug}`)
     assert.equal(status, 200)
-    const meta = html.match(/<section class="hero">\s*<div class="meta">([\s\S]*?)<\/div>/)[1]
+    const meta = html.match(/<section class="hero">\s*<div class="meta placard">([\s\S]*?)<\/div>/)[1]
     assert.equal((meta.match(/#\d+/g) || []).length, 1, t.slug)
     assert.ok(meta.includes(`<a class="rank" href="/category/${t.category}">#${catPos(t)} in ${LABEL[t.category]}</a>`), t.slug)
     assert.ok(meta.includes(`<span class="rankline">${overallPlace(t)}</span>`), t.slug)
