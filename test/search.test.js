@@ -217,7 +217,11 @@ function assertDecisionBlock(html, slug) {
   assert.equal(card.includes(tool.strength), true, slug)
   assert.equal(card.includes(tool.watchOut), true, slug)
   assert.match(card, /Free tier: (yes|no)/)
-  assert.equal(card.includes(`#${catRankOf(tool)} in ${catLabel(tool)}`), true, slug)
+  const ord = (n) => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 'st', 'nd', 'rd'][n % 100] || 'th')
+  const inCat = byRank.filter((item) => item.category === tool.category).length
+  const catText = `${ord(catRankOf(tool))} of ${inCat} in ${catLabel(tool)}`
+  const overallText = `${ord(tool.rank)} of ${byRank.length} overall`
+  assert.equal(card.includes(catText) || card.includes(overallText), true, slug)
 }
 
 test('search, category, and guide cards show a decision block and ranking is unchanged', async () => {

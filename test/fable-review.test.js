@@ -52,11 +52,11 @@ test('get-featured page is neutral: no Stripe, no test-mode wording, ranks not f
   assert.match(body, /mailto:buildstack@tier11\.com/)
 })
 
-test('tool page: no Get featured button, overall rank only here, no repeated FAQ answer', async () => {
+test('tool page: no Get featured button, category place is the big rank, no repeated FAQ answer', async () => {
   const claude = byRank.find((t) => t.slug === 'claude')
   const { html } = await get('/tool/claude')
-  assert.match(html, new RegExp(`<span class="rank">#${claude.rank} overall</span>`))
-  assert.match(html, /#1 in Writing/)
+  assert.match(html, /<a class="rank" href="\/category\/writing">#1 in Writing<\/a>/)
+  assert.match(html, new RegExp(`<span class="rankline">${claude.rank === 2 ? '2nd' : `${claude.rank}(st|nd|rd|th)`} of ${byRank.length} overall</span>`))
   assert.equal(html.includes('btn secondary'), false)
   assert.equal(html.includes('What is Claude?'), false)
   const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])
@@ -66,19 +66,20 @@ test('tool page: no Get featured button, overall rank only here, no repeated FAQ
   assert.match(html, /<meta name="description" content="#1 in Writing on BuildStack\./)
 })
 
-test('search results: numbered 1..N, category chip, top 6 then Show all N', async () => {
+test('search results: numbered 1..N, category place as small text, top 6 then Show all N', async () => {
   const q = 'blog post'
   const expected = rankTools(tools, q)
   assert.ok(expected.length > 6)
   const { html } = await get('/?q=blog%20post')
   const start = html.indexOf('Best fit for')
   const section = html.slice(start, html.indexOf('</section>', start))
-  const positions = [...section.matchAll(/<span class="pos" aria-label="Result (\d+)">(\d+)<\/span>/g)].map((m) => Number(m[2]))
+  const positions = [...section.matchAll(/<span class="pos" aria-hidden="true">(\d+)<\/span><span class="sr-only">Best fit number (\d+)\. <\/span>/g)].map((m) => { assert.equal(m[1], m[2]); return Number(m[1]) })
   assert.deepEqual(positions, expected.map((_, i) => i + 1))
   const [top, rest] = section.split('<details class="more">')
   assert.equal((top.match(/<article class="card">/g) || []).length, 6)
   assert.match(rest, new RegExp(`<summary>Show all ${expected.length} results</summary>`))
-  assert.match(top, /<span class="tag cat">#1 in Writing<\/span>/)
+  assert.match(top, /<span class="rankline">Top pick for this search\. 1st of \d+ in Writing<\/span>/)
+  assert.equal(section.includes('class="tag cat"'), false)
   for (const t of expected) assert.equal(section.includes(`<span class="rank">#${t.rank}</span>`), false)
   // ranking order unchanged
   const slugs = [...section.matchAll(/href="\/tool\/([^"]+)"/g)].map((m) => m[1])
@@ -94,7 +95,7 @@ test('short result lists have no Show all control', async () => {
 
 test('category page cards show category rank in order', async () => {
   const { html } = await get('/category/video')
-  const chips = [...html.matchAll(/<span class="tag cat">#(\d+) in Video<\/span>/g)].map((m) => Number(m[1]))
+  const chips = [...html.matchAll(/<span class="rankline">(\d+)(?:st|nd|rd|th) of \d+ in Video<\/span>/g)].map((m) => Number(m[1]))
   const n = tools.filter((t) => t.category === 'video').length
   assert.deepEqual(chips, Array.from({ length: n }, (_, i) => i + 1))
 })

@@ -66,6 +66,23 @@ function catRank(t) {
 function catChip(t) {
   return `#${catRank(t)} in ${CATEGORIES[t.category]?.label || t.category}`
 }
+// Small rank text. Each surface has one big number; any other rank is shown only in these
+// two formats, so the same tool reads the same way everywhere.
+function ordinal(n) {
+  const s = ['th', 'st', 'nd', 'rd'], v = n % 100
+  return n + (s[(v - 20) % 10] || s[v] || s[0])
+}
+let CAT_COUNT
+function catCount(cat) {
+  if (!CAT_COUNT) { CAT_COUNT = {}; for (const x of tools()) CAT_COUNT[x.category] = (CAT_COUNT[x.category] || 0) + 1 }
+  return CAT_COUNT[cat] || 0
+}
+function catPlace(t) {
+  return `${ordinal(catRank(t))} of ${catCount(t.category)} in ${CATEGORIES[t.category]?.label || t.category}`
+}
+function overallPlace(t) {
+  return `${ordinal(t.rank)} of ${tools().length} overall`
+}
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({
@@ -282,8 +299,8 @@ function searchResultsHtml(results) {
   if (!results.length) return '<p class="muted">No matches. Try a broader phrase.</p>'
   const top = results.slice(0, SEARCH_TOP)
   const rest = results.slice(SEARCH_TOP)
-  return `<div class="grid">${top.map((t, i) => toolCardAt(t, i + 1)).join('')}</div>${rest.length ? `
-    <details class="more"><summary>Show all ${results.length} results</summary><div class="grid">${rest.map((t, i) => toolCardAt(t, SEARCH_TOP + i + 1)).join('')}</div></details>` : ''}`
+  return `<div class="grid">${top.map((t, i) => toolCardAt(t, i + 1, 'fit')).join('')}</div>${rest.length ? `
+    <details class="more"><summary>Show all ${results.length} results</summary><div class="grid">${rest.map((t, i) => toolCardAt(t, SEARCH_TOP + i + 1, 'fit')).join('')}</div></details>` : ''}`
 }
 
 function layout({ title, description, path, body, jsonLd, robots, shareImage }) {
@@ -352,8 +369,19 @@ ${robots ? `<meta name="robots" content="${esc(robots)}"/>
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font); }
-a { color: var(--accent2); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a { color: var(--accent2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+a:hover { text-decoration-thickness: 2px; }
+.brand, .navlinks a, .pill, .card h3 a, .footrow a, a.rank, a.tag { text-decoration: none; }
+.navlinks a:hover, .card h3 a:hover, .footrow a:hover, a.rank:hover, a.tag:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+.searchbox:focus-within { outline: 2px solid var(--accent2); outline-offset: 2px; }
+.searchbox input:focus-visible { outline: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.skip { position: absolute; left: -999px; top: .5rem; z-index: 50; background: var(--accent); color: #1a0f05; padding: .5rem .8rem; border-radius: 8px; font-weight: 700; }
+.skip:focus { left: .5rem; }
+.searchlabel { display: block; color: var(--muted); font-size: .88rem; margin: 0 0 .45rem; }
+input::placeholder { color: var(--muted); opacity: 1; }
+.rankline { color: var(--muted); font-size: .78rem; margin-right: .4rem; }
 .wrap { width: min(1100px, calc(100% - 2rem)); margin: 0 auto; }
 .nav { display: flex; gap: 1rem; align-items: center; justify-content: space-between; padding: 1.1rem 0; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(11,15,20,.92); backdrop-filter: blur(10px); z-index: 20; }
 .brand { font-weight: 800; letter-spacing: -.02em; font-size: 1.15rem; color: var(--text); }
@@ -365,7 +393,7 @@ a:hover { text-decoration: underline; }
 .hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.1; margin: 0 0 .75rem; letter-spacing: -.03em; }
 .hero p { color: var(--muted); font-size: 1.05rem; max-width: 46rem; margin: 0 0 1.25rem; }
 .searchbox { display: flex; gap: .6rem; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: .35rem .35rem .35rem 1rem; box-shadow: var(--shadow); }
-.searchbox input { flex: 1; background: transparent; border: 0; outline: 0; color: var(--text); font-size: 1rem; min-width: 0; }
+.searchbox input { flex: 1; background: transparent; border: 0; color: var(--text); font-size: 1rem; min-width: 0; }
 .searchbox button { background: linear-gradient(135deg, var(--accent), #ff9a3c); color: #1a0f05; border: 0; border-radius: 999px; padding: .7rem 1.1rem; font-weight: 700; cursor: pointer; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.05rem; transition: border-color .15s, transform .15s; }
@@ -393,7 +421,7 @@ a:hover { text-decoration: underline; }
 .formrow input { flex: 1; min-width: 220px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; color: var(--text); padding: .7rem .85rem; }
 .formrow button { background: var(--accent); color: #1a0f05; border: 0; border-radius: 10px; padding: .7rem 1rem; font-weight: 700; cursor: pointer; }
 .notice { margin-top: .7rem; font-size: .9rem; }
-.rank { color: var(--accent); font-weight: 800; margin-right: .35rem; }
+.rank { color: var(--accent); font-weight: 800; margin-right: .5rem; font-size: 1.05rem; }
 .pos { display: inline-flex; align-items: center; justify-content: center; min-width: 1.6rem; height: 1.6rem; border-radius: 999px; background: var(--accent); color: #1a0f05; font-weight: 800; font-size: .8rem; margin-right: .45rem; padding: 0 .35rem; }
 .tag.cat { color: var(--text); }
 ol.top3 { margin: 0 0 .5rem; padding-left: 1.3rem; font-size: .95rem; line-height: 1.6; }
@@ -440,6 +468,7 @@ details.sources > summary { cursor: pointer; font-size: 1.25rem; font-weight: 70
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <div class="wrap">
   <nav class="nav">
     <a class="brand" href="/">Build<span>Stack</span></a>
@@ -451,7 +480,9 @@ details.sources > summary { cursor: pointer; font-size: 1.25rem; font-weight: 70
       <a href="/about">About</a>
     </div>
   </nav>
+  <main id="main">
   ${body}
+  </main>
   <footer class="footer">
     <nav class="footrow" aria-label="Footer"><a href="/about">About</a><a href="/methodology">How we rank</a><a href="/#guides">Guides</a><a href="/get-featured">List your tool</a><a href="/about#chatbots">For chatbots</a><a href="https://itsbuildstack.substack.com">Substack</a><a href="mailto:buildstack@tier11.com">Contact</a><a href="https://tier11.com">tier11</a><a href="/sitemap.xml">Sitemap</a></nav>
   </footer>
@@ -527,19 +558,29 @@ function glanceSection(items) {
   if (!list.length) return ''
   return `<section class="section" id="decide">
     <h2>Compare at a glance</h2>
-    <div class="grid">${list.map(toolCard).join('')}</div>
+    <div class="grid">${list.map((t) => toolCardAt(t, 0, 'guide')).join('')}</div>
   </section>`
 }
 
-// List card. Shows the rank inside the tool's category ("#1 in Writing"), never the overall
-// rank. toolCardAt adds a result position number (1, 2, 3) for search results.
+// List card. kind sets what the one big number means on this surface:
+//   'fit'     search results: pos is the fit rank for this query (1 = best fit)
+//   'overall' home Top ranked: pos is the overall rank
+//   'guide'   /best/ glance cards: no big number; small text is the overall rank, the same
+//             number the guide prose and table use
+//   default   category, New, Featured, More in: no big number; small text is the category place
 function toolCard(t) {
   return toolCardAt(t)
 }
 
-function toolCardAt(t, pos) {
+function rankLine(t, pos, kind) {
+  if (kind === 'guide') return overallPlace(t)
+  return `${kind === 'fit' && pos === 1 ? 'Top pick for this search. ' : ''}${catPlace(t)}`
+}
+
+function toolCardAt(t, pos, kind) {
+  const badge = pos ? `<span class="pos" aria-hidden="true">${pos}</span><span class="sr-only">${kind === 'overall' ? `Number ${pos} overall.` : `Best fit number ${pos}.`} </span>` : ''
   return `<article class="card">
-    <div class="meta">${pos ? `<span class="pos" aria-label="Result ${pos}">${pos}</span>` : ''}<span class="tag cat">${esc(catChip(t))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}${t.featured ? '<span class="tag feat">Featured</span>' : ''}</div>
+    <div class="meta">${badge}<span class="rankline">${esc(rankLine(t, pos, kind))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}${t.featured ? '<span class="tag feat">Featured</span>' : ''}</div>
     <h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3>
     <p class="muted" style="margin:0;font-size:.92rem">${esc(t.tagline)}</p>
     ${decisionBlock(t)}
@@ -858,8 +899,9 @@ app.get('/', (c) => {
   <section class="hero">
     <h1>Type the job. Get the best AI tool for it.</h1>
     <p>${all.length} AI tools, ranked. Every pick shows who it's for, what it costs, and the catch. Free, and ranks can't be bought.</p>
+    <label class="searchlabel" for="q">Describe the job you need an AI tool for</label>
     <form class="searchbox" action="/" method="get" role="search">
-      <input name="q" value="${esc(q)}" placeholder="e.g. edit a podcast, write a blog post, build an app" aria-label="Search use cases"/>
+      <input id="q" name="q" value="${esc(q)}" placeholder="e.g. edit a podcast, write a blog post, build an app"/>
       <button type="submit">Find tools</button>
     </form>
   </section>
@@ -880,7 +922,7 @@ app.get('/', (c) => {
   </section>
   <section class="section">
     <h2>Top ranked</h2>
-    <div class="grid">${tools().slice(0, 12).map((t, i) => toolCardAt(t, i + 1)).join('')}</div>
+    <div class="grid">${tools().slice(0, 12).map((t, i) => toolCardAt(t, i + 1, 'overall')).join('')}</div>
     <p style="margin-top:1rem"><a href="/categories">Browse all categories →</a></p>
   </section>
   ${lowerBlock}
@@ -889,7 +931,8 @@ app.get('/', (c) => {
       <h2 style="margin-top:0">Newsletter</h2>
       <p class="muted" style="margin:0">Leave your email to hear about new tools by email. We store your email and do not sell it. The weekly write-up lives on Substack for now.</p>
       <form class="formrow" data-source="home" onsubmit="subscribe(event)">
-        <input type="email" name="email" required placeholder="you@company.com" aria-label="Email"/>
+        <label class="sr-only" for="nl-email">Email address</label>
+        <input id="nl-email" type="email" name="email" required placeholder="you@company.com" autocomplete="email"/>
         <button type="submit">Subscribe</button>
         <div class="notice" style="flex-basis:100%"></div>
       </form>
@@ -1042,7 +1085,7 @@ app.get('/tool/:slug', (c) => {
   </section>`
   const body = `
   <section class="hero">
-    <div class="meta"><span class="rank">#${t.rank} overall</span><a class="tag cat" href="/category/${esc(t.category)}">${esc(catChip(t))}</a>${isNew(t) ? '<span class="tag new">New</span>' : ''}</div>
+    <div class="meta"><a class="rank" href="/category/${esc(t.category)}">${esc(catChip(t))}</a><span class="rankline">${esc(overallPlace(t))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}</div>
     <h1>${esc(t.name)}</h1>
     <p>${esc(t.tagline)}</p>
     <p>
@@ -3670,8 +3713,9 @@ app.get(DEEPFAKE_PATH, (c) => {
   <section class="section" id="find">
     <div class="panel">
       <h2 style="margin-top:0">What are you trying to make? Type the job.</h2>
+      <label class="searchlabel" for="q-find">Search AI tools by job</label>
       <form class="searchbox" action="/" method="get" role="search">
-        <input name="q" placeholder="e.g. dub a video, make a product demo, add captions" aria-label="Search AI tools by job"/>
+        <input id="q-find" name="q" placeholder="e.g. dub a video, make a product demo, add captions"/>
         <button type="submit">Find tools</button>
       </form>
       <div class="pills" style="margin-top:.9rem">${DEEPFAKE_PILLS.map((p) => `<a class="pill" href="${p.href}">${esc(p.label)}</a>`).join('')}</div>
