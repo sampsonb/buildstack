@@ -1123,7 +1123,7 @@ app.get('/methodology', (c) => {
   <section class="hero">
     <h1>How BuildStack ranks AI tools</h1>
     <p>Short answer: every tool gets one editorial rank, from #1 to #${all.length}. Category pages and the full list show tools in that order. Search reorders tools by how well they match your words, and uses rank only to break ties. Ranks are never for sale.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · ${all.length} tools</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${all.length} tools · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   <section class="panel prose">
     <h2 style="margin-top:0">One rank per tool</h2>
@@ -1179,6 +1179,7 @@ app.get('/methodology', (c) => {
         url: `${SITE}/methodology`,
         description,
         dateModified: PD,
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         isPartOf: { '@type': 'WebSite', name: NAME, url: SITE },
       }, breadcrumbs([['Home', '/'], ['How we rank', '/methodology']])],
     },
@@ -1296,7 +1297,7 @@ app.get('/alternatives/cursor', (c) => {
     <div class="meta"><a class="tag" href="/category/coding">Coding</a><span class="tag">Guide</span></div>
     <h1>Best Cursor Alternatives in 2026, Sorted by How You Code</h1>
     <p><strong>Short answer:</strong> ${link(cursor)} is #${cursor.rank} overall on ${NAME}, so every alternative here ranks below it. ${shortHtml}. Pick by how you work, not by one overall winner.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} alternatives · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} alternatives · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   <section class="section">
     <h2>Cursor alternatives at a glance</h2>
@@ -1354,7 +1355,7 @@ app.get('/alternatives/cursor', (c) => {
         description,
         url: `${SITE}/alternatives/cursor`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${cursor.name} is #${cursor.rank} overall on ${NAME}. ${shortText}.`,
       }, {
@@ -1461,7 +1462,7 @@ app.get(BEGINNER_PATH, (c) => {
     <div class="meta"><a class="tag" href="/category/coding">Coding</a><a class="tag" href="/category/agents">Agents</a><span class="tag">Guide</span></div>
     <h1>${esc(BEGINNER_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}. When you outgrow them, move to ${grow.map((t) => `${link(t)} (#${t.rank})`).join(' or ')}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · ${picks.length} beginner picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${picks.length} beginner picks · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -1542,7 +1543,7 @@ app.get(BEGINNER_PATH, (c) => {
         description,
         url: `${SITE}${BEGINNER_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -1664,7 +1665,7 @@ app.get(RESEARCH_PATH, (c) => {
     <div class="meta"><a class="tag" href="/category/research">Research</a><span class="tag">Guide</span></div>
     <h1>${esc(RESEARCH_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · ${picks.length} research picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${picks.length} research picks · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -1739,7 +1740,7 @@ app.get(RESEARCH_PATH, (c) => {
         description,
         url: `${SITE}${RESEARCH_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -1905,7 +1906,7 @@ app.get(FREE_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Free</span></div>
     <h1>${esc(FREE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · Free plans checked on ${fmtDate(SD)} · ${picks.length} free picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Free plans checked on ${fmtDate(SD)} · ${picks.length} free picks · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -1955,7 +1956,7 @@ app.get(FREE_PATH, (c) => {
         description,
         url: `${SITE}${FREE_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -2066,7 +2067,7 @@ app.get(VOICE_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Voice</span></div>
     <h1>${esc(VOICE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing checked on ${fmtDate(SD)} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing checked on ${fmtDate(SD)} · ${picks.length} picks · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -2124,7 +2125,7 @@ app.get(VOICE_PATH, (c) => {
         description,
         url: `${SITE}${VOICE_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -2236,7 +2237,7 @@ app.get(CODING_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Coding</span></div>
     <h1>${esc(CODING_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} coding tools ranked · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} coding tools ranked · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(list)}
   <section class="section" id="ranking">
@@ -2302,7 +2303,7 @@ app.get(CODING_PATH, (c) => {
         description,
         url: `${SITE}${CODING_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -2449,7 +2450,7 @@ app.get(AGENT_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Agents</span></div>
     <h1>${esc(AGENT_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} agent and automation tools ranked · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} agent and automation tools ranked · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(list)}
   <section class="section" id="at-a-glance">
@@ -2511,7 +2512,7 @@ app.get(AGENT_PATH, (c) => {
         description,
         url: `${SITE}${AGENT_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -2628,7 +2629,7 @@ app.get(SMB_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Small business</span></div>
     <h1>${esc(SMB_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} tools picked by job · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} tools picked by job · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
     <p>BuildStack is run by tier11. If you want help picking tools and rolling them out safely, email <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>.</p>
   </section>
   ${glanceSection(list)}
@@ -2687,7 +2688,7 @@ app.get(SMB_PATH, (c) => {
         description,
         url: `${SITE}${SMB_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -2804,7 +2805,7 @@ app.get(TRANS_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Voice</span></div>
     <h1>${esc(TRANS_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages, most rechecked on ${fmtDate(SD)} · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages, most rechecked on ${fmtDate(SD)} · ${picks.length} picks · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -2860,7 +2861,7 @@ app.get(TRANS_PATH, (c) => {
         description,
         url: `${SITE}${TRANS_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -2962,7 +2963,7 @@ app.get(WRITE_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Writing</span></div>
     <h1>${esc(WRITE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -3024,7 +3025,7 @@ app.get(WRITE_PATH, (c) => {
         description,
         url: `${SITE}${WRITE_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -3123,7 +3124,7 @@ app.get(IMAGE_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Images</span></div>
     <h1>${esc(IMAGE_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -3182,7 +3183,7 @@ app.get(IMAGE_PATH, (c) => {
         description,
         url: `${SITE}${IMAGE_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -3276,7 +3277,7 @@ app.get(VIDEO_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
     <h1>${esc(VIDEO_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -3331,7 +3332,7 @@ app.get(VIDEO_PATH, (c) => {
         description,
         url: `${SITE}${VIDEO_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
@@ -3431,7 +3432,7 @@ app.get(VIDEOGEN_PATH, (c) => {
     <div class="meta"><span class="tag">Guide</span><span class="tag">Video</span></div>
     <h1>${esc(VIDEOGEN_H1)}</h1>
     <p><strong>Short answer:</strong> ${shortHtml}.</p>
-    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a></p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Pricing from official pages · ${picks.length} picks · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   ${glanceSection(picks)}
   <section class="section">
@@ -3486,7 +3487,7 @@ app.get(VIDEOGEN_PATH, (c) => {
         description,
         url: `${SITE}${VIDEOGEN_PATH}`,
         dateModified: PD,
-        author: { '@type': 'Organization', name: NAME, url: SITE },
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
         abstract: `${shortText}.`,
       }, {
