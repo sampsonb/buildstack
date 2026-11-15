@@ -118,7 +118,7 @@ test('a11y basics: one main landmark, labeled search, visible focus, no outline 
     assert.equal((html.match(/<\/main>/g) || []).length, 1, p)
     assert.ok(html.includes('<a class="skip" href="#main">Skip to content</a>'), p)
     assert.equal(/outline:\s*0/.test(html), false, p)
-    assert.ok(html.includes(':focus-visible { outline: 2px solid'), p)
+    assert.ok(/:focus-visible \{ outline: [23]px solid/.test(html), p)
     for (const m of html.matchAll(/<input ([^>]*)>/g)) {
       const id = (m[1].match(/id="([^"]+)"/) || [])[1]
       assert.ok(id && html.includes(`<label class="`) && new RegExp(`<label [^>]*for="${id}"`).test(html), `${p}: input without label`)
