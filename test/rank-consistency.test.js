@@ -104,9 +104,9 @@ test('coding guide: GitHub Copilot reads the same number in prose, table, and ca
 test('home Top ranked: big number is the overall rank', async () => {
   const { html } = await get('/')
   const start = html.indexOf('<h2>Top ranked</h2>')
-  const cs = cards(html.slice(start, html.indexOf('</section>', start)))
-  assert.equal(cs.length, 12)
-  cs.forEach((c, i) => { assert.equal(c.slug, byRank[i].slug); assert.equal(Number(c.pos), i + 1); assert.equal(c.line, catPlace(byRank[i])) })
+  const rows = [...html.slice(start, html.indexOf('</section>', start)).matchAll(/<li><span class="pos" aria-hidden="true">(\d+)<\/span><span class="sr-only">Number (\d+) overall\. <\/span><div><h3><a href="\/tool\/([^"]+)">[^<]*<\/a><\/h3><p class="rankline">([^<]*)<\/p>/g)]
+  assert.equal(rows.length, 12)
+  rows.forEach((r, i) => { assert.equal(Number(r[1]), i + 1); assert.equal(Number(r[2]), i + 1); assert.equal(r[3], byRank[i].slug); assert.equal(r[4], catPlace(byRank[i])) })
 })
 
 test('a11y basics: one main landmark, labeled search, visible focus, no outline reset', async () => {

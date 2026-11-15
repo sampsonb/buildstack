@@ -434,6 +434,21 @@ details.more > summary { cursor: pointer; color: var(--accent2); font-weight: 65
 .decide div { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr); gap: .35rem; align-items: start; }
 .decide dt { margin: 0; color: var(--muted); font-weight: 650; }
 .decide dd { margin: 0; color: var(--text); }
+.mini { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.mini li { display: flex; gap: .65rem; align-items: flex-start; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: .6rem .8rem; }
+.mini li .pos { flex: 0 0 auto; margin: .05rem 0 0; }
+.mini h3 { margin: 0; font-size: 1rem; }
+.mini h3 a { color: var(--text); text-decoration: none; }
+.mini h3 a:hover { text-decoration: underline; }
+.mini p { margin: .15rem 0 0; font-size: .86rem; }
+.mini p.rankline { font-size: .78rem; }
+details.more .mini { margin-top: .5rem; }
+@media (min-width: 760px) { .mini { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.faqfold details { border-top: 1px solid var(--line); padding: .6rem 0; }
+.faqfold details:first-child { border-top: 0; padding-top: 0; }
+.faqfold summary { cursor: pointer; }
+.faqfold summary h3 { display: inline; color: var(--text); font-size: 1.02rem; margin: 0; }
+.faqfold details p { margin: .5rem 0 .2rem; }
 .card:has(.shelfedge) { display: flex; flex-direction: column; }
 .card:has(.shelfedge) .decide { margin-bottom: .9rem; }
 .shelfedge { display: flex; flex-wrap: wrap; gap: .5rem; align-items: stretch; margin: auto -1.05rem -1rem; padding: .65rem 1.05rem .75rem; background: var(--panel2); border-top: 1px solid var(--line); border-radius: 0 0 var(--radius) var(--radius); }
@@ -611,6 +626,14 @@ function glanceSection(items) {
 function toolCard(t) {
   return toolCardAt(t)
 }
+
+// Compact row for short home lists. pos (overall rank) shows the big number for Top ranked.
+function miniRow(t, pos) {
+  const badge = pos ? `<span class="pos" aria-hidden="true">${pos}</span><span class="sr-only">Number ${pos} overall. </span>` : ''
+  const added = !pos && t.added ? ` · Added ${esc(fmtDate(t.added))}` : ''
+  return `<li>${badge}<div><h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3><p class="rankline">${esc(catPlace(t))}${added}</p><p class="muted">${esc(t.tagline)}</p></div></li>`
+}
+const HOME_NEW_TOP = 6
 
 function rankLine(t, pos, kind) {
   if (kind === 'guide') return overallPlace(t)
@@ -930,9 +953,9 @@ app.get('/', (c) => {
   </section>
   <section class="section" id="faq">
     <h2>FAQ</h2>
-    <div class="panel prose">
-      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
-      <p>${esc(f.a)}</p>`).join('')}
+    <div class="panel prose faqfold">
+      ${faq.map((f) => `<details><summary><h3>${esc(f.q)}</h3></summary>
+      <p>${esc(f.a)}</p></details>`).join('')}
     </div>
   </section>`
   const body = `
@@ -954,17 +977,18 @@ app.get('/', (c) => {
     </div>
   </section>
   ${quickBlock}
-  ${featured.length ? `<section class="section"><h2>Featured</h2><div class="grid">${featured.map(toolCard).join('')}</div></section>` : ''}
+  ${q ? '' : `${featured.length ? `<section class="section"><h2>Featured</h2><div class="grid">${featured.map(toolCard).join('')}</div></section>` : ''}
   <section class="section" id="new">
     <h2>New on BuildStack</h2>
     <p class="muted" style="margin:-.4rem 0 .9rem;font-size:.88rem">Tools added in the last ${NEW_DAYS} days, newest first.</p>
-    ${news.length ? `<div class="grid">${news.map(toolCard).join('')}</div>` : '<p class="muted">Nothing new in the last two weeks.</p>'}
+    ${news.length ? `<ul class="mini">${news.slice(0, HOME_NEW_TOP).map((t) => miniRow(t)).join('')}</ul>${news.length > HOME_NEW_TOP ? `
+    <details class="more"><summary>Show all ${news.length} new tools</summary><ul class="mini">${news.slice(HOME_NEW_TOP).map((t) => miniRow(t)).join('')}</ul></details>` : ''}` : '<p class="muted">Nothing new in the last two weeks.</p>'}
   </section>
   <section class="section">
     <h2>Top ranked</h2>
-    <div class="grid">${tools().slice(0, 12).map((t, i) => toolCardAt(t, i + 1, 'overall')).join('')}</div>
+    <ol class="mini">${tools().slice(0, 12).map((t, i) => miniRow(t, i + 1)).join('')}</ol>
     <p style="margin-top:1rem"><a href="/categories">Browse all categories →</a></p>
-  </section>
+  </section>`}
   ${lowerBlock}
   <section class="section">
     <div class="panel">
@@ -1138,7 +1162,6 @@ app.get('/tool/:slug', (c) => {
     <p><strong>Best for.</strong></p>
     <ul class="clean">${(t.bestFor || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
     <p><strong>Pricing note.</strong> ${esc(t.pricingNote)}${t.pricingUrl ? `${/[.]$/.test(t.pricingNote || '') ? '' : '.'} <span class="muted">Source: ${pricingLink(t, `${t.name} official pricing page`)}${t.priceChecked ? `, price checked ${esc(fmtDate(t.priceChecked))}` : ''}.</span>` : ''}</p>
-    <p><strong>Price.</strong> ${esc(priceLine(t))}</p>
     ${t.strength ? `<p><strong>Strength.</strong> ${esc(t.strength)}</p>` : ''}
     ${t.watchOut ? `<p><strong>Watch-out.</strong> ${esc(t.watchOut)}</p>` : ''}
     <p class="muted">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url)}</a> · Listing last changed: ${esc(fmtDate(t.updated || UPDATED))}${t.added ? ` · Added to ${NAME}: ${esc(fmtDate(t.added))}` : ''}</p>

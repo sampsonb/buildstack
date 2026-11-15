@@ -82,7 +82,7 @@ test('every tool page shows one large price tag under the tagline', async () => 
 })
 
 test('cards outside search results keep the Price row and get no tag', async () => {
-  for (const p of ['/', '/category/writing', '/best/ai-coding-assistant', '/tool/claude']) {
+  for (const p of ['/category/writing', '/best/ai-coding-assistant', '/tool/claude']) {
     const { html } = await get(p)
     const cards = [...html.matchAll(/<article class="card">([\s\S]*?)<\/article>/g)].map((x) => x[1])
     assert.ok(cards.length > 0, p)
