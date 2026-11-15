@@ -634,6 +634,59 @@ details.sources > summary { cursor: pointer; font-size: 1.3rem; font-weight: 750
   .results > .rows > .card:first-child h3 { font-size: 1.6rem; }
   .rows .decide { grid-template-columns: 1fr; }
 }
+.sample { margin: 2rem 0 0; }
+.shelf-title { display: flex; justify-content: space-between; align-items: baseline; gap: .4rem 1.5rem; flex-wrap: wrap; margin: 0 0 .75rem; }
+.shelf-title h2 { font-size: 1.3rem; margin: 0; letter-spacing: -.015em; }
+.shelf-title p { margin: 0; color: var(--ink-2); font-size: .92rem; }
+.shelf { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--rule); }
+.slot { display: grid; grid-template-rows: subgrid; grid-row: span 5; align-content: start; padding: 1rem 1.5rem 0 0; }
+.slot + .slot { padding-left: 1.5rem; border-left: 1px solid var(--rule); }
+.slot .pos { display: block; background: none; color: var(--ink); font-size: 2.75rem; line-height: .9; height: auto; min-width: 0; padding: 0; margin: 0; border-radius: 0; font-weight: 820; font-stretch: 72%; font-variation-settings: "wdth" 72; letter-spacing: -.02em; }
+.slot h3 { font-size: 1.35rem; margin: .45rem 0 .1rem; letter-spacing: -.015em; }
+.slot h3 a { text-decoration: none; }
+.slot h3 a:hover { text-decoration: underline; text-decoration-color: var(--brand); }
+.slot .rankline { margin: 0; }
+.slot-best { margin: .35rem 0 1rem; color: var(--ink-2); font-size: .95rem; }
+.slot .shelfedge { margin: 0 -1.5rem 0 0; border-radius: 0; }
+.slot + .slot .shelfedge { margin-left: -1.5rem; }
+.slot:last-child { padding-right: 0; }
+.slot:last-child .shelfedge { margin-right: 0; }
+.slot .shelfedge { align-items: center; align-self: stretch; }
+.trust { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin: 2.5rem 0 0; padding: 1.25rem 0; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); font-size: .95rem; color: var(--ink-2); }
+.trust p { margin: 0; }
+.trust strong { display: block; color: var(--ink); font-size: 1.05rem; margin-bottom: .2rem; }
+.dir { width: 100%; border-collapse: collapse; font-size: 1rem; }
+.dir th { text-align: left; font-size: .8rem; color: var(--ink-3); font-weight: 650; padding: 0 .75rem .5rem 0; border-bottom: 1px solid var(--ink); }
+.dir td { padding: .85rem .75rem .85rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.dir td:first-child a { font-weight: 700; }
+.dir td small { display: block; color: var(--ink-3); font-size: .85rem; margin-top: .1rem; }
+.dir .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); padding-right: 0; }
+.dir ol.top3 { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: .2rem 1.1rem; counter-reset: top3; font-size: 1rem; line-height: 1.5; }
+.dir ol.top3 li { counter-increment: top3; }
+.dir ol.top3 li::before { content: counter(top3) ". "; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.cols2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 3rem; }
+.cols2 .mini { grid-template-columns: 1fr; }
+.catrows { margin-top: .5rem; }
+.catrows .card { grid-template-columns: 3.25rem minmax(0, 1fr) 15.5rem; column-gap: 1.25rem; padding: 1.2rem 0 0; margin: 0 0 1.2rem; }
+.catrows .card .pos { font-size: 2.4rem; grid-row: 1 / span 3; }
+.catrows .card h3 { font-size: 1.3rem; }
+.catrows .card > p.muted { font-size: .95rem !important; margin: 0; }
+.catrows .decide { font-size: .9rem; gap: .5rem 1.25rem; margin: .6rem 0 0; }
+.catrows .card .shelfedge { grid-column: 3; grid-row: 1 / span 5; align-self: start; flex-direction: column; margin: 0; padding: .6rem; border-radius: 6px; }
+.catrows .card .shelfedge .pcheck { flex: 0 0 auto; }
+@media (max-width: 820px) {
+  .shelf { grid-template-columns: 1fr; }
+  .slot, .slot + .slot { padding: 1rem 0 0; border-left: 0; }
+  .slot + .slot { border-top: 1px solid var(--rule); margin-top: 1.25rem; }
+  .slot .shelfedge, .slot + .slot .shelfedge { margin: 0; }
+  .slot .pos { font-size: 2.2rem; }
+  .catrows .card { grid-template-columns: 2.6rem minmax(0, 1fr); column-gap: .9rem; }
+  .catrows .card .pos { font-size: 2.1rem; }
+  .catrows .card .shelfedge { grid-column: 1 / -1; grid-row: auto; flex-direction: row; margin: .9rem 0 0; border-radius: 0; padding: .75rem 1.1rem; }
+  .catrows .card .shelfedge .pcheck { flex: 1 1 10rem; }
+  .trust, .cols2 { grid-template-columns: 1fr; gap: 1rem; }
+  .dir .n { display: none; }
+}
 </style>
 </head>
 <body>
@@ -759,7 +812,8 @@ function glanceSection(items) {
 //   'overall' home Top ranked: pos is the overall rank
 //   'guide'   /best/ glance cards: no big number; small text is the overall rank, the same
 //             number the guide prose and table use
-//   default   category, New, Featured, More in: no big number; small text is the category place
+//   'cat'     category pages: pos is the place in the category, the same number as the small text
+//   default   New, Featured, More in: no big number; small text is the category place
 function toolCard(t) {
   return toolCardAt(t)
 }
@@ -778,12 +832,12 @@ function rankLine(t, pos, kind) {
 }
 
 function toolCardAt(t, pos, kind) {
-  const badge = pos ? `<span class="pos" aria-hidden="true">${pos}</span><span class="sr-only">${kind === 'overall' ? `Number ${pos} overall.` : `Best fit number ${pos}.`} </span>` : ''
+  const badge = pos ? `<span class="pos" aria-hidden="true">${pos}</span><span class="sr-only">${kind === 'overall' ? `Number ${pos} overall.` : kind === 'cat' ? `Number ${pos} in ${esc(CATEGORIES[t.category]?.label || t.category)}.` : `Best fit number ${pos}.`} </span>` : ''
   return `<article class="card">
     <div class="meta">${badge}<span class="rankline">${esc(rankLine(t, pos, kind))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}${t.featured ? '<span class="tag feat">Featured</span>' : ''}</div>
     <h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3>
     <p class="muted" style="margin:0;font-size:.92rem">${esc(t.tagline)}</p>
-    ${decisionBlock(t, kind === 'fit')}${kind === 'fit' ? priceTag(t) : ''}
+    ${decisionBlock(t, kind === 'fit' || kind === 'cat')}${kind === 'fit' || kind === 'cat' ? priceTag(t) : ''}
   </article>`
 }
 
@@ -1040,27 +1094,28 @@ app.get('/', (c) => {
   const faq = q ? [] : homeFaq()
   const toolLink = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
   const homeDescription = `Free AI tool finder. Type a task, get ranked AI tools that fit. ${all.length} tools in ${Object.keys(CATEGORIES).length} categories, with quick answers by job. Updated ${fmtDate(PD)}.`
+  // Home first screen (redesign phase 6): the real top 3 the search returns right now for one
+  // sample job, on the same price tags as the results page.
+  const SAMPLE_Q = 'write blog posts'
+  const sample = q ? [] : searchTools(SAMPLE_Q)
+  const sampleBlock = q || !sample.length ? '' : `
+  <section class="sample" aria-labelledby="sample-h">
+    <div class="shelf-title"><h2 id="sample-h">What you get for “${SAMPLE_Q}”</h2><p>The top 3 our search returns right now. <a href="/?q=${encodeURIComponent(SAMPLE_Q)}">See all ${sample.length}</a></p></div>
+    <ol class="shelf">${sample.slice(0, 3).map((t, i) => `<li class="slot"><span class="pos" aria-hidden="true">${i + 1}</span><span class="sr-only">Best fit number ${i + 1}. </span><h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3><p class="rankline">${esc(catPlace(t))}</p><p class="slot-best">Best for ${esc(bestForLine(t))}.</p>${priceTag(t)}</li>`).join('')}</ol>
+  </section>`
+  const checkedCount = all.filter((t) => t.priceChecked && t.pricingUrl).length
   const quickBlock = q ? '' : `
+  <section class="trust" aria-label="How BuildStack stays honest">
+    <p><strong>Ranks are never for sale.</strong>BuildStack does not sell placements, and no payment can change a rank.</p>
+    <p><strong>Checked prices carry a date.</strong>${checkedCount} of ${all.length} prices are matched to the official pricing page, with the day we checked.</p>
+    <p><strong>One editorial rank per tool.</strong>From #1 to #${all.length}, edited by Sampson Brueher. <a href="/methodology">How we rank</a></p>
+  </section>
   <section class="section" id="quick-answer">
     <h2>Quick answer: which AI tool for which job</h2>
-    <div class="grid">
-      ${qa.map((j) => `<div class="card">
-        <h3>${esc(j.job)}</h3>
-        <ol class="top3">${j.picks.map((t) => `<li>${toolLink(t)}</li>`).join('')}</ol>
-        <a href="/category/${j.cat}" style="font-size:.88rem">All ${esc(j.label)} tools</a>
-      </div>`).join('')}
-    </div>
-  </section>
-  <section class="section">
-    <div class="panel prose">
-      <h2 style="margin-top:0">How BuildStack ranks tools</h2>
-      <ul class="clean">
-        <li>Every tool gets one editorial rank, from #1 to #${all.length}, and no two tools share a rank.</li>
-        <li>Category pages list tools in rank order. Search sorts tools by how well they match your words and uses rank only to break ties.</li>
-        <li>Ranks are never for sale. BuildStack does not sell placements.</li>
-      </ul>
-      <p style="margin-bottom:0"><a href="/methodology">Read the full methodology</a></p>
-    </div>
+    <table class="dir">
+      <thead><tr><th scope="col">Job</th><th scope="col">Top three, in rank order</th><th scope="col" class="n">Tools</th></tr></thead>
+      <tbody>${qa.map((j) => `<tr><td><a href="/category/${j.cat}">${esc(j.job)}</a></td><td><ol class="top3">${j.picks.map((t) => `<li>${toolLink(t)}</li>`).join('')}</ol></td><td class="n">${all.filter((t) => t.category === j.cat).length}</td></tr>`).join('')}</tbody>
+    </table>
   </section>`
   const lowerBlock = q ? '' : `
   <section class="section" id="browse">
@@ -1106,7 +1161,7 @@ app.get('/', (c) => {
       <button type="submit">Find tools</button>
     </form>
   </section>
-  ${q ? resultsBlock(q, results, free) : ''}
+  ${q ? resultsBlock(q, results, free) : sampleBlock}
   ${q ? '' : `<p class="muted" style="margin:.9rem 0 0;font-size:.88rem">Last updated: ${fmtDate(PD)} · ${all.length} ranked tools · <a href="/methodology">How we rank</a></p>`}
   <section class="section" id="best-for">
     <h2>Find an AI tool by task</h2>
@@ -1116,6 +1171,7 @@ app.get('/', (c) => {
   </section>
   ${quickBlock}
   ${q ? '' : `${featured.length ? `<section class="section"><h2>Featured</h2><div class="grid">${featured.map(toolCard).join('')}</div></section>` : ''}
+  <div class="cols2">
   <section class="section" id="new">
     <h2>New on BuildStack</h2>
     <p class="muted" style="margin:-.4rem 0 .9rem;font-size:.88rem">Tools added in the last ${NEW_DAYS} days, newest first.</p>
@@ -1126,7 +1182,8 @@ app.get('/', (c) => {
     <h2>Top ranked</h2>
     <ol class="mini">${tools().slice(0, 12).map((t, i) => miniRow(t, i + 1)).join('')}</ol>
     <p style="margin-top:1rem"><a href="/categories">Browse all categories →</a></p>
-  </section>`}
+  </section>
+  </div>`}
   ${lowerBlock}
   <section class="section">
     <div class="panel">
@@ -1200,16 +1257,13 @@ app.get('/categories', (c) => {
   const body = `
   <section class="hero"><h1>Categories</h1><p class="muted">Browse the full ranked stack by category.</p></section>
   <h2 class="sr-only">All categories</h2>
-  <div class="grid">
-    ${Object.entries(CATEGORIES).map(([k, v]) => {
-      const count = tools().filter((t) => t.category === k).length
-      return `<a class="card" href="/category/${k}" style="display:block">
-        <h3>${esc(v.label)}</h3>
-        <p class="muted">${esc(v.blurb)}</p>
-        <div class="meta">${count} tools</div>
-      </a>`
-    }).join('')}
-  </div>`
+  <table class="dir">
+    <thead><tr><th scope="col">Category</th><th scope="col">Top three, in rank order</th><th scope="col" class="n">Tools</th></tr></thead>
+    <tbody>${Object.entries(CATEGORIES).map(([k, v]) => {
+      const list = tools().filter((t) => t.category === k)
+      return `<tr><td><a href="/category/${k}">${esc(v.label)}</a><small>${esc(v.blurb)}</small></td><td><ol class="top3">${list.slice(0, 3).map((t) => `<li><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></li>`).join('')}</ol></td><td class="n">${list.length}</td></tr>`
+    }).join('')}</tbody>
+  </table>`
   return c.html(layout({
     title: `Categories | ${NAME}`,
     description: 'Browse BuildStack AI tools by category: coding, writing, images, video, agents, research, voice.',
@@ -1242,7 +1296,7 @@ app.get('/category/:slug', (c) => {
     <p class="muted">On a budget? See the <a href="/best/free-ai-tools#${slug === 'agents' ? 'automation' : esc(slug)}">best free AI tools for ${esc(cat.label.toLowerCase())}</a>.</p>
   </section>
   <h2 class="cathead">All ${list.length} ${esc(cat.label.toLowerCase())} tools, ranked</h2>
-  <div class="grid">${list.map(toolCard).join('')}</div>`
+  <div class="rows catrows">${list.map((t, i) => toolCardAt(t, i + 1, 'cat')).join('')}</div>`
   return c.html(layout({
     title: `Best ${cat.label} AI tools | ${NAME}`,
     description: categoryDescription(cat, list),
