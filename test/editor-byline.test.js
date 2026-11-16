@@ -29,6 +29,7 @@ test('new tools from 2026-11-15 are listed', async () => {
   for (const slug of ['llama-cpp', 'sciground']) {
     const { status, html } = await get(`/tool/${slug}`)
     assert.equal(status, 200, slug)
-    assert.equal(/[\u2013\u2014]/.test(html), false, slug)
+    // v2 tool pages: an en dash appears only as the empty-cell marker in the alternatives table
+    assert.equal(/[\u2013\u2014]/.test(html.replace(/<span aria-hidden="true">\u2013<\/span>/g, '')), false, slug)
   }
 })

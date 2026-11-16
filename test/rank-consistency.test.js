@@ -65,10 +65,11 @@ test('tool pages: one big rank (place in category) and overall only as small tex
   for (const t of tools) {
     const { status, html } = await get(`/tool/${t.slug}`)
     assert.equal(status, 200)
-    const meta = html.match(/<section class="hero">\s*<div class="meta placard">([\s\S]*?)<\/div>/)[1]
-    assert.equal((meta.match(/#\d+/g) || []).length, 1, t.slug)
-    assert.ok(meta.includes(`<a class="rank" href="/category/${t.category}">#${catPos(t)} in ${LABEL[t.category]}</a>`), t.slug)
-    assert.ok(meta.includes(`<span class="rankline">${overallPlace(t)}</span>`), t.slug)
+    // v2: the big rank reads "1st of 8 in Writing"; the overall rank is the small chip beside it
+    const meta = html.match(/<div class="rankrow">([\s\S]*?)<\/div>/)[1]
+    assert.equal((meta.match(/<b>/g) || []).length, 1, t.slug)
+    assert.ok(meta.includes(`<p class="bigrank"><a href="/category/${t.category}"><b>${ord(catPos(t))}</b> of ${inCat(t).length} in ${LABEL[t.category]}</a></p>`), t.slug)
+    assert.ok(meta.includes(`<span class="ochip">${overallPlace(t)}</span>`), t.slug)
     for (const c of cards(html)) assert.equal(c.line, catPlace(bySlug[c.slug]), `${t.slug} related ${c.slug}`)
   }
 })

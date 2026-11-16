@@ -47,7 +47,32 @@
     "freeTier": true,
     "priceFrom": "from $20/mo",
     "pricingUrl": "https://claude.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "plans": [
+      {
+        "name": "Free",
+        "price": "Free plan"
+      },
+      {
+        "name": "Pro",
+        "price": "$20 per month",
+        "note": "$17 a month billed annually"
+      },
+      {
+        "name": "Max",
+        "price": "$100 per month"
+      },
+      {
+        "name": "Ultra",
+        "price": "$200 per month",
+        "note": "New plan"
+      },
+      {
+        "name": "Team and Enterprise",
+        "price": "Plans for organizations"
+      }
+    ],
+    "apiPricing": "Fable 5.2 on the API costs $8 per million input tokens and $40 per million output tokens"
   },
   {
     "slug": "chatgpt",

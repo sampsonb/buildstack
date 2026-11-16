@@ -27,7 +27,7 @@ test('tool page links the official pricing page with the checked date', async ()
   const { status, text } = await get(`/tool/${t.slug}`)
   assert.equal(status, 200)
   assert.ok(text.includes(`href="${t.pricingUrl}"`), 'link')
-  assert.match(text, /price checked [A-Z][a-z]{2} \d{1,2}, \d{4}/)
+  assert.match(text, /price checked [A-Z][a-z]{2} \d{1,2}, \d{4}/i)
   const u = tools.find((x) => x.pricingUrl && !x.priceChecked)
   const page = (await get(`/tool/${u.slug}`)).text
   assert.ok(page.includes(`href="${u.pricingUrl}"`))

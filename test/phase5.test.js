@@ -69,15 +69,16 @@ test('tool page: breadcrumb, placard, Strength and Watch-out up top, honest plac
   }
 })
 
-test('tool page: every FAQPage question in JSON-LD is still visible, the cost answer once, in the price box', async () => {
+test('tool page: every FAQPage question in JSON-LD is still visible, the cost answer once, in the pricing section', async () => {
   for (const t of tools) {
     const { html } = await get(`/tool/${t.slug}`)
     const faq = ldOf(html)[0]['@graph'].find((n) => n['@type'] === 'FAQPage')
     const visible = unesc(html.slice(html.indexOf('<body>')).replace(/<script[\s\S]*?<\/script>/g, ''))
     for (const q of faq.mainEntity) assert.equal(visible.split(q.name).length - 1, 1, `${t.slug}: ${q.name}`)
     const cost = faq.mainEntity.find((q) => q.name.startsWith('How much does '))
-    const side = unesc(html.slice(html.indexOf('<aside class="side"'), html.indexOf('</aside>')))
-    assert.ok(side.includes(cost.acceptedAnswer.text), t.slug)
-    assert.equal(visible.split(cost.acceptedAnswer.text).length - 1, 1, t.slug)
+    const strip = (x) => unesc(x.replace(/<[^>]+>/g, ''))
+    const sec = html.slice(html.indexOf('<section class="tsec" id="pricing">'), html.indexOf('</section>', html.indexOf('id="pricing"')))
+    assert.ok(strip(sec).includes(cost.acceptedAnswer.text), t.slug)
+    assert.equal(strip(html.slice(html.indexOf('<body>')).replace(/<script[\s\S]*?<\/script>/g, '')).split(cost.acceptedAnswer.text).length - 1, 1, t.slug)
   }
 })

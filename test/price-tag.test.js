@@ -21,7 +21,7 @@ function tags(html) {
   return [...html.matchAll(/<div class="shelfedge( big)?"><div class="ptag">([\s\S]*?)<\/div>(<div class="pcheck( missing)?">[\s\S]*?<\/div>)<\/div>/g)]
     .map((m) => ({ big: !!m[1], ptag: m[2], check: m[3], missing: !!m[4] }))
 }
-function assertTag(tag, t) {
+function assertTag(tag, t, noFree) {
   const where = t.slug
   // price: "from $20/mo" splits into From + amount + unit; anything else is shown as written
   const m = String(t.priceFrom).match(/^from (\$[\d.,]+|[\d.,]+ euros)(\/[a-z]+)$/i)
@@ -29,7 +29,8 @@ function assertTag(tag, t) {
   else if (/^free$/i.test(t.priceFrom)) assert.ok(tag.ptag.includes('<b>Free</b>'), where)
   else assert.equal(unesc(tag.ptag.match(/<b class="txt">([^<]*)<\/b>/)[1]), t.priceFrom || 'See pricing', where)
   // free tier: straight from the data, never invented
-  if (typeof t.freeTier === 'boolean') assert.ok(tag.ptag.includes(`<span class="pfree">Free tier: ${t.freeTier ? 'yes' : 'no'}</span>`), where)
+  if (noFree) assert.equal(tag.ptag.includes('Free tier'), false, where)
+  else if (typeof t.freeTier === 'boolean') assert.ok(tag.ptag.includes(`<span class="pfree">Free tier: ${t.freeTier ? 'yes' : 'no'}</span>`), where)
   else assert.equal(tag.ptag.includes('Free tier'), false, where)
   // checked panel
   if (t.priceChecked) {
@@ -75,14 +76,16 @@ test('every tool page shows one large price tag in the side box, above the Visit
     const ts = tags(hero)
     assert.equal(ts.length, 1, t.slug)
     assert.equal(ts[0].big, true, t.slug)
-    assertTag(ts[0], t)
+    // v2: the free tier is stated first in the price box, so the tag carries only the price
+    assertTag(ts[0], t, true)
+    if (typeof t.freeTier === 'boolean') assert.ok(hero.indexOf(`Free tier: ${t.freeTier ? 'yes' : 'no'}</p>`) < hero.indexOf('class="shelfedge big"') && hero.includes('<p class="freefirst'), t.slug)
     assert.ok(hero.indexOf('class="shelfedge big"') < hero.indexOf('class="btn"'), t.slug)
     assert.equal(tags(html).length, 1, `${t.slug}: tag outside the hero`)
   }
 })
 
 test('cards outside search results and category pages keep the Price row and get no tag', async () => {
-  for (const p of ['/best/ai-coding-assistant', '/tool/claude']) {
+  for (const p of ['/best/ai-coding-assistant']) {
     const { html } = await get(p)
     const cards = [...html.matchAll(/<article class="card">([\s\S]*?)<\/article>/g)].map((x) => x[1])
     assert.ok(cards.length > 0, p)

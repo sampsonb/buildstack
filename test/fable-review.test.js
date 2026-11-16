@@ -55,8 +55,8 @@ test('get-featured page is neutral: no Stripe, no test-mode wording, ranks not f
 test('tool page: no Get featured button, category place is the big rank, no repeated FAQ answer', async () => {
   const claude = byRank.find((t) => t.slug === 'claude')
   const { html } = await get('/tool/claude')
-  assert.match(html, /<a class="rank" href="\/category\/writing">#1 in Writing<\/a>/)
-  assert.match(html, new RegExp(`<span class="rankline">${claude.rank === 2 ? '2nd' : `${claude.rank}(st|nd|rd|th)`} of ${byRank.length} overall</span>`))
+  assert.match(html, /<p class="bigrank"><a href="\/category\/writing"><b>1st<\/b> of \d+ in Writing<\/a><\/p>/)
+  assert.match(html, new RegExp(`<span class="ochip">${claude.rank === 2 ? '2nd' : `${claude.rank}(st|nd|rd|th)`} of ${byRank.length} overall</span>`))
   assert.equal(html.includes('btn secondary'), false)
   assert.equal(html.includes('What is Claude?'), false)
   const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])

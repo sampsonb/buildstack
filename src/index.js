@@ -343,7 +343,7 @@ function resultsBlock(q, results, free) {
   ${relatedSearches(q, shown[0] || results[0])}`
 }
 
-function layout({ title, description, path, body, jsonLd, robots, shareImage }) {
+function layout({ title, description, path, body, jsonLd, robots, shareImage, extraCss }) {
   const url = SITE + path
   const share = shareImage || {
     url: `${SITE}/og.png`,
@@ -687,7 +687,7 @@ details.sources > summary { cursor: pointer; font-size: 1.3rem; font-weight: 750
   .trust, .cols2 { grid-template-columns: 1fr; gap: 1rem; }
   .dir .n { display: none; }
 }
-</style>
+${extraCss || ''}</style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -770,12 +770,12 @@ function priceParts(t) {
   return { text: raw || 'See pricing' }
 }
 
-function priceTag(t, big) {
+function priceTag(t, big, noFree) {
   const p = priceParts(t)
   const head = p.text
     ? `<b class="txt">${esc(p.text)}</b>`
     : `${p.from ? '<span class="pfrom">From</span>' : ''}<b>${esc(p.amount)}${p.unit ? `<small>${esc(p.unit)}</small>` : ''}</b>`
-  const free = typeof t.freeTier === 'boolean' ? `<span class="pfree">Free tier: ${t.freeTier ? 'yes' : 'no'}</span>` : ''
+  const free = !noFree && typeof t.freeTier === 'boolean' ? `<span class="pfree">Free tier: ${t.freeTier ? 'yes' : 'no'}</span>` : ''
   const check = t.priceChecked && t.pricingUrl
     ? `<div class="pcheck"><strong>Price checked ${esc(fmtDate(t.priceChecked))}</strong>${pricingLink(t)}</div>`
     : `<div class="pcheck missing"><strong>Price not yet checked</strong>${t.pricingUrl ? pricingLink(t) : '<span>We will date it once we confirm it</span>'}</div>`
@@ -1327,65 +1327,252 @@ app.get('/category/:slug', (c) => {
   }))
 })
 
+// Tool page v2 (2026-11-15, from the Paper mockup reviewed with Impeccable). Everything comes from
+// tools.json; empty cells show an en dash. Yellow stays on the one price tag. Optional data:
+// `plans` [{ name, price, note }] renders a plan table, `apiPricing` a small developer block.
+const EMPTY = '\u2013'
+const EMPTY_CELL = `<span aria-hidden="true">${EMPTY}</span><span class="sr-only">Not listed</span>`
+function priceText(t) {
+  const p = priceParts(t)
+  if (p.text) return p.text
+  return `${p.from ? 'From ' : ''}${p.amount}${p.unit || ''}`
+}
+function freeText(t) {
+  return typeof t.freeTier === 'boolean' ? (t.freeTier ? 'Yes' : 'No') : ''
+}
+function checkedText(t) {
+  return t.priceChecked && t.pricingUrl ? `Price checked ${fmtDate(t.priceChecked)}` : 'Price not yet checked'
+}
+function cell(v) { return v ? v : EMPTY_CELL }
+function plansTable(t) {
+  const plans = Array.isArray(t.plans) ? t.plans.filter((p) => p && p.name && p.price) : []
+  if (!plans.length) return ''
+  return `<table class="plans">
+      <caption class="sr-only">${esc(t.name)} plans and prices</caption>
+      <thead><tr><th scope="col">Plan</th><th scope="col">Price</th></tr></thead>
+      <tbody>${plans.map((p) => `<tr><th scope="row">${esc(p.name)}</th><td><b>${esc(p.price)}</b>${p.note ? ` <span class="pn">${esc(p.note)}</span>` : ''}</td></tr>`).join('')}</tbody>
+    </table>`
+}
+function altTable(t, others, catLabel) {
+  const n = catCount(t.category)
+  const row = (x, here) => `<tr${here ? ' class="here" aria-current="page"' : ''}>
+        <td data-label="Rank in ${esc(catLabel)}">${esc(ordinal(catRank(x)))} of ${n}</td>
+        <th scope="row" data-label="Tool">${here ? `<span class="tn">${esc(x.name)}</span> <span class="herechip">This page</span>` : `<a class="tn" href="/tool/${esc(x.slug)}">${esc(x.name)}<span class="chev" aria-hidden="true">›</span></a>`}<small>${esc(x.tagline)}</small></th>
+        <td data-label="Price">${cell(esc(priceText(x)))}</td>
+        <td data-label="Free tier">${cell(freeText(x))}</td>
+        <td data-label="Pricing source">${x.pricingUrl ? `<a class="src" href="${esc(x.pricingUrl)}" rel="noopener noreferrer" target="_blank">Official pricing<span class="sr-only"> for ${esc(x.name)}</span></a>${x.priceChecked ? `<small>Checked ${esc(fmtDate(x.priceChecked))}</small>` : ''}` : EMPTY_CELL}</td>
+      </tr>`
+  return `<table class="alts">
+      <caption class="sr-only">${esc(t.name)} and the top ranked ${esc(catLabel)} tools, in category rank order</caption>
+      <thead><tr><th scope="col">Rank in ${esc(catLabel)}</th><th scope="col">Tool</th><th scope="col">Price</th><th scope="col">Free tier</th><th scope="col">Pricing source</th></tr></thead>
+      <tbody>${row(t, true)}${others.map((x) => row(x, false)).join('')}</tbody>
+    </table>`
+}
+const TOOL_V2_CSS = `
+:root { --bs-ground: var(--ground); --bs-rail: var(--rail); --bs-rail-line: var(--rail-line); --bs-ink: var(--ink); --bs-ink-2: var(--ink-2); --bs-ink-3: var(--ink-3); --bs-rule: var(--rule); --bs-brand: var(--brand); --bs-brand-ink: var(--brand-ink); --bs-ok: var(--ok); --bs-ok-bg: #e3f3ea; --bs-warn: #8a4b00; --bs-r-sm: 4px; --bs-r: var(--radius); --bs-r-lg: 10px; --bs-tap: 44px; }
+.tv2 { display: grid; grid-template-columns: minmax(0, 1fr) 320px; grid-template-areas: "head side" "main side"; column-gap: 3.5rem; align-items: start; margin-top: 1rem; }
+.tv2-head { grid-area: head; min-width: 0; }
+.tv2 > .side { grid-area: side; align-self: stretch; }
+.tv2-main { grid-area: main; min-width: 0; }
+.tv2-head h1 { font-size: clamp(2.6rem, 6vw, 4.2rem); line-height: 1; letter-spacing: -.035em; font-weight: 800; margin: 0; }
+.tv2-head .one { font-size: 1.2rem; color: var(--bs-ink-2); margin: .55rem 0 0; max-width: 46ch; }
+.rankrow { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1rem; margin: 1.4rem 0 0; padding: 1rem 0; border-top: 1px solid var(--bs-rule); border-bottom: 1px solid var(--bs-rule); }
+.bigrank { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--bs-ink); }
+.bigrank a { text-decoration: none; color: var(--bs-ink); }
+.bigrank a:hover { text-decoration: underline; text-decoration-color: var(--bs-brand); }
+.bigrank b { font-size: clamp(2.2rem, 4.4vw, 3rem); line-height: .9; font-weight: 820; letter-spacing: -.02em; font-stretch: 75%; font-variation-settings: "wdth" 75; font-variant-numeric: tabular-nums; color: var(--bs-brand-ink); margin-right: .3rem; }
+.ochip { display: inline-flex; align-items: center; border: 1px solid var(--bs-rail-line); border-radius: 999px; padding: .15rem .65rem; font-size: .85rem; color: var(--bs-ink-2); font-variant-numeric: tabular-nums; }
+.howrank { margin-left: auto; font-size: .88rem; }
+.bf { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .9rem; margin: 1rem 0 0; font-size: .95rem; }
+.bf strong { color: var(--bs-ink); }
+.bf ul { display: flex; flex-wrap: wrap; gap: .25rem 1rem; list-style: none; margin: 0; padding: 0; color: var(--bs-ink-2); }
+.bf li + li::before { content: "\\00b7"; margin-right: 1rem; color: var(--bs-ink-3); }
+.tv2-head .sw { display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; border: 0; border-radius: 0; overflow: visible; margin: 1.5rem 0 0; }
+.tv2-head .sw > div { padding: 0; }
+.tv2-head .sw > div + div { border: 0; }
+.tv2-head .sw h2 { display: flex; align-items: center; gap: .45rem; font-size: .95rem; margin: 0 0 .35rem; }
+.tv2-head .sw h2::before { content: ""; width: .7rem; height: .7rem; border-radius: 50%; border: 2px solid var(--bs-ok); flex: 0 0 auto; }
+.tv2-head .sw div + div h2::before { border-color: var(--bs-warn); }
+.tv2-head .sw p { margin: 0; color: var(--bs-ink-2); font-size: .97rem; }
+.pbox { background: var(--bs-rail); border-radius: var(--bs-r-lg); padding: 1.25rem; border-bottom: 4px solid var(--bs-rail-line); }
+.freefirst { display: flex; align-items: center; gap: .45rem; margin: 0 0 .8rem; font-weight: 700; color: var(--bs-ink); }
+.freefirst::before { content: ""; width: .75rem; height: .75rem; border-radius: 50%; background: var(--bs-ink-3); }
+.freefirst.yes::before { background: var(--bs-ok); }
+.pbox .shelfedge.big { display: flex; flex-direction: column; align-items: flex-start; margin: 0; padding: 0; width: 100%; background: transparent; border: 0; border-radius: 0; }
+.pbox .shelfedge.big .pcheck { background: transparent; box-shadow: none; border: 0; padding: .6rem 0 0; flex: 0 0 auto; }
+.pbox .shelfedge.big .pcheck.missing { border: 0; }
+.pbox .visit { margin: 1rem 0 0; }
+.pbox .visit .btn { width: 100%; justify-content: center; min-height: var(--bs-tap); }
+.pbox .site { margin: .6rem 0 0; text-align: center; font-size: .88rem; color: var(--bs-ink-2); overflow-wrap: anywhere; }
+.pbox .facts-list { margin: 1rem 0 0; font-size: .86rem; border-top: 1px solid var(--bs-rail-line); }
+.pbox .facts-list li { padding: .45rem 0; border-bottom: 0; }
+.pbox .facts-list li.paid { font-weight: 700; color: var(--bs-ink); }
+.pbox .muted { font-size: .86rem; margin: .5rem 0 0; }
+.toc { position: sticky; top: 5rem; margin: 2rem 0 0; font-size: .9rem; }
+.toc h2 { font-size: .8rem; letter-spacing: .02em; color: var(--bs-ink-3); margin: 0 0 .4rem; }
+.toc ul { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--bs-rule); }
+.toc a { display: block; padding: .35rem 0 .35rem .9rem; color: var(--bs-ink-2); text-decoration: none; }
+.toc a:hover { color: var(--bs-ink); text-decoration: underline; text-decoration-color: var(--bs-brand); }
+.tsec { padding: 2.5rem 0 0; scroll-margin-top: 4.5rem; }
+.tsec h2 { font-size: 1.45rem; color: var(--bs-ink); margin: 0 0 .8rem; letter-spacing: -.02em; }
+.tsec .prose, .tsec.prose { max-width: 68ch; }
+.plans, .alts { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.plans { font-size: .97rem; border-top: 2px solid var(--bs-ink); }
+.plans th, .plans td { text-align: left; padding: .7rem .75rem .7rem 0; border-bottom: 1px solid var(--bs-rule); vertical-align: top; }
+.plans thead th { font-size: .8rem; color: var(--bs-ink-3); font-weight: 650; padding-top: .5rem; }
+.plans tbody th { font-weight: 700; color: var(--bs-ink); width: 40%; }
+.plans .pn { color: var(--bs-ink-3); font-size: .88rem; }
+.pnote { color: var(--bs-ink-2); font-size: .92rem; margin: .9rem 0 0; max-width: 68ch; }
+.plans + .pnote { color: var(--bs-ink-3); font-size: .86rem; }
+.api { background: var(--bs-rail); border-radius: var(--bs-r); padding: .8rem 1rem; margin: 1rem 0 0; font-size: .9rem; max-width: 68ch; }
+.api h3 { font-size: .82rem; margin: 0 0 .25rem; color: var(--bs-ink); }
+.api p { margin: 0; color: var(--bs-ink-2); }
+.alts { font-size: .93rem; border-top: 2px solid var(--bs-ink); }
+.alts thead th { text-align: left; font-size: .78rem; color: var(--bs-ink-3); font-weight: 650; padding: .5rem .75rem .5rem 0; border-bottom: 1px solid var(--bs-rule); }
+.alts td, .alts tbody th { text-align: left; font-weight: 400; padding: .8rem .75rem .8rem 0; border-bottom: 1px solid var(--bs-rule); vertical-align: top; }
+.alts td:first-child { white-space: nowrap; color: var(--bs-ink-2); }
+.alts tbody th .tn { font-weight: 750; color: var(--bs-ink); }
+.alts tbody th a.tn { text-decoration: none; }
+.alts tbody th a.tn:hover { text-decoration: underline; text-decoration-color: var(--bs-brand); }
+.alts .chev { margin-left: .25rem; color: var(--bs-brand-ink); }
+.alts small { display: block; color: var(--bs-ink-3); font-size: .82rem; margin-top: .1rem; }
+.alts tr.here { background: var(--bs-rail); }
+.alts tr.here td:first-child { padding-left: .6rem; font-weight: 700; color: var(--bs-ink); }
+.herechip { font-size: .75rem; color: var(--bs-ink-3); font-weight: 600; margin-left: .3rem; }
+.seeall { margin: .9rem 0 0; font-size: .95rem; }
+.closer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 1.5rem; margin: 2.5rem 0 0; padding: 1.1rem 1.25rem; border: 1px solid var(--bs-rule); border-radius: var(--bs-r-lg); }
+.closer p { margin: 0; }
+.closer .ct { font-size: 1.1rem; color: var(--bs-ink); }
+.closer .cs { font-size: .88rem; color: var(--bs-ink-2); margin-top: .2rem; font-variant-numeric: tabular-nums; }
+.closer .cb { display: flex; flex-wrap: wrap; gap: .6rem; }
+.btn.ghost { background: #fff; border: 1.5px solid var(--bs-ink); }
+.btn.ghost:hover { background: var(--bs-rail); }
+.closer .btn { min-height: var(--bs-tap); }
+#faq.tsec .panel { max-width: 68ch; }
+@media (max-width: 820px) {
+  .tv2 { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "side" "main"; margin-top: .5rem; }
+  .toc { display: none; }
+  .pbox { margin-top: 1.5rem; }
+  .tv2-head .sw { grid-template-columns: 1fr; gap: 1rem; }
+  .howrank { margin-left: 0; }
+  .bf ul { flex-direction: column; gap: .1rem; }
+  .bf li + li::before { content: none; }
+  .crumb a, .howrank, .bigrank a, .pbox .site a, .pbox .facts-list a, .pbox .pcheck a, .seeall a { display: inline-flex; align-items: center; min-height: var(--bs-tap); }
+  .navlinks a, .footrow a, .brand, .tsec.prose .muted a { display: inline-flex; align-items: center; min-height: var(--bs-tap); }
+  .alts thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .alts, .alts tbody, .alts tr, .alts td, .alts tbody th { display: block; width: 100%; }
+  .alts tr { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr); column-gap: .75rem; padding: .75rem 0; border-bottom: 1px solid var(--bs-rule); }
+  .alts tr.here { padding-left: .6rem; padding-right: .6rem; }
+  .alts td, .alts tbody th { border: 0; padding: .1rem 0; }
+  .alts td:first-child { grid-row: 1 / span 4; font-weight: 750; color: var(--bs-ink); white-space: normal; padding-top: .7rem; }
+  .alts tr.here td:first-child { padding-left: 0; }
+  .alts tbody th a.tn { display: inline-flex; align-items: center; min-height: var(--bs-tap); }
+  .alts tbody th .tn { font-size: 1.05rem; }
+  .alts td:not(:first-child)::before { content: attr(data-label) ": "; color: var(--bs-ink-3); font-size: .82rem; }
+  .alts td a.src { display: inline-flex; align-items: center; min-height: var(--bs-tap); }
+  .alts td small { display: inline; margin-left: .4rem; }
+  .closer { flex-direction: column; align-items: stretch; }
+  .closer .cb { flex-direction: column; }
+  .closer .btn { justify-content: center; }
+}
+`
+
 app.get('/tool/:slug', (c) => {
   const t = bySlug(c.req.param('slug'))
   if (!t) return c.notFound()
   const related = tools().filter((x) => x.category === t.category && x.slug !== t.slug).slice(0, 4)
   const tf = toolFaq(t)
-  const altLinks = tf.alts.map((x) => `<a href="/tool/${esc(x.slug)}">${esc(x.name)}</a> (#${x.rank})`)
+  // Visible FAQ labels these as overall ranks (the table above uses category ranks). JSON-LD text is unchanged.
+  const altLinks = tf.alts.map((x) => `<a href="/tool/${esc(x.slug)}">${esc(x.name)}</a> (#${x.rank} overall)`)
   const isCost = (f) => f.q.startsWith('How much does ')
   const cost = tf.faq.find(isCost)
   const faqHtml = `
-  <section class="section" id="faq">
+  <section class="tsec" id="faq">
     <h2>${esc(t.name)} FAQ</h2>
-    <div class="panel prose">
+    <div class="panel prose faqlinks">
       ${tf.faq.filter((f) => !isCost(f)).map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
       <p>${f.q.startsWith('What are the best alternatives') ? `The top ranked ${esc(tf.label)} tools on ${NAME} besides ${esc(t.name)} are ${listNames(altLinks)}. See the full <a href="/category/${esc(t.category)}">${esc(tf.label)} category</a> for every option in rank order.` : esc(f.a)}</p>`).join('')}
     </div>
   </section>`
   const catLabel = CATEGORIES[t.category]?.label || t.category
-  // Price shows once in the visible body: the tag plus the FAQ's cost answer, in the side box.
-  // The FAQPage JSON-LD is unchanged and every question in it is still visible on the page.
+  // v2 layout: header, price box (right column on desktop, after the header on mobile), then
+  // pricing, what it is, ranked alternatives, a closing decision strip, and the FAQ.
+  // The cost answer is the FAQ's own text, shown once in the pricing section, so FAQPage JSON-LD stays
+  // unchanged and every question in it is still visible on the page.
+  const nInCat = catCount(t.category)
+  const freeKnown = typeof t.freeTier === 'boolean'
+  const costHtml = cost ? (() => {
+    let a = esc(cost.a)
+    if (t.pricingUrl) a = a.replace(esc(t.pricingUrl), `<a href="${esc(t.pricingUrl)}" rel="noopener noreferrer" target="_blank">${esc(t.pricingUrl)}</a>`)
+    return `<p class="pnote">${a}</p>`
+  })() : ''
+  const toc = [
+    cost ? ['pricing', 'Pricing'] : null,
+    ['what-it-is', 'What it is'],
+    related.length ? ['alternatives', 'Ranked alternatives'] : null,
+    ['faq', 'FAQ'],
+  ].filter(Boolean)
   const body = `
   <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/category/${esc(t.category)}">${esc(catLabel)}</a> › <span aria-current="page">${esc(t.name)}</span></nav>
-  <section class="hero">
-    <div class="meta placard"><a class="rank" href="/category/${esc(t.category)}">${esc(catChip(t))}</a><span class="rankline">${esc(overallPlace(t))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}</div>
-    <div class="th-main">
-      <h1>${esc(t.name)}</h1>
-      <p class="one">${esc(t.tagline)}</p>
-      ${(t.bestFor || []).length ? `<ul class="bestfor" aria-label="Best for">${t.bestFor.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
+  <div class="tv2">
+  <section class="hero tv2-head">
+    <h1>${esc(t.name)}</h1>
+    <p class="one">${esc(t.tagline)}</p>
+    <div class="rankrow">
+      <p class="bigrank"><a href="/category/${esc(t.category)}"><b>${esc(ordinal(catRank(t)))}</b> of ${nInCat} in ${esc(catLabel)}</a></p>
+      <span class="ochip">${esc(overallPlace(t))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}
+      <a class="howrank" href="/methodology">How we rank</a>
     </div>
+    ${(t.bestFor || []).length ? `<div class="bf"><strong id="bf-label">Best for</strong><ul aria-labelledby="bf-label">${t.bestFor.map((b) => `<li>${esc(b)}</li>`).join('')}</ul></div>` : ''}
+    ${t.strength || t.watchOut ? `<div class="sw">${t.strength ? `<div><h2>Strength</h2><p>${esc(t.strength)}</p></div>` : ''}${t.watchOut ? `<div><h2>Watch-out</h2><p>${esc(t.watchOut)}</p></div>` : ''}</div>` : ''}
   </section>
-  <div class="toolgrid">
-    <aside class="side" aria-label="Price and listing facts">
-      ${priceTag(t, true)}
-      ${cost ? `<div class="plan"><h2>${esc(cost.q)}</h2><p>${esc(cost.a)}</p></div>` : ''}
-      <p class="visit"><a class="btn" href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">Visit ${esc(t.name)}</a></p>
+  <aside class="side" aria-label="Price and listing facts">
+    <div class="pbox">
+      ${freeKnown ? `<p class="freefirst${t.freeTier ? ' yes' : ''}">Free tier: ${t.freeTier ? 'yes' : 'no'}</p>` : ''}
+      ${priceTag(t, true, true)}
+      <p class="visit"><a class="btn" href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">Visit ${esc(t.name)} <span aria-hidden="true">↗</span></a></p>
+      <p class="site">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a></p>
       <ul class="facts-list">
-        <li>Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a></li>
+        <li class="paid">${t.featured ? 'Featured listing. It does not change the rank.' : 'Paid placement: none.'} <a href="/methodology">Ranks are never for sale</a></li>
         <li>Listing last changed: ${esc(fmtDate(t.updated || UPDATED))}</li>
         ${t.added ? `<li>Added to ${NAME}: ${esc(fmtDate(t.added))}</li>` : ''}
-        <li>${t.featured ? 'Featured listing. It does not change the rank.' : 'Paid placement: none.'} <a href="/methodology">Ranks are never for sale</a></li>
       </ul>
       ${t.affiliate ? '<p class="muted">Affiliate link: we may earn a commission if you use the link on this page.</p>' : ''}
-    </aside>
-    <div class="toolmain">
-      ${t.strength || t.watchOut ? `<div class="sw">${t.strength ? `<div><h2>Strength</h2><p>${esc(t.strength)}</p></div>` : ''}${t.watchOut ? `<div><h2>Watch-out</h2><p>${esc(t.watchOut)}</p></div>` : ''}</div>` : ''}
-      <section class="prose">
+    </div>
+    <nav class="toc" aria-label="On this page"><h2>On this page</h2><ul>${toc.map(([id, label]) => `<li><a href="#${id}">${esc(label)}</a></li>`).join('')}</ul></nav>
+  </aside>
+  <div class="tv2-main">
+    ${cost ? `<section class="tsec" id="pricing">
+      <h2>${esc(cost.q)}</h2>
+      ${plansTable(t)}
+      ${costHtml}
+      ${t.apiPricing ? `<div class="api"><h3>Developer API pricing</h3><p>${esc(t.apiPricing)}.</p></div>` : ''}
+    </section>` : ''}
+    <section class="tsec prose" id="what-it-is">
         <h2>What it is</h2>
         <p>${esc(t.description)}</p>
         ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
         ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
-      </section>
-      ${faqHtml}
-    </div>
+    </section>
+    ${related.length ? `<section class="tsec" id="alternatives">
+      <h2>Ranked alternatives in ${esc(catLabel)}</h2>
+      ${altTable(t, related, catLabel)}
+      ${nInCat > related.length + 1 ? `<p class="seeall"><a href="/category/${esc(t.category)}">See all ${nInCat} in ${esc(catLabel)}</a></p>` : ''}
+    </section>` : ''}
+    <section class="closer" aria-label="Decide on ${esc(t.name)}">
+      <div><p class="ct"><strong>${esc(t.name)}</strong> · ${esc(catPlace(t))}</p>
+      <p class="cs">${freeKnown ? `Free tier: ${t.freeTier ? 'yes' : 'no'} · ` : ''}${esc(priceText(t))} · ${esc(checkedText(t))}</p></div>
+      <div class="cb"><a class="btn ghost" href="/category/${esc(t.category)}">See the full ${esc(catLabel)} category</a><a class="btn" href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">Visit ${esc(t.name)} <span aria-hidden="true">↗</span></a></div>
+    </section>
+    ${faqHtml}
   </div>
-  ${related.length ? `<section class="section"><h2>Ranked alternatives in ${esc(catLabel)}</h2><div class="grid">${related.map(toolCard).join('')}</div></section>` : ''}`
+  </div>`
   return c.html(layout({
     title: `${t.name}: ${t.tagline} | ${NAME}`,
     description: toolMetaDescription(t),
     path: `/tool/${t.slug}`,
     body,
+    extraCss: TOOL_V2_CSS,
     jsonLd: {
       '@context': 'https://schema.org',
       '@graph': [{
