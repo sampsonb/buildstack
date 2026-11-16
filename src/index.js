@@ -83,6 +83,23 @@ function catPlace(t) {
 function overallPlace(t) {
   return `${ordinal(t.rank)} of ${tools().length} overall`
 }
+// One-line rank reason for tool pages (SEO item 3, part 2). Built only from tools.json: the tool's
+// own strength line and the tools ranked directly above and below it in the same category.
+// Ranks stay an editorial call; this line never claims a score or a test.
+function rankReason(t) {
+  const list = tools().filter((x) => x.category === t.category)
+  const i = list.findIndex((x) => x.slug === t.slug)
+  if (i < 0) return ''
+  const cat = CATEGORIES[t.category]?.label || t.category
+  const link = (x) => `<a href="/tool/${esc(x.slug)}">${esc(x.name)}</a>`
+  const up = list[i - 1], down = list[i + 1]
+  const where = up && down ? `Ranked below ${link(up)} and above ${link(down)} in ${esc(cat)}.`
+    : down ? `Ranked above ${link(down)} and every other ${esc(cat)} tool.`
+    : up ? `Ranked below ${link(up)} and the other ${esc(cat)} tools.` : ''
+  const why = String(t.strength || '').trim()
+  if (!why && !where) return ''
+  return `<p class="why"><strong>Why ${esc(ordinal(i + 1))} in ${esc(cat)}:</strong> ${why ? esc(/[.!?]$/.test(why) ? why : why + '.') + ' ' : ''}${where}</p>`
+}
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({
@@ -1383,6 +1400,8 @@ const TOOL_V2_CSS = `
 .bigrank b { font-size: clamp(2.2rem, 4.4vw, 3rem); line-height: .9; font-weight: 820; letter-spacing: -.02em; font-stretch: 75%; font-variation-settings: "wdth" 75; font-variant-numeric: tabular-nums; color: var(--bs-brand-ink); margin-right: .3rem; }
 .ochip { display: inline-flex; align-items: center; border: 1px solid var(--bs-rail-line); border-radius: 999px; padding: .15rem .65rem; font-size: .85rem; color: var(--bs-ink-2); font-variant-numeric: tabular-nums; }
 .howrank { margin-left: auto; font-size: .88rem; }
+.tv2-head .why { margin: .9rem 0 0; max-width: 70ch; font-size: 1rem; line-height: 1.5; color: var(--bs-ink-2); }
+.tv2-head .why strong { color: var(--bs-ink); }
 .bf { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .9rem; margin: 1rem 0 0; font-size: .95rem; }
 .bf strong { color: var(--bs-ink); }
 .bf ul { display: flex; flex-wrap: wrap; gap: .25rem 1rem; list-style: none; margin: 0; padding: 0; color: var(--bs-ink-2); }
@@ -1523,6 +1542,7 @@ app.get('/tool/:slug', (c) => {
       <span class="ochip">${esc(overallPlace(t))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}
       <a class="howrank" href="/methodology">How we rank</a>
     </div>
+    ${rankReason(t)}
     ${(t.bestFor || []).length ? `<div class="bf"><strong id="bf-label">Best for</strong><ul aria-labelledby="bf-label">${t.bestFor.map((b) => `<li>${esc(b)}</li>`).join('')}</ul></div>` : ''}
     ${t.strength || t.watchOut ? `<div class="sw">${t.strength ? `<div><h2>Strength</h2><p>${esc(t.strength)}</p></div>` : ''}${t.watchOut ? `<div><h2>Watch-out</h2><p>${esc(t.watchOut)}</p></div>` : ''}</div>` : ''}
   </section>
