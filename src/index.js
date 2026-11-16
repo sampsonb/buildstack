@@ -4100,8 +4100,9 @@ app.get(DEEPFAKE_PATH, (c) => {
     <p class="byline-note">BuildStack is a free ranked directory of AI tools. Ranks aren't for sale.</p>
     <figure class="hero-art capped">
       <picture>
-        <source type="image/webp" srcset="/guides/deepfake-hero.webp"/>
-        <img src="/guides/deepfake-hero.jpg" width="1280" height="720" alt="Illustration: an invented face, half photographic and half digital wireframe" fetchpriority="high" decoding="async"/>
+        <source type="image/avif" srcset="/guides/deepfake-hero-800.avif 800w, /guides/deepfake-hero-1200.avif 1200w, /guides/deepfake-hero.avif 2172w" sizes="min(1120px, calc(100vw - 2.5rem))"/>
+        <source type="image/webp" srcset="/guides/deepfake-hero-800.webp 800w, /guides/deepfake-hero-1200.webp 1200w, /guides/deepfake-hero.webp 2172w" sizes="min(1120px, calc(100vw - 2.5rem))"/>
+        <img src="/guides/deepfake-hero.jpg" width="2172" height="724" alt="Illustration on a light background: an invented woman's face, half a photograph and half an orange wireframe mesh" fetchpriority="high" decoding="async" style="object-position:72% 50%"/>
       </picture>
       <figcaption>AI-generated illustration. Not a real person.</figcaption>
     </figure>
@@ -4146,8 +4147,9 @@ app.get(DEEPFAKE_PATH, (c) => {
 
       <figure class="tells" id="tells">
         <picture>
-          <source type="image/webp" srcset="/guides/deepfake-tells.webp"/>
-          <img src="/guides/deepfake-tells.jpg" width="1600" height="900" loading="lazy" decoding="async" alt="Explainer graphic titled 5 places deepfakes slip up, with five callouts on an invented face: Hairline, blurry or melting edges. Blinking, too rare or unnatural. Lighting, shadows that don't match the scene. Teeth, smeared or too uniform. Edges, jaw and neck seams that flicker."/>
+          <source type="image/avif" srcset="/guides/deepfake-tells-800.avif 800w, /guides/deepfake-tells-1200.avif 1200w, /guides/deepfake-tells.avif 1600w" sizes="min(68ch, calc(100vw - 2.5rem))"/>
+          <source type="image/webp" srcset="/guides/deepfake-tells-800.webp 800w, /guides/deepfake-tells-1200.webp 1200w, /guides/deepfake-tells.webp 1600w" sizes="min(68ch, calc(100vw - 2.5rem))"/>
+          <img src="/guides/deepfake-tells.jpg" width="1600" height="900" loading="lazy" decoding="async" alt="Explainer graphic on a light background titled 5 places deepfakes slip up, with five callouts on an invented face: Hairline, blurry or melting edges. Blinking, too rare or unnatural. Lighting, shadows that don't match the scene. Teeth, smeared or too uniform. Edges, jaw and neck seams that flicker."/>
         </picture>
         <figcaption>Five common tells. Illustration of an invented person, not a real individual.</figcaption>
       </figure>
@@ -4211,7 +4213,7 @@ app.get(DEEPFAKE_PATH, (c) => {
       type: 'image/jpeg',
       width: 1200,
       height: 630,
-      alt: 'Illustration: an invented face, half photographic and half digital wireframe',
+      alt: 'Illustration on a light background: an invented woman\'s face, half a photograph and half an orange wireframe mesh',
     },
     body,
     jsonLd: {

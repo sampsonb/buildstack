@@ -53,12 +53,14 @@ test('deepfake explainer is published with metadata, FAQ, sources, and listings'
   assert.match(guides, /href="\/guides\/how-celebrity-deepfakes-are-made"/)
 
   assert.match(html, /<figure class="hero-art capped">/)
-  assert.match(html, /<source type="image\/webp" srcset="\/guides\/deepfake-hero\.webp"\/>/)
+  assert.match(html, /<source type="image\/avif" srcset="\/guides\/deepfake-hero-800\.avif 800w, \/guides\/deepfake-hero-1200\.avif 1200w, \/guides\/deepfake-hero\.avif 2172w"/)
+  assert.match(html, /<source type="image\/webp" srcset="\/guides\/deepfake-hero-800\.webp 800w, \/guides\/deepfake-hero-1200\.webp 1200w, \/guides\/deepfake-hero\.webp 2172w"/)
   assert.match(html, /src="\/guides\/deepfake-hero\.jpg"/)
-  assert.match(html, /width="1280"/)
-  assert.match(html, /height="720"/)
+  assert.match(html, /width="2172"/)
+  assert.match(html, /height="724"/)
   assert.match(html, /fetchpriority="high"/)
-  assert.match(html, /alt="Illustration: an invented face, half photographic and half digital wireframe"/)
+  assert.match(html, /style="object-position:72% 50%"/)
+  assert.match(html, /alt="Illustration on a light background: an invented woman's face, half a photograph and half an orange wireframe mesh"/)
   assert.match(html, /<figcaption>AI-generated illustration\. Not a real person\.<\/figcaption>/)
   assert.match(html, /<meta property="og:image" content="https:\/\/buildstack\.tier11\.com\/guides\/deepfake-og\.jpg"\/>/)
   assert.match(html, /<meta property="og:image:type" content="image\/jpeg"\/>/)
@@ -73,11 +75,13 @@ test('deepfake explainer is published with metadata, FAQ, sources, and listings'
   const { statSync } = await import('node:fs')
   const { fileURLToPath } = await import('node:url')
   const dir = fileURLToPath(new URL('../public/guides/', import.meta.url))
-  for (const name of ['deepfake-hero.jpg', 'deepfake-hero.webp', 'deepfake-og.jpg']) {
+  for (const name of ['deepfake-hero.jpg', 'deepfake-hero.webp', 'deepfake-hero.avif', 'deepfake-hero-800.webp', 'deepfake-hero-800.avif', 'deepfake-hero-1200.webp', 'deepfake-hero-1200.avif', 'deepfake-og.jpg']) {
     const info = statSync(dir + name)
     assert.ok(info.size > 1000, name)
     assert.ok(info.size <= 200 * 1024, `${name} is ${info.size}`)
   }
+  assert.ok(statSync(dir + 'deepfake-hero.avif').size <= 100 * 1024)
+  assert.ok(statSync(dir + 'deepfake-hero.webp').size <= 100 * 1024)
 
   assert.match(home, /data-source="home"/)
   assert.match(home, /onsubmit="subscribe\(event\)"/)
