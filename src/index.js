@@ -157,7 +157,25 @@ function toolFaq(t) {
   const best = (t.bestFor || []).slice(0, 3)
   // No "What is X?" entry: its answer was the Overview paragraph repeated word for word.
   const faq = []
-  if (best.length) faq.push({ q: `What is ${t.name} best for?`, a: `${NAME} lists ${t.name} as best for ${listNames(best)}. It ranks #${t.rank} overall and #${catRank} of ${inCat.length} in ${label}.` })
+  // SEO item 4: the old "What is X best for?" answer repeated the Best for list in the header,
+  // so these two answers carry facts the page does not already state in that form.
+  const priceWords = (x) => {
+    const p = String(x.priceFrom || '').trim()
+    if (p === 'Free') return 'free'
+    const base = !p || p === 'See pricing' ? 'priced on its official site' : p
+    return typeof x.freeTier === 'boolean' ? `${base}${x.freeTier ? ', with a free tier' : ', with no free tier listed'}` : base
+  }
+  if (typeof t.freeTier === 'boolean') {
+    const p = String(t.priceFrom || '').trim()
+    const paid = p && p !== 'See pricing' && p !== 'Free' ? ` Paid plans: ${p}.` : ''
+    const nFree = inCat.filter((x) => x.freeTier === true).length
+    faq.push({ q: `Is there a free version of ${t.name}?`, a: `${t.freeTier ? `Yes. ${NAME} lists a free tier for ${t.name}.` : `No. ${NAME} does not list a free tier for ${t.name}.`}${paid} ${nFree} of ${inCat.length} ${label} tools on ${NAME} list a free tier.` })
+  }
+  const rival = catRank > 1 ? inCat[catRank - 2] : inCat[1]
+  if (rival && best.length && (rival.bestFor || []).length) {
+    const rRank = inCat.indexOf(rival) + 1
+    faq.push({ q: `${t.name} or ${rival.name}: which should I pick?`, a: `${NAME} ranks ${t.name} #${catRank} and ${rival.name} #${rRank} of ${inCat.length} in ${label}. Pick ${t.name} for ${best[0]}; pick ${rival.name} for ${rival.bestFor[0]}. On price, ${t.name} is ${priceWords(t)}, and ${rival.name} is ${priceWords(rival)}.` })
+  }
   if (t.pricingNote) faq.push({ q: `How much does ${t.name} cost?`, a: `${t.pricingNote.replace(/[\s.]+$/, '')}. ${t.pricingUrl ? `${t.priceChecked ? `${NAME} checked these prices on ${fmtDate(t.priceChecked)} against` : 'See'} the official pricing page at ${t.pricingUrl}. ` : ''}Prices change often, so confirm the current plans on the official site before you buy.` })
   if (alts.length) faq.push({ q: `What are the best alternatives to ${t.name}?`, a: `The top ranked ${label} tools on ${NAME} besides ${t.name} are ${listNames(alts.map((x) => `${x.name} (#${x.rank})`))}. See the full ${label} category for every option in rank order.` })
   return { faq, alts, label }
