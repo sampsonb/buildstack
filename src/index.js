@@ -278,6 +278,7 @@ const SECTION_DATES = {
   '/best/ai-video-generator': '2026-11-13',
   '/guides/how-celebrity-deepfakes-are-made': '2026-11-13',
   '/get-featured': '2026-11-13',
+  '/vs': '2026-11-18',
 }
 
 function maxDate(dates) {
@@ -320,6 +321,8 @@ function pageDate(path) {
   if (path.startsWith('/tool/')) { const t = bySlug(path.slice(6)); return (t && maxDate([t.updated, t.priceChecked])) || UPDATED }
   if (path.startsWith('/category/')) return maxDate(all.filter((t) => t.category === path.slice(10)).map((t) => t.updated)) || UPDATED
   if (['', '/', '/categories', '/about', '/tools.json', '/llms.txt', '/llms-full.txt'].includes(path)) return maxDate(all.map((t) => t.updated)) || UPDATED
+  if (path === '/vs') return maxDate([SECTION_DATES['/vs'], ...vsPairs().map((p) => maxDate([p.a.updated, p.b.updated]))]) || UPDATED
+  if (path.startsWith('/vs/')) { const p = vsPairs().find((x) => x.path === path); return (p && maxDate([SECTION_DATES['/vs'], p.a.updated, p.b.updated, p.a.priceChecked, p.b.priceChecked])) || UPDATED }
   const fn = guideData()[path]
   return maxDate([SECTION_DATES[path], ...(fn ? toolsIn(fn()).map((t) => t.updated) : [])]) || UPDATED
 }
@@ -882,7 +885,7 @@ function toolCardAt(t, pos, kind) {
 //   /api/health  /api/subscribe
 //   /categories  /category/:slug  /tool/:slug
 //   /get-featured  /methodology  /about
-//   /alternatives/*  /best/*
+//   /alternatives/*  /best/*  /vs  /vs/*
 //   /favicon.svg  /favicon.png  /og.png
 //   /.well-known/*  (ACME and future well-known; never block)
 const SCANNER_EXT = ['.php', '.sql', '.bak', '.tfstate', '.yml', '.yaml', '.enc', '.ini', '.cfg', '.config']
@@ -930,6 +933,7 @@ app.get('/sitemap.xml', (c) => {
   const urls = [
     '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
+    '/vs', ...vsPairs().map((p) => p.path),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -1005,6 +1009,10 @@ app.get('/llms.txt', (c) => {
     `- Best AI video editors for YouTube in 2026: ${SITE}/best/ai-video-editor-for-youtube`,
     `- Best AI video generators in 2026, by what you want to make: ${SITE}/best/ai-video-generator`,
     `- How viral celebrity deepfakes get made, and how to spot one (not a how-to): ${SITE}/guides/how-celebrity-deepfakes-are-made`,
+    ``,
+    `## Head to head comparisons`,
+    `All comparisons: ${SITE}/vs`,
+    ...vsPairs().map((p) => `- ${p.a.name} (#${p.a.rank}) vs ${p.b.name} (#${p.b.rank}): ${SITE}${p.path}`),
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -1592,6 +1600,7 @@ app.get('/tool/:slug', (c) => {
         ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
         ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
     </section>
+    ${vsPairsFor(t.slug).length ? `<p class="muted">Compare: ${vsPairsFor(t.slug).map((p) => `<a href="${p.path}">${esc(p.a.name)} vs ${esc(p.b.name)}</a>`).join(' · ')}</p>` : ''}
     ${related.length ? `<section class="tsec" id="alternatives">
       <h2>Ranked alternatives in ${esc(catLabel)}</h2>
       ${altTable(t, related, catLabel)}
@@ -1813,6 +1822,173 @@ function cursorAltFaq(d) {
   })
   return faq
 }
+
+// "X vs Y" pages (SEO item 5, added 2026-11-18). Every fact on these pages comes from the two
+// tools' tools.json entries: rank, category, best-for tags, pricing note, free tier, starting price,
+// strength, watch-out, and the official pricing link with its checked date. No hand-written claims.
+// Pairs are fixed here in canonical order; the reverse order redirects. A pair is live only while
+// both tools are listed. Bump SECTION_DATES['/vs'] when this copy changes.
+const VS_PAIRS = [
+  ['chatgpt', 'claude'],
+  ['chatgpt', 'gemini'],
+  ['claude', 'gemini'],
+  ['chatgpt', 'perplexity'],
+  ['cursor', 'github-copilot'],
+  ['cursor', 'windsurf'],
+  ['claude-code', 'openai-codex'],
+  ['lovable', 'bolt'],
+  ['midjourney', 'ideogram'],
+  ['runway', 'kling'],
+  ['heygen', 'synthesia'],
+  ['otter', 'fireflies'],
+]
+
+function vsPairs() {
+  return VS_PAIRS.map(([a, b]) => ({ a: bySlug(a), b: bySlug(b) }))
+    .filter((p) => p.a && p.b)
+    .map((p) => ({ ...p, path: `/vs/${p.a.slug}-vs-${p.b.slug}` }))
+}
+
+function vsPairsFor(slug) {
+  return vsPairs().filter((p) => p.a.slug === slug || p.b.slug === slug)
+}
+
+function catRankOf(t) {
+  return tools().filter((x) => x.category === t.category).findIndex((x) => x.slug === t.slug) + 1
+}
+
+function vsPriceText(t) {
+  const p = String(t.priceFrom || '').trim()
+  const base = !p || p === 'See pricing' ? 'priced on its official site' : p === 'Free' ? 'free' : p
+  if (typeof t.freeTier !== 'boolean' || p === 'Free') return base
+  return `${base}${t.freeTier ? ', with a free tier' : ', with no free tier listed'}`
+}
+
+function vsFaq(a, b) {
+  const [hi, lo] = a.rank <= b.rank ? [a, b] : [b, a]
+  const lab = (t) => CATEGORIES[t.category]?.label || t.category
+  const faq = []
+  faq.push({ q: `Is ${a.name} better than ${b.name}?`, a: `${NAME} ranks ${hi.name} #${hi.rank} overall and ${lo.name} #${lo.rank}, so ${hi.name} ranks higher. That does not make it better for every job: pick ${a.name} for ${(a.bestFor || [])[0] || lab(a).toLowerCase()}, and ${b.name} for ${(b.bestFor || [])[0] || lab(b).toLowerCase()}.` })
+  if (typeof a.freeTier === 'boolean' && typeof b.freeTier === 'boolean') {
+    const both = a.freeTier && b.freeTier
+    const none = !a.freeTier && !b.freeTier
+    faq.push({ q: `Do ${a.name} and ${b.name} have free plans?`, a: both ? `Yes. ${NAME} lists a free tier for both ${a.name} and ${b.name}.` : none ? `${NAME} does not list a free tier for either ${a.name} or ${b.name}.` : `${NAME} lists a free tier for ${a.freeTier ? a.name : b.name} but not for ${a.freeTier ? b.name : a.name}.` })
+  }
+  faq.push({ q: `How much do ${a.name} and ${b.name} cost?`, a: [a, b].map((t) => `${t.name} is ${vsPriceText(t)}${t.pricingUrl ? ` (official pricing: ${t.pricingUrl}${t.priceChecked ? `, checked ${fmtDate(t.priceChecked)}` : ''})` : ''}.`).join(' ') + ' Prices change often, so confirm on the official sites before you buy.' })
+  if (a.watchOut && b.watchOut) faq.push({ q: `What are the downsides of ${a.name} and ${b.name}?`, a: `${a.name}: ${a.watchOut.replace(/[\s.]+$/, '')}. ${b.name}: ${b.watchOut.replace(/[\s.]+$/, '')}.` })
+  return faq
+}
+
+app.get('/vs', (c) => {
+  const pairs = vsPairs()
+  const PD = pageDate('/vs')
+  const title = `AI Tool Comparisons: Head to Head | ${NAME}`
+  const description = `${pairs.length} head to head AI tool comparisons, including ${pairs.slice(0, 3).map((p) => `${p.a.name} vs ${p.b.name}`).join(', ')}. Ranks, free plans, and official pricing from the ${NAME} ranking.`
+  const body = `
+  <section class="hero">
+    <div class="meta"><span class="tag">Comparisons</span></div>
+    <h1>AI Tool Comparisons, Head to Head</h1>
+    <p>Side by side comparisons of tools people often weigh against each other. Every rank, price, and pick on these pages comes from the same data as the rest of ${NAME}, and ranks are not for sale.</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
+  </section>
+  <section class="section">
+    <div class="panel prose"><ul class="clean">
+      ${pairs.map((p) => `<li><a href="${p.path}">${esc(p.a.name)} vs ${esc(p.b.name)}</a> <span class="muted">(#${p.a.rank} vs #${p.b.rank})</span></li>`).join('\n      ')}
+    </ul></div>
+  </section>`
+  return c.html(layout({
+    title, description, path: '/vs', body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'CollectionPage', name: 'AI tool comparisons', description, url: `${SITE}/vs`, dateModified: PD,
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+      }, breadcrumbs([['Home', '/'], ['Comparisons', '/vs']])],
+    },
+  }))
+})
+
+app.get('/vs/:pair', (c) => {
+  const pair = c.req.param('pair')
+  const pairs = vsPairs()
+  const hit = pairs.find((p) => p.path === `/vs/${pair}`)
+  if (!hit) {
+    const rev = pairs.find((p) => `/vs/${p.b.slug}-vs-${p.a.slug}` === `/vs/${pair}`)
+    return rev ? c.redirect(rev.path, 301) : c.notFound()
+  }
+  const { a, b, path } = hit
+  const PD = pageDate(path)
+  const [hi, lo] = a.rank <= b.rank ? [a, b] : [b, a]
+  const lab = (t) => CATEGORIES[t.category]?.label || t.category
+  const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
+  const sameCat = a.category === b.category
+  const faq = vsFaq(a, b)
+  const title = `${a.name} vs ${b.name} (2026): Ranks, Pricing, Which to Pick | ${NAME}`
+  const description = `${a.name} vs ${b.name}: ${hi.name} ranks #${hi.rank} and ${lo.name} #${lo.rank} on ${NAME}. Compare free plans, starting prices, strengths, and downsides. Updated ${fmtDate(PD)}.`
+  const row = (label, f) => `<tr><th scope="row">${label}</th><td>${f(a)}</td><td>${f(b)}</td></tr>`
+  const body = `
+  <section class="hero">
+    <div class="meta"><a class="tag" href="/category/${esc(a.category)}">${esc(lab(a))}</a>${sameCat ? '' : `<a class="tag" href="/category/${esc(b.category)}">${esc(lab(b))}</a>`}<span class="tag">Comparison</span></div>
+    <h1>${esc(a.name)} vs ${esc(b.name)}</h1>
+    <p><strong>Short answer:</strong> ${link(hi)} ranks #${hi.rank} overall on ${NAME} and ${link(lo)} ranks #${lo.rank}${sameCat ? ` (#${catRankOf(hi)} and #${catRankOf(lo)} in ${esc(lab(a))})` : `, in different categories (${esc(lab(hi))} and ${esc(lab(lo))})`}. Pick ${esc(a.name)} for ${esc((a.bestFor || [])[0] || lab(a).toLowerCase())}; pick ${esc(b.name)} for ${esc((b.bestFor || [])[0] || lab(b).toLowerCase())}.</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
+  </section>
+  <section class="section">
+    <h2>${esc(a.name)} vs ${esc(b.name)} at a glance</h2>
+    <div class="panel prose" style="overflow-x:auto">
+    <table class="plans">
+      <thead><tr><th scope="col"></th><th scope="col">${link(a)}</th><th scope="col">${link(b)}</th></tr></thead>
+      <tbody>
+      ${row('Overall rank', (t) => `#${t.rank}`)}
+      ${row('Category', (t) => `<a href="/category/${esc(t.category)}">${esc(lab(t))}</a> (#${catRankOf(t)})`)}
+      ${row('What it is', (t) => esc(t.tagline))}
+      ${row('Best for', (t) => esc((t.bestFor || []).join('; ')))}
+      ${row('Free plan', (t) => typeof t.freeTier === 'boolean' ? (t.freeTier ? 'Yes' : 'None listed') : 'Not confirmed')}
+      ${row('Starts at', (t) => esc(t.priceFrom || 'See pricing'))}
+      ${row('Pricing', (t) => `${esc(t.pricingNote || '')}${t.pricingUrl ? `<br><small>${pricingSourceLine(t)}</small>` : ''}`)}
+      ${row('Strength', (t) => esc(t.strength || ''))}
+      ${row('Watch out', (t) => esc(t.watchOut || ''))}
+      </tbody>
+    </table>
+    </div>
+  </section>
+  <section class="section">
+    <div class="panel prose">
+      <h2 style="margin-top:0">Pick ${esc(a.name)} if you need</h2>
+      <ul class="clean">${(a.bestFor || []).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+      <h2>Pick ${esc(b.name)} if you need</h2>
+      <ul class="clean">${(b.bestFor || []).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+      <p>Still deciding? See every ${link(a)} and ${link(b)} detail on their tool pages, or browse the full <a href="/category/${esc(a.category)}">${esc(lab(a))}</a>${sameCat ? '' : ` and <a href="/category/${esc(b.category)}">${esc(lab(b))}</a>`} ranking. More head to head pages: <a href="/vs">all comparisons</a>.</p>
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title, description, path, body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: `${a.name} vs ${b.name}`,
+        description,
+        url: `${SITE}${path}`,
+        dateModified: PD,
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        about: [a, b].map((t) => ({ '@type': 'SoftwareApplication', name: t.name, url: `${SITE}/tool/${t.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Comparisons', '/vs'], [`${a.name} vs ${b.name}`, path]])],
+    },
+  }))
+})
 
 app.get('/alternatives/cursor', (c) => {
   const PD = pageDate('/alternatives/cursor')
