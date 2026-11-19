@@ -279,6 +279,7 @@ const SECTION_DATES = {
   '/guides/how-celebrity-deepfakes-are-made': '2026-11-13',
   '/get-featured': '2026-11-13',
   '/vs': '2026-11-18',
+  '/alternatives': '2026-11-19',
 }
 
 function maxDate(dates) {
@@ -323,6 +324,8 @@ function pageDate(path) {
   if (['', '/', '/categories', '/about', '/tools.json', '/llms.txt', '/llms-full.txt'].includes(path)) return maxDate(all.map((t) => t.updated)) || UPDATED
   if (path === '/vs') return maxDate([SECTION_DATES['/vs'], ...vsPairs().map((p) => maxDate([p.a.updated, p.b.updated]))]) || UPDATED
   if (path.startsWith('/vs/')) { const p = vsPairs().find((x) => x.path === path); return (p && maxDate([SECTION_DATES['/vs'], p.a.updated, p.b.updated, p.a.priceChecked, p.b.priceChecked])) || UPDATED }
+  if (path === '/alternatives') return maxDate([SECTION_DATES['/alternatives'], pageDate('/alternatives/cursor'), ...altPages().map((p) => pageDate(p.path))]) || UPDATED
+  if (path.startsWith('/alternatives/') && altPageFor(path.slice(14))) { const p = altPageFor(path.slice(14)); return maxDate([SECTION_DATES['/alternatives'], ...[p.t, ...p.alts].flatMap((t) => [t.updated, t.priceChecked])]) || UPDATED }
   const fn = guideData()[path]
   return maxDate([SECTION_DATES[path], ...(fn ? toolsIn(fn()).map((t) => t.updated) : [])]) || UPDATED
 }
@@ -885,7 +888,7 @@ function toolCardAt(t, pos, kind) {
 //   /api/health  /api/subscribe
 //   /categories  /category/:slug  /tool/:slug
 //   /get-featured  /methodology  /about
-//   /alternatives/*  /best/*  /vs  /vs/*
+//   /alternatives  /alternatives/*  /best/*  /vs  /vs/*
 //   /favicon.svg  /favicon.png  /og.png
 //   /.well-known/*  (ACME and future well-known; never block)
 const SCANNER_EXT = ['.php', '.sql', '.bak', '.tfstate', '.yml', '.yaml', '.enc', '.ini', '.cfg', '.config']
@@ -934,6 +937,7 @@ app.get('/sitemap.xml', (c) => {
     '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     '/vs', ...vsPairs().map((p) => p.path),
+    '/alternatives', ...altPages().map((p) => p.path),
     ...tools().map((t) => `/tool/${t.slug}`),
   ]
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -1013,6 +1017,11 @@ app.get('/llms.txt', (c) => {
     `## Head to head comparisons`,
     `All comparisons: ${SITE}/vs`,
     ...vsPairs().map((p) => `- ${p.a.name} (#${p.a.rank}) vs ${p.b.name} (#${p.b.rank}): ${SITE}${p.path}`),
+    ``,
+    `## Alternatives pages`,
+    `All alternatives pages: ${SITE}/alternatives`,
+    `- Cursor alternatives, sorted by how you code: ${SITE}/alternatives/cursor`,
+    ...altPages().map((p) => `- ${p.t.name} (#${p.t.rank}) alternatives, top ranked: ${p.alts.slice(0, 3).map((x) => `${x.name} (#${x.rank})`).join(', ')}: ${SITE}${p.path}`),
     ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
@@ -1172,6 +1181,8 @@ app.get('/', (c) => {
     <h2>Guides</h2>
     <div class="pills">
       <a class="pill" href="/alternatives/cursor">Best Cursor alternatives</a>
+      ${altPages().map((p) => `<a class="pill" href="${p.path}">${esc(p.t.name)} alternatives</a>`).join('\n      ')}
+      <a class="pill" href="/alternatives">All alternatives pages</a>
       <a class="pill" href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>
       <a class="pill" href="/best/ai-research-assistant">Best AI research assistants</a>
       <a class="pill" href="/best/free-ai-tools">Best free AI tools</a>
@@ -1336,6 +1347,7 @@ app.get('/category/:slug', (c) => {
     ${slug === 'images' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-image-generator">best AI image generators, plus the best Midjourney alternatives</a>.</p>' : ''}
     ${slug === 'writing' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-writing-tool">best AI writing tools, and the best for blog posts</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
+    ${altPages().some((p) => p.t.category === slug) ? `<p class="muted">Switching tools? See the ${listNames(altPages().filter((p) => p.t.category === slug).map((p) => `<a href="${p.path}">${esc(p.t.name)} alternatives</a>`))}, or <a href="/alternatives">all alternatives pages</a>.</p>` : ''}
     <p class="muted">On a budget? See the <a href="/best/free-ai-tools#${slug === 'agents' ? 'automation' : esc(slug)}">best free AI tools for ${esc(cat.label.toLowerCase())}</a>.</p>
   </section>
   <h2 class="cathead">All ${list.length} ${esc(cat.label.toLowerCase())} tools, ranked</h2>
@@ -1598,6 +1610,7 @@ app.get('/tool/:slug', (c) => {
         <h2>What it is</h2>
         <p>${esc(t.description)}</p>
         ${t.slug === 'cursor' ? '<p><strong>Compare.</strong> See the <a href="/alternatives/cursor">best Cursor alternatives, sorted by how you code</a>.</p>' : ''}
+        ${altPageFor(t.slug) ? `<p><strong>Compare.</strong> See the <a href="/alternatives/${esc(t.slug)}">best ${esc(t.name)} alternatives, ranked</a>.</p>` : ''}
         ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
     </section>
     ${vsPairsFor(t.slug).length ? `<p class="muted">Compare: ${vsPairsFor(t.slug).map((p) => `<a href="${p.path}">${esc(p.a.name)} vs ${esc(p.b.name)}</a>`).join(' · ')}</p>` : ''}
@@ -2086,6 +2099,167 @@ app.get('/alternatives/cursor', (c) => {
         '@type': 'FAQPage',
         mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
       }, breadcrumbs([['Home', '/'], ['Coding', '/category/coding'], ['Cursor alternatives', '/alternatives/cursor']])],
+    },
+  }))
+})
+
+// "X alternatives" pages (SEO item 5 part 2, added 2026-11-19). Generalizes /alternatives/cursor:
+// for each tool in ALT_SLUGS, the alternatives are the other live tools.json tools in the same
+// category, in rank order (top ALT_MAX). Every fact comes from tools.json fields: rank, category,
+// tagline, best-for tags, free tier, starting price, pricing note, strength, watch-out, and the
+// official pricing link with its checked date. Ranking never reads featured or affiliate. A page is
+// live only while its tool is listed and has at least 3 same-category alternatives.
+// Bump SECTION_DATES['/alternatives'] when this copy changes.
+const ALT_SLUGS = ['chatgpt', 'claude', 'gemini', 'github-copilot', 'midjourney', 'perplexity', 'elevenlabs', 'runway', 'notion-ai', 'grammarly', 'otter', 'zapier']
+const ALT_MAX = 10
+
+function altPages() {
+  const all = tools()
+  return ALT_SLUGS.map(bySlug).filter(Boolean).map((t) => {
+    const rest = all.filter((x) => x.category === t.category && x.slug !== t.slug).sort((a, b) => a.rank - b.rank)
+    return { t, alts: rest.slice(0, ALT_MAX), total: rest.length, path: `/alternatives/${t.slug}` }
+  }).filter((p) => p.alts.length >= 3)
+}
+
+function altPageFor(slug) {
+  return altPages().find((p) => p.t.slug === slug)
+}
+
+function altFaq(p) {
+  const { t, alts, total } = p
+  const lab = CATEGORIES[t.category]?.label || t.category
+  const rn = (x) => `${x.name} (#${x.rank})`
+  const top = alts[0]
+  const faq = []
+  faq.push({ q: `What is the best alternative to ${t.name}?`, a: `On ${NAME}, ${t.name} is #${t.rank} overall, and the highest ranked other ${lab} tool is ${rn(top)}${(top.bestFor || [])[0] ? `, best for ${top.bestFor[0]}` : ''}. The next picks are ${listNames(alts.slice(1, 3).map(rn))}. The right pick depends on the job you need done.` })
+  const free = alts.filter((x) => x.freeTier === true)
+  faq.push({ q: `Is there a free alternative to ${t.name}?`, a: free.length ? `Yes. ${NAME} lists a free tier for ${listNames(free.slice(0, 4).map(rn))}. Free plans have limits, so check each official site.` : `None of the alternatives on this page lists a free tier in ${NAME}'s data. Check each official site for trials.` })
+  faq.push({ q: `How many ${t.name} alternatives does ${NAME} rank?`, a: `${NAME} ranks ${total + 1} ${lab} tools, so ${t.name} has ${total} ranked alternatives in its category. This page shows the top ${alts.length} by rank, and the full ${lab} category lists every one.` })
+  for (const v of vsPairsFor(t.slug)) {
+    const o = v.a.slug === t.slug ? v.b : v.a
+    faq.push({ q: `How does ${t.name} compare with ${o.name}?`, a: `${NAME} ranks ${t.name} #${t.rank} and ${o.name} #${o.rank} overall. The head to head page compares free plans, starting prices, strengths, and downsides: ${SITE}${v.path}` })
+  }
+  return faq
+}
+
+app.get('/alternatives', (c) => {
+  const pages = altPages()
+  const cursor = bySlug('cursor')
+  const PD = pageDate('/alternatives')
+  const title = `Best Alternatives to Popular AI Tools, Ranked | ${NAME}`
+  const description = `Ranked alternatives to ${listNames([...(cursor ? ['Cursor'] : []), ...pages.slice(0, 4).map((p) => p.t.name)])}, and more. Every list comes from the ${NAME} ranking, in rank order. Updated ${fmtDate(PD)}.`
+  const items = [...(cursor ? [{ name: 'Cursor', path: '/alternatives/cursor', note: 'sorted by how you code' }] : []), ...pages.map((p) => ({ name: p.t.name, path: p.path, note: `top pick: ${p.alts[0].name}` }))]
+  const body = `
+  <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <span aria-current="page">Alternatives</span></nav>
+  <section class="hero">
+    <div class="meta"><span class="tag">Alternatives</span></div>
+    <h1>Best Alternatives to Popular AI Tools</h1>
+    <p>Thinking of switching? Each page lists the other tools in the same category, in ${NAME} rank order, with free plans, starting prices, strengths, and downsides from the same data as the rest of the site. Ranks are not for sale.</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${items.length} pages · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
+  </section>
+  <section class="section">
+    <div class="panel prose"><ul class="clean">
+      ${items.map((x) => `<li><a href="${x.path}">${esc(x.name)} alternatives</a> <span class="muted">(${esc(x.note)})</span></li>`).join('\n      ')}
+    </ul>
+    <p>Want two tools side by side instead? See the <a href="/vs">head to head comparisons</a>.</p></div>
+  </section>`
+  return c.html(layout({
+    title, description, path: '/alternatives', body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'CollectionPage', name: 'AI tool alternatives', description, url: `${SITE}/alternatives`, dateModified: PD,
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+      }, {
+        '@type': 'ItemList',
+        name: 'Alternatives pages on BuildStack',
+        numberOfItems: items.length,
+        itemListElement: items.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: `${x.name} alternatives`, url: `${SITE}${x.path}` })),
+      }, breadcrumbs([['Home', '/'], ['Alternatives', '/alternatives']])],
+    },
+  }))
+})
+
+app.get('/alternatives/:slug', (c) => {
+  const p = altPageFor(c.req.param('slug'))
+  if (!p) return c.notFound()
+  const { t, alts, total, path } = p
+  const PD = pageDate(path)
+  const lab = CATEGORIES[t.category]?.label || t.category
+  const link = (x) => `<a href="/tool/${esc(x.slug)}">${esc(x.name)}</a>`
+  const free = (x) => typeof x.freeTier === 'boolean' ? (x.freeTier ? 'Yes' : 'None listed') : 'Not confirmed'
+  const faq = altFaq(p)
+  const top3 = alts.slice(0, 3)
+  const nFree = alts.filter((x) => x.freeTier === true).length
+  const title = `Best ${t.name} Alternatives in 2026, Ranked | ${NAME}`
+  const description = `Best ${t.name} alternatives: ${top3.map((x) => `${x.name} (#${x.rank})`).join(', ')} and more. ${alts.length} ${lab.toLowerCase()} tools from the ${NAME} ranking, with free plans and pricing. Updated ${fmtDate(PD)}.`
+  const vs = vsPairsFor(t.slug)
+  const body = `
+  <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/alternatives">Alternatives</a> › <span aria-current="page">${esc(t.name)} alternatives</span></nav>
+  <section class="hero">
+    <div class="meta"><a class="tag" href="/category/${esc(t.category)}">${esc(lab)}</a><span class="tag">Alternatives</span></div>
+    <h1>Best ${esc(t.name)} Alternatives in 2026, Ranked</h1>
+    <p><strong>Short answer:</strong> ${link(t)} is #${t.rank} overall and ${esc(ordinal(catRankOf(t)))} in ${esc(lab)} on ${NAME}. The highest ranked ${esc(lab)} alternatives are ${listNames(top3.map((x) => `${link(x)} (#${x.rank})`))}.${nFree ? ` ${nFree} of the ${alts.length} alternatives below list a free tier.` : ''} Pick by the job you need done, not by one overall winner.</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${alts.length} alternatives · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
+  </section>
+  <section class="section">
+    <h2>${esc(t.name)} alternatives at a glance</h2>
+    <div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Tool</th><th>Rank</th><th>In ${esc(lab)}</th><th>Best for</th><th>Free plan</th><th>Starts at</th></tr></thead>
+        <tbody><tr><td>${link(t)}</td><td>#${t.rank}</td><td>${esc(ordinal(catRankOf(t)))} (this tool)</td><td>${esc((t.bestFor || [])[0] || '')}</td><td>${free(t)}</td><td>${esc(t.priceFrom || 'See pricing')}</td></tr>${alts.map((x) => `<tr><td>${link(x)}</td><td>#${x.rank}</td><td>${esc(ordinal(catRankOf(x)))}</td><td>${esc((x.bestFor || [])[0] || '')}</td><td>${free(x)}</td><td>${esc(x.priceFrom || 'See pricing')}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:.88rem">Prices are short summaries from each tool's listing. Check the official site for current prices.</p>
+  </section>
+  <section class="section" id="picks">
+    <h2>The ${alts.length} alternatives, in rank order</h2>
+    ${alts.map((x) => `<div class="panel prose" style="margin-bottom:1rem">
+      <h3 style="margin-top:0;color:var(--text)">${link(x)} (#${x.rank} overall)</h3>
+      <p>${esc(x.tagline)}.</p>
+      ${x.strength ? `<p><strong>Strength:</strong> ${esc(x.strength)}</p>` : ''}
+      ${x.watchOut ? `<p><strong>Watch out:</strong> ${esc(x.watchOut)}</p>` : ''}
+      <p><strong>Pricing:</strong> ${esc(x.pricingNote || 'See official site')}${x.pricingUrl ? ` <small>(<a href="${esc(x.pricingUrl)}" rel="noopener noreferrer" target="_blank">official pricing</a>${x.priceChecked ? `, checked ${esc(fmtDate(x.priceChecked))}` : ''})</small>` : ''}</p>
+    </div>`).join('\n    ')}
+  </section>
+  <section class="section">
+    <div class="panel prose">
+      <h2 style="margin-top:0">How we chose</h2>
+      <p>This page lists the top ${alts.length} of the ${total} other ${esc(lab)} tools on ${NAME}, in the same editorial rank order used across the site. Every rank, price, and pick comes from each tool's listing. Featured listings and affiliate links do not affect rank. Read the full <a href="/methodology">methodology</a>, browse every <a href="/category/${esc(t.category)}">${esc(lab)} tool</a>, or see <a href="/alternatives">alternatives to other tools</a>.</p>
+      ${vs.length ? `<p>Head to head: ${vs.map((v) => `<a href="${v.path}">${esc(v.a.name)} vs ${esc(v.b.name)}</a>`).join(' · ')}</p>` : ''}
+    </div>
+  </section>
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="panel prose">
+      ${faq.map((f, i) => `<h3 style="color:var(--text);font-size:1.02rem;${i ? '' : 'margin-top:0'}">${esc(f.q)}</h3>
+      <p>${esc(f.a)}</p>`).join('')}
+    </div>
+  </section>`
+  return c.html(layout({
+    title, description, path, body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article',
+        headline: `Best ${t.name} Alternatives in 2026, Ranked`,
+        description,
+        url: `${SITE}${path}`,
+        dateModified: PD,
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        about: { '@type': 'SoftwareApplication', name: t.name, url: `${SITE}/tool/${t.slug}` },
+      }, {
+        '@type': 'ItemList',
+        name: `${t.name} alternatives ranked on BuildStack`,
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: alts.length,
+        itemListElement: alts.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: x.name, url: `${SITE}/tool/${x.slug}` })),
+      }, {
+        '@type': 'FAQPage',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }, breadcrumbs([['Home', '/'], ['Alternatives', '/alternatives'], [`${t.name} alternatives`, path]])],
     },
   }))
 })
