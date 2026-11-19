@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "test": "node --test test/search.test.js test/deepfake-guide.test.js test/fable-review.test.js test/about.test.js test/deepfake-tells.test.js test/deepfake-order.test.js test/pricing-links.test.js test/editor-byline.test.js test/rank-consistency.test.js test/price-tag.test.js test/trim.test.js test/phase4-type.test.js test/phase5.test.js test/phase6.test.js test/tool-page-v2.test.js test/rank-reason.test.js test/faq-distinct.test.js test/vs.test.js test/alternatives.test.js"
+    "test": "node --test test/search.test.js test/deepfake-guide.test.js test/fable-review.test.js test/about.test.js test/deepfake-tells.test.js test/deepfake-order.test.js test/pricing-links.test.js test/editor-byline.test.js test/rank-consistency.test.js test/price-tag.test.js test/trim.test.js test/phase4-type.test.js test/phase5.test.js test/phase6.test.js test/tool-page-v2.test.js test/rank-reason.test.js test/faq-distinct.test.js test/vs.test.js test/alternatives.test.js test/nano-banana.test.js"
   },
   "dependencies": {
     "hono": "^4.7.0"
