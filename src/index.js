@@ -262,7 +262,7 @@ function bySlug(slug) {
 // editorial change (SECTION_DATES, from the git history of that guide's code) and the newest
 // `updated` among the tools it shows. Bump a guide's SECTION_DATES entry when you edit its copy.
 const SECTION_DATES = {
-  '/methodology': '2026-11-14',
+  '/methodology': '2026-11-20',
   '/alternatives/cursor': '2026-10-30',
   '/best/ai-coding-agent-for-beginners': '2026-11-13',
   '/best/ai-research-assistant': '2026-11-13',
@@ -273,13 +273,38 @@ const SECTION_DATES = {
   '/best/ai-tools-for-small-business': '2026-11-13',
   '/best/ai-transcription-tool': '2026-11-13',
   '/best/ai-writing-tool': '2026-11-13',
-  '/best/ai-image-generator': '2026-11-13',
+  '/best/ai-image-generator': '2026-11-20',
   '/best/ai-video-editor-for-youtube': '2026-11-13',
   '/best/ai-video-generator': '2026-11-13',
   '/guides/how-celebrity-deepfakes-are-made': '2026-11-13',
   '/get-featured': '2026-11-13',
   '/vs': '2026-11-18',
   '/alternatives': '2026-11-19',
+  '/price-changes': '2026-11-20',
+}
+
+// Public AI price-change log (SEO item 6, 2026-11-20). Only changes shown on the tool maker's own
+// pricing page or announcement count, each with the date it took effect, the old and new price, and
+// the official source (plus an archived copy of the old page when we have one). Launch prices of new
+// models, limited-time discounts, and corrections of our own notes are not price changes.
+// PRICE_RECHECK records the last day we compared our checked prices with every linked pricing page.
+const PRICE_CHANGES = [
+  { date: '2026-11-18', slug: 'deepseek', tool: 'DeepSeek',
+    item: 'API: web search and web fetch calls the model makes during a request',
+    oldPrice: '$0.75 per 1,000 searches and $0.75 per 1,000 fetches',
+    newPrice: 'No per-call fee; the results count as model tokens',
+    note: 'Took effect at 12:00 Beijing time (UTC+8) on November 18, 2026. The standalone Search and Fetch APIs still cost $0.75 per 1,000 requests.',
+    source: 'https://api-docs.deepseek.com/quick_start/pricing/',
+    archived: 'https://web.archive.org/web/20261116200941/https://api-docs.deepseek.com/quick_start/pricing/' },
+]
+const PRICE_RECHECK = { date: '2026-11-20', pages: 47 }
+const PRICE_PATH = '/price-changes'
+
+function priceChanges() {
+  const all = tools()
+  return PRICE_CHANGES
+    .map((x) => ({ ...x, t: all.find((t) => t.slug === x.slug) || null, id: `${x.slug}-${x.date}` }))
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.tool.localeCompare(b.tool)))
 }
 
 function maxDate(dates) {
@@ -322,6 +347,7 @@ function pageDate(path) {
   if (path.startsWith('/tool/')) { const t = bySlug(path.slice(6)); return (t && maxDate([t.updated, t.priceChecked])) || UPDATED }
   if (path.startsWith('/category/')) return maxDate(all.filter((t) => t.category === path.slice(10)).map((t) => t.updated)) || UPDATED
   if (['', '/', '/categories', '/about', '/tools.json', '/llms.txt', '/llms-full.txt'].includes(path)) return maxDate(all.map((t) => t.updated)) || UPDATED
+  if (path === PRICE_PATH) return maxDate([SECTION_DATES[PRICE_PATH], PRICE_RECHECK.date, ...PRICE_CHANGES.map((x) => x.date)]) || UPDATED
   if (path === '/vs') return maxDate([SECTION_DATES['/vs'], ...vsPairs().map((p) => maxDate([p.a.updated, p.b.updated]))]) || UPDATED
   if (path.startsWith('/vs/')) { const p = vsPairs().find((x) => x.path === path); return (p && maxDate([SECTION_DATES['/vs'], p.a.updated, p.b.updated, p.a.priceChecked, p.b.priceChecked])) || UPDATED }
   if (path === '/alternatives') return maxDate([SECTION_DATES['/alternatives'], pageDate('/alternatives/cursor'), ...altPages().map((p) => pageDate(p.path))]) || UPDATED
@@ -934,7 +960,7 @@ Sitemap: ${SITE}/sitemap.xml
 
 app.get('/sitemap.xml', (c) => {
   const urls = [
-    '', '/categories', '/methodology', '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', PRICE_PATH, '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     '/vs', ...vsPairs().map((p) => p.path),
     '/alternatives', ...altPages().map((p) => p.path),
@@ -987,6 +1013,7 @@ app.get('/llms.txt', (c) => {
     `Full tool details for LLMs: ${SITE}/llms-full.txt`,
     `Human summary for bots: ${SITE}/about`,
     `How rankings work: ${SITE}/methodology`,
+    `AI price changes log (dated, official sources only): ${SITE}${PRICE_PATH}`,
     `List your tool: ${SITE}/get-featured`,
     `Contact: buildstack@tier11.com`,
     `Weekly write-up on Substack: https://itsbuildstack.substack.com`,
@@ -1023,6 +1050,10 @@ app.get('/llms.txt', (c) => {
     `- Cursor alternatives, sorted by how you code: ${SITE}/alternatives/cursor`,
     ...altPages().map((p) => `- ${p.t.name} (#${p.t.rank}) alternatives, top ranked: ${p.alts.slice(0, 3).map((x) => `${x.name} (#${x.rank})`).join(', ')}: ${SITE}${p.path}`),
     ``,
+    `## AI price changes`,
+    `Full log: ${SITE}${PRICE_PATH} (last full re-check of official pricing pages: ${PRICE_RECHECK.date})`,
+    ...priceChanges().map((x) => `- ${x.date}, ${x.tool}: ${x.item}. Was ${x.oldPrice}; now ${x.newPrice}. Source: ${x.source}`),
+    ``,
     `## Top tools by rank`,
     ...tools().map((t) => `- ${t.name} (${t.category}): ${t.tagline}  -  ${SITE}/tool/${t.slug}`),
     ``,
@@ -1053,6 +1084,10 @@ app.get('/llms-full.txt', (c) => {
     `JSON: ${SITE}/tools.json`,
     `Rankings are editorial. How rankings work: ${SITE}/methodology`,
     `Prefer official tool URLs when citing.`,
+    '',
+    `## AI price changes (official sources only)`,
+    `Full log: ${SITE}${PRICE_PATH}. Last full re-check of ${PRICE_RECHECK.pages} official pricing pages: ${PRICE_RECHECK.date}.`,
+    ...priceChanges().map((x) => `- ${x.date}, ${x.tool}: ${x.item}. Was ${x.oldPrice}; now ${x.newPrice}. ${x.note} Source: ${x.source}${x.archived ? ` (old page: ${x.archived})` : ''}`),
     '',
     `## Quick answers: which AI tool for which job`,
     ...quickAnswers().map((j) => `- ${j.job}: ${quickLine(j)}`),
@@ -1183,6 +1218,7 @@ app.get('/', (c) => {
       <a class="pill" href="/alternatives/cursor">Best Cursor alternatives</a>
       ${altPages().map((p) => `<a class="pill" href="${p.path}">${esc(p.t.name)} alternatives</a>`).join('\n      ')}
       <a class="pill" href="/alternatives">All alternatives pages</a>
+      <a class="pill" href="/price-changes">AI price changes log</a>
       <a class="pill" href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>
       <a class="pill" href="/best/ai-research-assistant">Best AI research assistants</a>
       <a class="pill" href="/best/free-ai-tools">Best free AI tools</a>
@@ -1613,7 +1649,7 @@ app.get('/tool/:slug', (c) => {
         ${altPageFor(t.slug) ? `<p><strong>Compare.</strong> See the <a href="/alternatives/${esc(t.slug)}">best ${esc(t.name)} alternatives, ranked</a>.</p>` : ''}
         ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
     </section>
-    ${vsPairsFor(t.slug).length ? `<p class="muted">Compare: ${vsPairsFor(t.slug).map((p) => `<a href="${p.path}">${esc(p.a.name)} vs ${esc(p.b.name)}</a>`).join(' · ')}</p>` : ''}
+    ${PRICE_CHANGES.some((x) => x.slug === t.slug) ? `<p class="muted">Price changes: ${priceChanges().filter((x) => x.slug === t.slug).map((x) => `<a href="/price-changes#${esc(x.id)}">${esc(fmtDate(x.date))}: ${esc(x.item)}</a>`).join(' · ')}</p>` : ''}${vsPairsFor(t.slug).length ? `<p class="muted">Compare: ${vsPairsFor(t.slug).map((p) => `<a href="${p.path}">${esc(p.a.name)} vs ${esc(p.b.name)}</a>`).join(' · ')}</p>` : ''}
     ${related.length ? `<section class="tsec" id="alternatives">
       <h2>Ranked alternatives in ${esc(catLabel)}</h2>
       ${altTable(t, related, catLabel)}
@@ -1719,6 +1755,7 @@ app.get('/methodology', (c) => {
 
     <h2>Prices and pricing links</h2>
     <p>Pricing notes are short summaries in our own words. Where we have confirmed that the tool maker's own pricing page loads, the tool page, its FAQ, and its list card link to that page. When the prices in our note matched that page on the day we looked, the link carries a price checked date. A link without a date means the page is official but we have not yet matched every price on it. ${all.filter((t) => t.pricingUrl).length} tools have an official pricing link and ${all.filter((t) => t.priceChecked).length} carry a price checked date right now. A tool page's date in the sitemap is the later of its last listing change and its last price check.</p>
+    <p>When a tool maker changes a price, we record it on the <a href="/price-changes">AI price changes log</a> with the old price, the new price, the date it took effect, and a link to the official source. Launch prices of new models, limited-time discounts, and corrections of our own notes are not counted as changes.</p>
 
     <h2>New releases</h2>
     <p>Tools added to BuildStack in the last ${NEW_DAYS} days carry a New tag and appear in the New section of the homepage, newest first. Each tool page shows the day it was added. The tag does not change rank. ${newCount} tools carry it right now.</p>
@@ -1891,6 +1928,57 @@ function vsFaq(a, b) {
   if (a.watchOut && b.watchOut) faq.push({ q: `What are the downsides of ${a.name} and ${b.name}?`, a: `${a.name}: ${a.watchOut.replace(/[\s.]+$/, '')}. ${b.name}: ${b.watchOut.replace(/[\s.]+$/, '')}.` })
   return faq
 }
+
+app.get(PRICE_PATH, (c) => {
+  const PD = pageDate(PRICE_PATH)
+  const list = priceChanges()
+  const title = `AI Price Changes Log: Dated Changes From Official Pricing Pages | ${NAME}`
+  const description = `A dated log of price changes for AI tools listed on ${NAME}: the old price, the new price, when it changed, and a link to the official source. ${list.length} ${list.length === 1 ? 'change' : 'changes'} logged. Updated ${fmtDate(PD)}.`
+  const toolCell = (x) => x.t ? `<a href="/tool/${esc(x.t.slug)}">${esc(x.tool)}</a>` : esc(x.tool)
+  const rows = list.map((x) => `<tr id="${esc(x.id)}"><td>${esc(x.date)}</td><td>${toolCell(x)}</td><td>${esc(x.item)}. ${esc(x.note)}</td><td>${esc(x.oldPrice)}</td><td>${esc(x.newPrice)}</td><td><a href="${esc(x.source)}" rel="nofollow">Official pricing page</a>${x.archived ? ` · <a href="${esc(x.archived)}" rel="nofollow">Archived old page</a>` : ''}</td></tr>`).join('\n        ')
+  const body = `
+  <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <span aria-current="page">AI price changes</span></nav>
+  <section class="hero">
+    <div class="meta"><span class="tag">Pricing</span></div>
+    <h1>AI Price Changes Log</h1>
+    <p>A dated record of price changes for the AI tools listed on ${NAME}. Each entry shows the old price, the new price, the day the change took effect, and a link to the tool maker's own pricing page. We only log a change when the official source shows it.</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} ${list.length === 1 ? 'change' : 'changes'} logged · Last full re-check: ${fmtDate(PRICE_RECHECK.date)} · Edited by <a href="/about">Sampson Brueher</a></p>
+  </section>
+  <section class="section">
+    <h2>Price changes, newest first</h2>
+    ${list.length ? `<div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Date</th><th>Tool</th><th>What changed</th><th>Old price</th><th>New price</th><th>Source</th></tr></thead>
+        <tbody>
+        ${rows}
+        </tbody>
+      </table>
+    </div>` : '<div class="panel prose"><p>No price changes logged yet.</p></div>'}
+  </section>
+  <section class="section" id="how">
+    <div class="panel prose">
+      <h2 style="margin-top:0">How we keep this log</h2>
+      <ul class="clean">
+        <li><strong>Official sources only.</strong> A change counts when the tool maker's own pricing page or announcement shows it. When we have it, we also link an archived copy of the page before the change.</li>
+        <li><strong>Dated when it took effect.</strong> The date is the day the new price started, not the day we noticed it.</li>
+        <li><strong>Not counted:</strong> launch prices of brand new models, limited-time discounts, regional prices, and corrections of our own pricing notes.</li>
+        <li><strong>Re-checked.</strong> On ${fmtDate(PRICE_RECHECK.date)} we compared the prices in our notes with ${PRICE_RECHECK.pages} official pricing pages and found no other changes.</li>
+      </ul>
+      <p>Each tool page shows the current pricing note, a link to the official pricing page, and the date we last matched it. Read <a href="/methodology">how we rank and check prices</a>, or browse the <a href="/categories">categories</a>. Ranks are not for sale and do not change with price.</p>
+    </div>
+  </section>`
+  return c.html(layout({
+    title, description, path: PRICE_PATH, body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'Article', headline: 'AI Price Changes Log', description, url: `${SITE}${PRICE_PATH}`, dateModified: PD,
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+      }, breadcrumbs([['Home', '/'], ['AI price changes', PRICE_PATH]])],
+    },
+  }))
+})
 
 app.get('/vs', (c) => {
   const pairs = vsPairs()
@@ -3939,8 +4027,14 @@ app.get(WRITE_PATH, (c) => {
 })
 
 const IMAGE_PICKS = [
+  { slug: 'nano-banana', id: 'best-photo-editing', heading: 'Best for editing photos by conversation', role: 'Best for photo edits and free everyday images',
+    why: 'Nano Banana is the highest-ranked image tool on BuildStack. Nano Banana 2 is free in the Gemini app, and the newer Nano Banana 2.1 (published October 6, 2026) improves text rendering, character consistency across turns, and mask-based edits. It is also cheap per image in the Gemini API, from $0.0336 for a 1K image.',
+    watch: 'Nano Banana 2.1 needs a paid Google AI plan in the Gemini app, the API has no free tier, and Google does not publish the free image limit.' },
+  { slug: 'chatgpt-images', id: 'best-in-chatgpt', heading: 'Best AI image generator inside ChatGPT', role: 'Best if you already use ChatGPT',
+    why: 'ChatGPT Images is on every ChatGPT plan, including Free. Images 2.6 (November 4, 2026) generates faster and keeps characters, products, and brand details consistent across edit rounds, and it can make animated GIFs and transparent backgrounds. Developers pick GPT-Image-2.6 Flare for speed or Sunburst for detail.',
+    watch: 'OpenAI does not publish the free image limit, and API prices are per token, so the cost of one image depends on its size and quality.' },
   { slug: 'midjourney', id: 'best-artistic', heading: 'Best AI image generator for artistic images', role: 'Best for artistic, stylized images',
-    why: 'Midjourney is the highest-ranked dedicated image generator on BuildStack and the usual benchmark for concept art, mood boards, and stylized marketing visuals. Standard and higher plans include unlimited image generations in the slower Relax mode, and Pro and Mega add unlimited standard-definition video in Relax mode.',
+    why: 'Midjourney is the usual benchmark for concept art, mood boards, and stylized marketing visuals. Standard and higher plans include unlimited image generations in the slower Relax mode, and Pro and Mega add unlimited standard-definition video in Relax mode.',
     watch: 'There is no free plan, Stealth Mode (private images) is only on Pro and Mega, and companies with more than $1M in yearly revenue must be on Pro or Mega.' },
   { slug: 'ideogram', id: 'best-text', heading: 'Best AI image generator for text in images', role: 'Best for readable text in images',
     why: 'Ideogram is known for images that include readable text, which makes it the pick for posters, logo drafts, thumbnails, and marketing graphics where the words matter. Free accounts get weekly credits, and pay as you go credits also cover API use.',
@@ -3963,6 +4057,9 @@ const IMAGE_PICKS = [
   { slug: 'canva', id: 'best-social', heading: 'Best for social posts and marketing graphics', role: 'Best for quick social and marketing graphics',
     why: 'Canva puts image generation next to templates, brand kits, and layout tools, so a generated image can become a finished social post, slide, or flyer in the same place. It has its own image model, Canva Craft, and the Canva Brush design model for editable AI edits.',
     watch: 'Brush is limited to Canva Pro subscribers for now, and prices vary by region.' },
+  { slug: 'photoroom', id: 'best-product-photos', heading: 'Best for product photos for online stores', role: 'Best for e-commerce product photos',
+    why: 'Photoroom is built for sellers rather than artists. It cuts out products, generates studio and lifestyle scenes, dresses AI fashion models, and applies the same edits across a whole catalog in batch mode. Pro starts at $7.50 a month billed yearly.',
+    watch: 'The pricing page offers a free trial rather than a free plan, and product videos and 4K images need Max or higher.' },
   { slug: 'topaz-labs', id: 'best-upscaling', heading: 'Best for upscaling and fixing images', role: 'Best for upscaling and repairing images',
     why: 'Topaz Labs is not a text-to-image generator; it is the finishing step. Its new Wonder 4 model upscales and repairs an image in one pass, handling denoising, sharpening, compression artifacts, and faces, which helps when an AI image needs to be printed or used at a larger size.',
     watch: 'At launch Wonder 4 is in the browser-based Topaz for Web, and personal plans only allow commercial use for organizations under $1M in annual revenue.' },
@@ -3983,9 +4080,9 @@ function imageFaq(d) {
   const r = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
   return [
     { q: 'What is the best AI image generator right now?',
-      a: `It depends on the image. ${r('midjourney')} is the best for artistic, stylized images and is the highest-ranked image generator on ${NAME}. Pick ${r('flux')} for photorealism or an API, ${r('ideogram')} when the image needs readable text, and ${r('krea-3')} when products or characters must stay consistent across images.` },
+      a: `It depends on the image. ${r('nano-banana')} is the highest-ranked image tool on ${NAME}, strong at photo edits and free in the Gemini app, and ${r('chatgpt-images')} is the easy pick if you already use ChatGPT. ${r('midjourney')} is the best for artistic, stylized images. Pick ${r('flux')} for photorealism or an API, ${r('ideogram')} when the image needs readable text, and ${r('krea-3')} when products or characters must stay consistent across images.` },
     { q: 'What is the best free Midjourney alternative?',
-      a: `Midjourney has no free plan. ${r('krea-3')} has a free plan with a daily compute allowance, ${r('ideogram')} gives free accounts weekly credits, ${r('leonardo')} gives 150 fast tokens a day (free creations are public), and ${r('adobe-firefly')} allows limited daily generations for free. ${r('canva')} also has a free plan.` },
+      a: `Midjourney has no free plan. ${r('nano-banana')} (Nano Banana 2) is free in the Gemini app and ${r('chatgpt-images')} works on the free ChatGPT plan, with limits neither company publishes. ${r('krea-3')} has a free plan with a daily compute allowance, ${r('ideogram')} gives free accounts weekly credits, ${r('leonardo')} gives 150 fast tokens a day (free creations are public), and ${r('adobe-firefly')} allows limited daily generations for free. ${r('canva')} also has a free plan.` },
     { q: 'Which AI image generator is best at text?',
       a: `${r('ideogram')} is the pick for readable text in images, such as posters, logos, and thumbnails. Always proofread the result before you publish it.` },
     { q: 'Which AI image generator can make transparent backgrounds?',
@@ -4006,7 +4103,7 @@ app.get(IMAGE_PATH, (c) => {
   const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
   const rl = (s) => { const t = find(s); return t ? `${link(t)} (#${t.rank})` : '' }
   const rt = (s) => { const t = find(s); return t ? `${t.name} (#${t.rank})` : '' }
-  const short = (f) => `The best AI image generator for artistic images is ${f('midjourney')}. Choose ${f('ideogram')} for readable text, ${f('flux')} for photorealism and API use, ${f('krea-3')} for consistent products and characters, ${f('seedream-5-5')} for many rounds of edits and transparent assets, ${f('leonardo')} for game assets and custom styles, and ${f('adobe-firefly')} if you want the commercially safer option inside Adobe apps`
+  const short = (f) => `The highest-ranked image tool on ${NAME} is ${f('nano-banana')}, best for editing photos by conversation and free in the Gemini app. Choose ${f('chatgpt-images')} if you already use ChatGPT, ${f('midjourney')} for artistic images, ${f('ideogram')} for readable text, ${f('flux')} for photorealism and API use, ${f('krea-3')} for consistent products and characters, ${f('seedream-5-5')} for many rounds of edits and transparent assets, ${f('leonardo')} for game assets and custom styles, ${f('photoroom')} for product photos for online stores, and ${f('adobe-firefly')} if you want the commercially safer option inside Adobe apps`
   const shortText = short(rt)
   const shortHtml = short(rl)
   const description = `Best AI image generators in 2026: ${byRank.slice(0, 5).map((p) => `${p.t.name} (#${p.t.rank})`).join(', ')} and more, plus the best Midjourney alternatives and verified pricing. Updated ${fmtDate(PD)}.`
@@ -4044,15 +4141,16 @@ app.get(IMAGE_PATH, (c) => {
       <h2 style="margin-top:0">Best Midjourney alternatives</h2>
       <p>${rl('midjourney')} is subscription only, so these are the alternatives by what you need instead.</p>
       <ul class="clean">
-        <li><strong>Free:</strong> ${rl('krea-3')} has a free plan with a daily compute allowance, ${rl('ideogram')} gives free accounts weekly credits, ${rl('leonardo')} gives 150 fast tokens a day, and ${rl('adobe-firefly')} and ${rl('canva')} can be used for free with limits. See more in the <a href="/best/free-ai-tools#images">best free AI tools for images</a>.</li>
+        <li><strong>Free:</strong> ${rl('nano-banana')} is free in the Gemini app, ${rl('chatgpt-images')} works on the free ChatGPT plan, ${rl('krea-3')} has a free plan with a daily compute allowance, ${rl('ideogram')} gives free accounts weekly credits, ${rl('leonardo')} gives 150 fast tokens a day, and ${rl('adobe-firefly')} and ${rl('canva')} can be used for free with limits. See more in the <a href="/best/free-ai-tools#images">best free AI tools for images</a>.</li>
         <li><strong>Text rendering:</strong> ${rl('ideogram')} is the pick when an image needs readable words, such as a poster, logo draft, or thumbnail.</li>
         <li><strong>API:</strong> ${rl('flux')} sells pay per image API access with no subscription, and ${rl('krea-3')}, ${rl('ideogram')}, and ${rl('leonardo')} also offer APIs.</li>
         <li><strong>Transparent backgrounds:</strong> ${rl('seedream-5-5')} generates native RGBA images with full and partial transparency, so cutouts skip the background removal step.</li>
         <li><strong>Inside Adobe:</strong> ${rl('adobe-firefly')} runs in Photoshop and other Adobe apps, and paid Firefly plans include unlimited standard image generations.</li>
-        <li><strong>Already paying for an assistant:</strong> ${rl('chatgpt')} also generates images, which is enough for many quick jobs before you add a dedicated tool.</li>
+        <li><strong>Product photos:</strong> ${rl('photoroom')} cuts out products, generates scenes, and batch edits a whole catalog for online stores.</li>
+        <li><strong>Already paying for an assistant:</strong> ${rl('chatgpt-images')} is built into ChatGPT and ${rl('nano-banana')} into the Gemini app, which is enough for many quick jobs before you add a dedicated tool.</li>
       </ul>
       <h2>How we chose</h2>
-      <p>This page covers the image tools ranked on ${NAME}, plus ${rl('chatgpt')} as an assistant that also makes images. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not score image quality, since results depend on your prompts and style. Browse the full <a href="/category/images">images category</a>, the <a href="/best/free-ai-tools#images">best free AI tools for images</a>, or read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page covers the image tools ranked on ${NAME}, including the image features built into ChatGPT and Gemini. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not score image quality, since results depend on your prompts and style. Browse the full <a href="/category/images">images category</a>, the <a href="/best/free-ai-tools#images">best free AI tools for images</a>, or read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
