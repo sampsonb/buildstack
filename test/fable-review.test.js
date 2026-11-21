@@ -35,20 +35,20 @@ test('nav and footer: no Get featured, one footer row with List your tool', asyn
     assert.equal((foot.match(/List your tool/g) || []).length, 1, path)
     assert.match(foot, /href="https:\/\/itsbuildstack\.substack\.com"/)
     assert.match(foot, /href="\/about#chatbots">For chatbots</)
-    assert.ok((foot.match(/<a /g) || []).length <= 10, path)
+    assert.ok((foot.match(/<a /g) || []).length <= 11, path)
     assert.equal(foot.includes('/best/'), false, path)
     assert.equal(bodyOf(html).includes('Get featured'), false, path)
     assert.equal(bodyOf(html).includes('For chatbots</a>\n'), false, path)
   }
 })
 
-test('get-featured page is neutral: no Stripe, no test-mode wording, ranks not for sale', async () => {
-  const { status, html } = await get('/get-featured')
+test('submit page is neutral: no Stripe, no test-mode wording, rank and search position never sold', async () => {
+  const { status, html } = await get('/submit')
   assert.equal(status, 200)
   const body = bodyOf(html)
   assert.equal(/stripe/i.test(body), false)
   assert.equal(/test mode|live charges|Sampson approves/i.test(body), false)
-  assert.match(body, /Paid placements are not offered yet, and ranks are never for sale\./)
+  assert.match(body, /There are no listing fees and no paid fast-track, and rank and search position are never sold\./)
   assert.match(body, /mailto:buildstack@tier11\.com/)
 })
 
@@ -131,7 +131,7 @@ test('homepage copy: headline, live count, placeholder, task pills to /best, 1-2
 })
 
 test('trust cleanup across pages: no real AI tools, no unshipped promises, no ISO dates in visible copy, no em dash', async () => {
-  const paths = ['/', '/?q=blog%20post', '/tool/claude', '/category/writing', '/categories', GUIDE, '/about', '/get-featured', '/methodology', '/best/ai-writing-tool', '/best/free-ai-tools', '/alternatives/cursor']
+  const paths = ['/', '/?q=blog%20post', '/tool/claude', '/category/writing', '/categories', GUIDE, '/about', '/submit', '/money', '/rank-changelog', '/methodology', '/best/ai-writing-tool', '/best/free-ai-tools', '/alternatives/cursor']
   for (const path of paths) {
     const { status, html } = await get(path)
     assert.equal(status, 200, path)

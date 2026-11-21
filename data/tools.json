@@ -5,6 +5,7 @@
     "url": "https://cursor.com",
     "category": "coding",
     "rank": 1,
+    "rankReason": "The most complete AI code editor: codebase-aware chat, tab completion, and agents for multi-file edits in one app.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -32,6 +33,7 @@
     "url": "https://claude.ai",
     "category": "writing",
     "rank": 2,
+    "rankReason": "Our pick for long documents, careful writing, and coding help, with a free plan to start.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-20",
@@ -82,6 +84,7 @@
     "url": "https://chatgpt.com",
     "category": "writing",
     "rank": 3,
+    "rankReason": "The broadest general assistant: everyday questions, writing, documents, images, and coding, free to start.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-20",
@@ -98,7 +101,8 @@
     "watchOut": "Paid plan prices are not listed here; confirm current Go, Plus, Pro, Business, and Enterprise prices on the official pricing page.",
     "freeTier": true,
     "priceFrom": "See pricing",
-    "pricingUrl": "https://chatgpt.com/pricing/"
+    "pricingUrl": "https://chatgpt.com/pricing/",
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "gemini",
@@ -106,6 +110,7 @@
     "url": "https://gemini.google.com",
     "category": "research",
     "rank": 4,
+    "rankReason": "The natural fit if you live in Google Workspace, with multimodal research and a free plan.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-13",
@@ -131,6 +136,7 @@
     "url": "https://github.com/features/copilot",
     "category": "coding",
     "rank": 5,
+    "rankReason": "The easiest coding assistant to roll out across a team: many IDEs, pull request help, and a free plan.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -158,6 +164,7 @@
     "url": "https://gemini.google/overview/image-generation/",
     "category": "images",
     "rank": 6,
+    "rankReason": "Our top image tool for editing and restyling photos, with accurate text in images and consistent characters.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-19",
@@ -183,6 +190,7 @@
     "url": "https://openai.com/index/introducing-images-2-6/",
     "category": "images",
     "rank": 7,
+    "rankReason": "Image creation and repeated edits inside a ChatGPT chat, on every plan including Free.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-19",
@@ -208,6 +216,7 @@
     "url": "https://www.midjourney.com",
     "category": "images",
     "rank": 8,
+    "rankReason": "Best for stylized concept art and creative exploration, though there is no free plan.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-04",
@@ -223,7 +232,9 @@
     "strength": "Artistic AI image generation well suited to concept art, stylized marketing visuals, and creative exploration.",
     "watchOut": "Subscription only, with no free plan; companies with more than $1M in yearly revenue need Pro or Mega.",
     "freeTier": false,
-    "priceFrom": "from $10/mo"
+    "priceFrom": "from $10/mo",
+    "pricingUrl": "https://docs.midjourney.com/hc/en-us/articles/27870484040333-Comparing-Midjourney-Plans",
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "perplexity",
@@ -231,6 +242,7 @@
     "url": "https://www.perplexity.ai",
     "category": "research",
     "rank": 9,
+    "rankReason": "Our pick for web research with citations, with a free plan.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-08",
@@ -254,6 +266,7 @@
     "url": "https://elevenlabs.io",
     "category": "voice",
     "rank": 10,
+    "rankReason": "The most realistic voiceovers and multilingual dubbing we list, with a free plan that has no commercial license.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-12",
@@ -279,6 +292,7 @@
     "url": "https://runwayml.com",
     "category": "video",
     "rank": 11,
+    "rankReason": "A strong all-round video generator for text-to-video, image-to-video, and creative edits.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-06",
@@ -304,9 +318,10 @@
     "url": "https://www.anthropic.com/claude-code",
     "category": "coding",
     "rank": 12,
+    "rankReason": "A terminal coding agent for repo-wide refactors, included with Claude Pro and above.",
     "featured": false,
     "affiliate": false,
-    "updated": "2026-10-15",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "Anthropic's agentic coding in the terminal",
     "description": "Claude Code is Anthropic's terminal-native coding agent for reading repos, making edits, and running tasks with Claude models.",
@@ -315,12 +330,13 @@
       "repo-wide refactors",
       "CLI workflows"
     ],
-    "pricingNote": "Uses Claude subscription or API; see Anthropic docs",
+    "pricingNote": "Included with Claude Pro ($20 a month, or $17 billed annually), Max ($100 a month), and Ultra ($200 a month); not included in the Free plan",
     "strength": "Anthropic's agentic coding in the terminal, using your Claude subscription or API.",
     "watchOut": "There is no standalone price in this listing; you need a Claude subscription or an Anthropic API key.",
     "freeTier": false,
-    "priceFrom": "See pricing",
-    "pricingUrl": "https://claude.com/pricing"
+    "priceFrom": "from $20/mo",
+    "pricingUrl": "https://claude.com/pricing",
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "openai-codex",
@@ -328,9 +344,10 @@
     "url": "https://openai.com/codex/",
     "category": "coding",
     "rank": 13,
+    "rankReason": "A coding agent included in ChatGPT plans, useful if you already pay for ChatGPT.",
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-09",
+    "updated": "2026-11-21",
     "added": "2026-10-23",
     "tagline": "OpenAI's open-source coding agent for your terminal",
     "description": "OpenAI Codex is OpenAI's coding agent. The open-source Codex CLI reads your repo, edits files, and runs commands inside a sandbox with permission controls, and you can sign in with ChatGPT or use an API key. Version 0.167.0 (November 6, 2026) added an agent command center (codex agents) that marks unread results, switching between connected backends without losing your draft, local image previews while you compose, Google Cloud Vertex AI setup during sign-in, and expandable patch details inside approval prompts. GPT-6.1 Sol became its default model in version 0.161.0 on October 7.",
@@ -339,12 +356,13 @@
       "managing several agent sessions from one command center",
       "teams already on ChatGPT plans"
     ],
-    "pricingNote": "Sign in with a ChatGPT plan or use an OpenAI API key; see openai.com/codex for plan details",
+    "pricingNote": "Included in ChatGPT Free, Go, Plus, Pro (plans at $100, $200, or $500 a month), Business, Edu, and Enterprise plans, and shares usage limits with ChatGPT Work; API-key use is billed at API prices",
     "strength": "OpenAI's open-source coding agent that runs in your terminal.",
     "watchOut": "You sign in with a ChatGPT plan or an OpenAI API key; plan details are on the official Codex page.",
     "freeTier": false,
-    "priceFrom": "See pricing",
-    "pricingUrl": "https://learn.chatgpt.com/docs/pricing"
+    "priceFrom": "Included in ChatGPT",
+    "pricingUrl": "https://learn.chatgpt.com/docs/pricing",
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "google-antigravity",
@@ -352,6 +370,7 @@
     "url": "https://antigravity.google/",
     "category": "coding",
     "rank": 14,
+    "rankReason": "A free agent-first coding environment across app, CLI, and IDE extensions, with rate limits on the free plan.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -370,7 +389,8 @@
     "priceFrom": "Free",
     "pricingUrl": "https://antigravity.google/pricing",
     "freePlan": true,
-    "byoModel": false
+    "byoModel": false,
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "grok",
@@ -378,6 +398,7 @@
     "url": "https://x.ai/grok",
     "category": "writing",
     "rank": 15,
+    "rankReason": "Useful for real-time social context and general chat, with a free way to try it.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-03",
@@ -416,7 +437,8 @@
     "pricingNote": "Free with usage limits; Microsoft 365 Personal is $9.99 a month, Family is $12.99, Premium (the plan that replaced Copilot Pro) is $19.99, and Pro is $99.99; Copilot Pro is no longer sold",
     "strength": "Built into Windows and the Microsoft 365 apps, with a free version and a Premium plan that adds extensive usage and agent features.",
     "watchOut": "Copilot Pro is gone, the free version has usage limits, and the AI in Microsoft 365 apps is only for the subscription owner, not everyone on a Family plan.",
-    "rank": 16
+    "rank": 16,
+    "rankReason": "A free everyday assistant that helps most if you already use Word, Outlook, and other Microsoft 365 apps."
   },
   {
     "featured": false,
@@ -441,7 +463,8 @@
     "pricingNote": "Free plan with limited messages, web searches, and coding sessions; Pro is $14.99 a month ($5.99 for verified students); Team is $24.99 per user a month; Enterprise is custom",
     "strength": "Mistral's assistant for chat, multi-step work, and coding, with a free plan, 100+ connectors, and Pro at $14.99 a month.",
     "watchOut": "Le Chat is now called Vibe, the free plan has limited messages and searches, and Team and Enterprise add the security features.",
-    "rank": 17
+    "rank": 17,
+    "rankReason": "A free-to-start assistant from a European lab that can do multi-step work across connected apps."
   },
   {
     "featured": false,
@@ -464,7 +487,8 @@
     "pricingNote": "Free for everyday use; the optional Meta One plans give more AI usage, with single-product plans from $2.99 a month, Core at $7.99, and Premium at $19.99",
     "strength": "A free assistant built into the apps billions already use, with Thinking mode, image editing, and research reports.",
     "watchOut": "Some features are limited to certain countries and languages, and heavier image and video creation needs a paid Meta One plan.",
-    "rank": 18
+    "rank": 18,
+    "rankReason": "A free everyday assistant inside WhatsApp and Instagram, with quick image creation and photo edits."
   },
   {
     "slug": "v0",
@@ -472,6 +496,7 @@
     "url": "https://v0.dev",
     "category": "coding",
     "rank": 19,
+    "rankReason": "A fast way to prototype UI and React pages from a prompt, with a free plan capped at 7 messages a day.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -499,6 +524,7 @@
     "url": "https://lovable.dev",
     "category": "coding",
     "rank": 20,
+    "rankReason": "Best fit for non-coders building a first app or MVP from prompts, with 5 free build credits a day.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -510,14 +536,15 @@
       "building a website without code",
       "full-stack scaffolding"
     ],
-    "pricingNote": "Free plan with 5 build credits a day (up to 30 a month); paid Pro and Business plans add monthly credits, see lovable.dev/pricing",
+    "pricingNote": "Free plan with 5 build credits a day (up to 30 a month); Pro starts at $25 a month and Business at $50 a month, each with 100 credits; Enterprise is priced by volume",
     "strength": "Build full-stack apps from natural language.",
     "watchOut": "The free plan has 5 build credits a day (up to 30 a month); paid plan prices are on the official pricing page.",
     "freeTier": true,
-    "priceFrom": "See pricing",
+    "priceFrom": "from $25/mo",
     "pricingUrl": "https://lovable.dev/pricing",
     "freePlan": true,
-    "byoModel": false
+    "byoModel": false,
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "bolt",
@@ -525,6 +552,7 @@
     "url": "https://bolt.new",
     "category": "coding",
     "rank": 21,
+    "rankReason": "Build and host a full-stack web app in the browser with no local setup, with a free plan.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -552,6 +580,7 @@
     "url": "https://www.wix.com/studio/studio-two",
     "category": "coding",
     "rank": 22,
+    "rankReason": "Visual site editing plus real React code, but it is rolling out to Wix Partners first.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-20",
@@ -576,6 +605,7 @@
     "url": "https://spacefast.com",
     "category": "coding",
     "rank": 23,
+    "rankReason": "Publishes what ChatGPT or Claude builds without hosting setup, and includes a ready database.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -603,6 +633,7 @@
     "url": "https://windsurf.com",
     "category": "coding",
     "rank": 24,
+    "rankReason": "An agentic IDE for managing several coding agents in one place, with a free plan.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -630,6 +661,7 @@
     "url": "https://opencode.ai",
     "category": "coding",
     "rank": 25,
+    "rankReason": "A free, open-source terminal agent that works with any model provider you bring.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -655,6 +687,7 @@
     "url": "https://github.com/QwenLM/qwen-code",
     "category": "coding",
     "rank": 26,
+    "rankReason": "A free, open-source terminal agent for scripted runs, using a Qwen account or your own model endpoint.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -680,6 +713,7 @@
     "url": "https://cline.bot",
     "category": "coding",
     "rank": 27,
+    "rankReason": "A free, open-source VS Code agent where you bring your own keys and pay only for model use.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -698,7 +732,8 @@
     "priceFrom": "Free",
     "pricingUrl": "https://cline.bot/pricing",
     "freePlan": true,
-    "byoModel": true
+    "byoModel": true,
+    "priceChecked": "2026-11-21"
   },
   {
     "featured": false,
@@ -723,7 +758,8 @@
     "pricingNote": "JetBrains says Junie is free to start with no credit card; the JetBrains AI plans for individuals are AI Pro at $10 a month (10 AI credits per 30 days) and AI Ultimate at $30 a month (35 credits); organizations pay $20 and $60; AI Pro is included with a paid All Products Pack or dotUltimate",
     "strength": "A coding agent from the maker of IntelliJ that runs in JetBrains IDEs or the terminal and works with the model you choose.",
     "watchOut": "Regular use needs a paid JetBrains AI plan for credits, and JetBrains recommends AI Ultimate over AI Pro for frequent Junie use.",
-    "rank": 28
+    "rank": 28,
+    "rankReason": "Best fit for developers already in IntelliJ, PyCharm, or other JetBrains IDEs, and free to start."
   },
   {
     "slug": "zed",
@@ -731,6 +767,7 @@
     "url": "https://zed.dev",
     "category": "coding",
     "rank": 29,
+    "rankReason": "A fast editor that runs external coding agents, free on the Personal plan with your own keys.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -758,6 +795,7 @@
     "url": "https://kiro.dev",
     "category": "coding",
     "rank": 30,
+    "rankReason": "A spec-driven agent for larger codebases with parallel agents, with a free tier of 50 credits.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -875,7 +913,9 @@
     "strength": "Google's source-grounded research notebook for asking questions answered from your own files.",
     "watchOut": "Higher limits require Google AI Plus, Pro, or Ultra, or a Google Workspace plan.",
     "freeTier": true,
-    "priceFrom": "See pricing"
+    "priceFrom": "See pricing",
+    "pricingUrl": "https://support.google.com/notebooklm/answer/16213268",
+    "priceChecked": "2026-11-21"
   },
   {
     "featured": false,
@@ -1105,7 +1145,8 @@
     "watchOut": "The free plan is limited to 10 summaries, and the free Article Summarizer allows 1 per day.",
     "freeTier": true,
     "priceFrom": "See pricing",
-    "pricingUrl": "https://www.scholarcy.com/pricing"
+    "pricingUrl": "https://www.scholarcy.com/pricing",
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "sciground",
@@ -1244,7 +1285,9 @@
     "strength": "Image generation with strong text rendering.",
     "watchOut": "Free accounts get weekly credits only; paid plans are cheaper billed yearly than monthly.",
     "freeTier": true,
-    "priceFrom": "from $15/mo"
+    "priceFrom": "from $15/mo",
+    "pricingUrl": "https://ideogram.ai/pricing",
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "flux",
@@ -1254,7 +1297,7 @@
     "rank": 50,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-04",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "Black Forest Labs image models",
     "description": "FLUX is a family of high-quality text-to-image models from Black Forest Labs, available via partners and APIs.",
@@ -1263,12 +1306,13 @@
       "API image generation",
       "product visuals"
     ],
-    "pricingNote": "Pay as you go API credits (1 credit is $0.01), priced per image by model and resolution, with the same price in the API and the Playground and no subscriptions or seat fees; licenses for self-hosting the open weights are sold separately",
+    "pricingNote": "Pay as you go with no subscriptions or seat fees, priced per image by model and resolution (FLUX 3 Image from $0.041 per image and FLUX 3 Image Klein from $0.011); licenses for self-hosting the open weights are sold separately",
     "strength": "Black Forest Labs image models with the same pay-as-you-go price in the API and the Playground, and no seat fees.",
     "watchOut": "Price is per image by model and resolution; licenses for self-hosting the open weights are sold separately.",
     "freeTier": false,
-    "priceFrom": "from $0.01/credit",
-    "pricingUrl": "https://bfl.ai/pricing"
+    "priceFrom": "from $0.011/img",
+    "pricingUrl": "https://bfl.ai/pricing",
+    "priceChecked": "2026-11-21"
   },
   {
     "featured": false,

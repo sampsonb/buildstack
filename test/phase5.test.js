@@ -64,7 +64,7 @@ test('tool page: breadcrumb, placard, Strength and Watch-out up top, honest plac
     const { html } = await get(`/tool/${t.slug}`)
     assert.ok(html.includes(`<nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/category/${t.category}">`), t.slug)
     assert.ok(html.indexOf('<div class="sw">') < html.indexOf('<h2>What it is</h2>'), t.slug)
-    assert.ok(html.includes('Paid placement: none. <a href="/methodology">Ranks are never for sale</a>'), t.slug)
+    assert.ok(html.includes('Paid placement: none. <a href="/methodology">Rank and search position are never sold</a>'), t.slug)
     assert.equal((html.match(/<h1>/g) || []).length, 1, t.slug)
   }
 })

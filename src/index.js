@@ -7,6 +7,8 @@ const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
 const UPDATED = toolsData.reduce((latest, t) => (t.updated && t.updated > latest ? t.updated : latest), '2026-11-13')
+const LICENSE_NAME = 'CC BY 4.0'
+const LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/'
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -257,6 +259,20 @@ function bySlug(slug) {
   return tools().find((t) => t.slug === slug)
 }
 
+// One source for every "N of M prices checked" claim: a price counts as checked only when it has a
+// check date and an official pricing link. Every page and file reads this, so the numbers agree.
+function priceCoverage() {
+  const all = tools()
+  return { checked: all.filter((t) => t.priceChecked && t.pricingUrl).length, total: all.length }
+}
+function coverageText() {
+  const c = priceCoverage()
+  return `${c.checked} of ${c.total} prices checked against the vendor's page`
+}
+function editorReason(t) {
+  return t.rankReason ? `<p class="reason"><strong>Why #${t.rank} overall:</strong> ${esc(t.rankReason)}</p>` : ''
+}
+
 // Honest per-page dates (added 2026-11-13). Each tool carries `updated`: the last day its facts
 // (name, link, category, tagline, description, best-for tags, or pricing note) changed. Rank
 // renumbering when other tools are added does not count. A guide's date is the later of its own last
@@ -278,7 +294,9 @@ const SECTION_DATES = {
   '/best/ai-video-editor-for-youtube': '2026-11-13',
   '/best/ai-video-generator': '2026-11-13',
   '/guides/how-celebrity-deepfakes-are-made': '2026-11-13',
-  '/get-featured': '2026-11-13',
+  '/submit': '2026-11-21',
+  '/money': '2026-11-21',
+  '/rank-changelog': '2026-11-21',
   '/vs': '2026-11-18',
   '/alternatives': '2026-11-19',
   '/price-changes': '2026-11-20',
@@ -384,7 +402,7 @@ const RELATED_SEARCHES = {
   images: ['generate images', 'edit photos', 'make a logo', 'design graphics', 'remove background from a photo', 'upscale a photo', 'product photos'],
   video: ['make short videos', 'edit youtube videos', 'add captions to video', 'generate a video', 'edit a podcast'],
   voice: ['voiceover for a podcast', 'transcribe a meeting', 'text to speech', 'clone a voice'],
-  agents: ['automate workflows', 'automate email', 'build an ai agent', 'ai browser', 'phone calls', 'customer support chatbot'],
+  agents: ['automate workflows', 'automate email', 'build an ai agent', 'ai browser', 'ai web browser', 'browser agent', 'automate web tasks', 'phone calls', 'answer phone calls', 'ai phone agent', 'outbound sales calls', 'customer support chatbot', 'live chat for my website', 'ai helpdesk', 'answer customer questions'],
 }
 // The /best guide for a results page: a guide named by the search words, else the top result's category guide.
 const RELATED_GUIDES = [
@@ -412,9 +430,13 @@ function relatedSearches(q, top) {
   const want = String(q || '').trim().toLowerCase()
   const cat = top && RELATED_SEARCHES[top.category] ? top.category : ''
   const pool = (cat ? RELATED_SEARCHES[cat] : Object.values(RELATED_SEARCHES).map((x) => x[0])).filter((x) => x !== want)
+  // The agents list mixes unrelated jobs (chatbots, phone calls, browsers), so searches that share no
+  // words with the query are ordered by the words they share with the top result itself.
+  const topText = top ? [top.name, top.tagline, ...(top.bestFor || [])].join(' ') : ''
   const list = pool
-    .map((x, i) => ({ x, i, n: sharedWords(x, want) }))
-    .sort((a, b) => b.n - a.n || a.i - b.i)
+    .map((x, i) => ({ x, i, n: sharedWords(x, want), m: 0 }))
+    .map((r) => (r.n === 0 && topText && cat === 'agents' ? { ...r, m: sharedWords(r.x, topText) } : r))
+    .sort((a, b) => b.n - a.n || b.m - a.m || a.i - b.i)
     .slice(0, 3)
     .map((r) => r.x)
   const links = list.map((x) => `<a href="/?q=${encodeURIComponent(x)}">${esc(x)}</a>`)
@@ -566,6 +588,7 @@ input::placeholder { color: #5e656e; opacity: 1; }
 .tag { display: inline-block; background: var(--rail); border: 1px solid transparent; color: var(--ink-2); border-radius: 4px; padding: .1rem .5rem; font-size: .78rem; margin-right: .3rem; }
 .tag.new { color: var(--ok); background: #e3f3ea; }
 .tag.feat { color: var(--brand-ink); background: #fff1e6; }
+.tag.aff { color: var(--ink); background: var(--rail); border-color: var(--ink-3); }
 .section { padding: 2rem 0 0; }
 h2.cathead { margin: .5rem 0 1rem; font-size: 1.3rem; letter-spacing: -.02em; }
 .section h2 { margin: 0 0 .9rem; font-size: 1.4rem; letter-spacing: -.02em; }
@@ -598,6 +621,8 @@ details.more > summary { cursor: pointer; color: var(--ink); font-weight: 700; m
 .footrow { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; }
 .footrow a { color: var(--ink-2); }
 .footrow a:hover { color: var(--ink); }
+.footlic { margin: 1rem 0 0; color: var(--ink-3); font-size: .82rem; }
+.footlic a { color: var(--ink-2); }
 .decide { margin: .7rem 0 0; display: grid; gap: .35rem; font-size: .84rem; line-height: 1.4; }
 .decide div { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr); gap: .35rem; align-items: start; }
 .decide dt { margin: 0; color: var(--ink); font-weight: 700; }
@@ -806,7 +831,8 @@ ${extraCss || ''}</style>
   ${body}
   </main>
   <footer class="footer">
-    <nav class="footrow" aria-label="Footer"><a href="/about">About</a><a href="/methodology">How we rank</a><a href="/#guides">Guides</a><a href="/get-featured">List your tool</a><a href="/about#chatbots">For chatbots</a><a href="https://itsbuildstack.substack.com">Substack</a><a href="mailto:buildstack@tier11.com">Contact</a><a href="https://tier11.com">tier11</a><a href="/sitemap.xml">Sitemap</a></nav>
+    <nav class="footrow" aria-label="Footer"><a href="/about">About</a><a href="/methodology">How we rank</a><a href="/#guides">Guides</a><a href="/submit">List your tool</a><a href="/money">How we earn</a><a href="/about#chatbots">For chatbots</a><a href="https://itsbuildstack.substack.com">Substack</a><a href="mailto:buildstack@tier11.com">Contact</a><a href="https://tier11.com">tier11</a><a href="/sitemap.xml">Sitemap</a></nav>
+    <p class="footlic">The data in tools.json and llms.txt is licensed <a href="${LICENSE_URL}" rel="license noopener">${LICENSE_NAME}</a>. Credit ${NAME} and link to ${SITE.replace('https://', '')}.</p>
   </footer>
 </div>
 <script>
@@ -934,7 +960,7 @@ function rankLine(t, pos, kind) {
 function toolCardAt(t, pos, kind) {
   const badge = pos ? `<span class="pos" aria-hidden="true">${pos}</span><span class="sr-only">${kind === 'overall' ? `Number ${pos} overall.` : kind === 'cat' ? `Number ${pos} in ${esc(CATEGORIES[t.category]?.label || t.category)}.` : `Best fit number ${pos}.`} </span>` : ''
   return `<article class="card">
-    <div class="meta">${badge}<span class="rankline">${esc(rankLine(t, pos, kind))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}${t.featured ? '<span class="tag feat">Featured</span>' : ''}</div>
+    <div class="meta">${badge}<span class="rankline">${esc(rankLine(t, pos, kind))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}${t.featured ? '<span class="tag feat">Sponsor</span>' : ''}${t.affiliate ? '<span class="tag aff">Affiliate link</span>' : ''}</div>
     <h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3>
     <p class="muted" style="margin:0;font-size:.92rem">${esc(t.tagline)}</p>
     ${decisionBlock(t, kind === 'fit' || kind === 'cat')}${kind === 'fit' || kind === 'cat' ? priceTag(t) : ''}
@@ -946,7 +972,7 @@ function toolCardAt(t, pos, kind) {
 //   /  /robots.txt  /sitemap.xml  /tools.json  /llms.txt  /llms-full.txt
 //   /api/health  /api/subscribe
 //   /categories  /category/:slug  /tool/:slug
-//   /get-featured  /methodology  /about
+//   /submit  /money  /rank-changelog  /methodology  /about
 //   /alternatives  /alternatives/*  /best/*  /vs  /vs/*
 //   /favicon.svg  /favicon.png  /og.png
 //   /.well-known/*  (ACME and future well-known; never block)
@@ -996,7 +1022,7 @@ app.get(`/${INDEXNOW_KEY}.txt`, (c) => c.text(INDEXNOW_KEY, 200, { 'cache-contro
 
 app.get('/sitemap.xml', (c) => {
   const urls = [
-    '', '/categories', '/methodology', PRICE_PATH, '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/get-featured', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', PRICE_PATH, '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/submit', '/money', '/rank-changelog', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     '/vs', ...vsPairs().map((p) => p.path),
     '/alternatives', ...altPages().map((p) => p.path),
@@ -1014,12 +1040,17 @@ app.get('/tools.json', (c) => c.json({
   url: SITE,
   updated: UPDATED,
   count: tools().length,
+  priceCheckedCount: priceCoverage().checked,
+  license: LICENSE_NAME,
+  licenseUrl: LICENSE_URL,
+  attribution: `Credit ${NAME} and link to ${SITE}`,
   tools: tools().map((t) => ({
     slug: t.slug,
     name: t.name,
     url: t.url,
     category: t.category,
     rank: t.rank,
+    rankReason: t.rankReason || null,
     featured: !!t.featured,
     affiliate: !!t.affiliate,
     newRelease: isNew(t),
@@ -1047,17 +1078,21 @@ app.get('/tools.json', (c) => c.json({
 app.get('/llms.txt', (c) => {
   const lines = [
     `# ${NAME}`,
-    `> Free ranked directory of AI tools. Type a use case, get best-fit tools. Ranks are not for sale.`,
+    `> Free ranked directory of AI tools. Type a use case, get best-fit tools. Rank and search position are never sold.`,
     ``,
     `Site: ${SITE}`,
     `Updated: ${UPDATED}`,
     `Tools: ${tools().length}`,
+    `Price checks: ${coverageText()}. The rest are not checked yet.`,
+    `License: ${LICENSE_NAME} (${LICENSE_URL}) for the data in tools.json, llms.txt, and llms-full.txt. Credit ${NAME} and link to ${SITE}.`,
     `Machine-readable: ${SITE}/tools.json`,
     `Full tool details for LLMs: ${SITE}/llms-full.txt`,
     `Human summary for bots: ${SITE}/about`,
     `How rankings work: ${SITE}/methodology`,
     `AI price changes log (dated, official sources only): ${SITE}${PRICE_PATH}`,
-    `List your tool: ${SITE}/get-featured`,
+    `List your tool (free): ${SITE}/submit`,
+    `How BuildStack earns money (nothing today): ${SITE}/money`,
+    `Rank changelog: ${SITE}/rank-changelog`,
     `Contact: buildstack@tier11.com`,
     `Weekly write-up on Substack: https://itsbuildstack.substack.com`,
     ``,
@@ -1123,6 +1158,8 @@ app.get('/llms-full.txt', (c) => {
     `Site: ${SITE}`,
     `Updated: ${UPDATED}`,
     `Tools: ${all.length}`,
+    `Price checks: ${coverageText()}. The rest are not checked yet.`,
+    `License: ${LICENSE_NAME} (${LICENSE_URL}) for the data in this file, llms.txt, and tools.json. Credit ${NAME} and link to ${SITE}.`,
     `Short index: ${SITE}/llms.txt`,
     `JSON: ${SITE}/tools.json`,
     `Rankings are editorial. How rankings work: ${SITE}/methodology`,
@@ -1174,7 +1211,8 @@ app.get('/llms-full.txt', (c) => {
       lines.push(
         '',
         `### ${t.name}`,
-        `- Rank: #${t.rank} overall, ${catChip(t)}${isNew(t) ? ` (new, added ${t.added})` : ''}${t.featured ? ' (featured)' : ''}`,
+        `- Rank: #${t.rank} overall, ${catChip(t)}${isNew(t) ? ` (new, added ${t.added})` : ''}${t.featured ? ' (sponsor)' : ''}`,
+        ...(t.rankReason ? [`- Why this rank: ${t.rankReason}`] : []),
         `- Tagline: ${t.tagline}`,
         `- Official site: ${t.url}`,
         `- BuildStack page: ${SITE}/tool/${t.slug}`,
@@ -1233,12 +1271,11 @@ app.get('/', (c) => {
     <div class="shelf-title"><h2 id="sample-h">What you get for “${SAMPLE_Q}”</h2><p>The top 3 our search returns right now. <a href="/?q=${encodeURIComponent(SAMPLE_Q)}">See all ${sample.length}</a></p></div>
     <ol class="shelf">${topShown(sample, 3).map((t, i) => `<li class="slot"><span class="pos" aria-hidden="true">${i + 1}</span><span class="sr-only">Best fit number ${i + 1}. </span><h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3><p class="rankline">${esc(catPlace(t))}</p><p class="slot-best">Best for ${esc(bestForLine(t))}.</p>${priceTag(t)}</li>`).join('')}</ol>
   </section>`
-  const checkedCount = all.filter((t) => t.priceChecked && t.pricingUrl).length
   const quickBlock = q ? '' : `
   <section class="trust" aria-label="How BuildStack stays honest">
-    <p><strong>Ranks are never for sale.</strong>BuildStack does not sell placements, and no payment can change a rank.</p>
-    <p><strong>Checked prices carry a date.</strong>${checkedCount} of ${all.length} prices are matched to the official pricing page, with the day we checked.</p>
-    <p><strong>One editorial rank per tool.</strong>From #1 to #${all.length}, edited by Sampson Brueher. <a href="/methodology">How we rank</a></p>
+    <p><strong>Rank and search position are never sold.</strong>No payment can change a rank or where a tool appears in search. <a href="/money">How BuildStack earns</a></p>
+    <p><strong>Checked prices carry a date.</strong>${coverageText()}, each with the day we checked. The other ${priceCoverage().total - priceCoverage().checked} are not checked yet.</p>
+    <p><strong>One editorial rank per tool.</strong>From #1 to #${all.length}, set by Sampson Brueher. An AI agent writes the write-ups and checks prices, with his review. <a href="/methodology">How we rank</a></p>
   </section>
   <section class="section" id="quick-answer">
     <h2>Quick answer: which AI tool for which job</h2>
@@ -1303,7 +1340,7 @@ app.get('/', (c) => {
     </div>
   </section>
   ${quickBlock}
-  ${q ? '' : `${featured.length ? `<section class="section"><h2>Featured</h2><div class="grid">${featured.map(toolCard).join('')}</div></section>` : ''}
+  ${q ? '' : `${featured.length ? `<section class="section"><h2>Sponsor</h2><p class="muted">Paid placement. It does not change rank or search.</p><div class="grid">${featured.map(toolCard).join('')}</div></section>` : ''}
   <div class="cols2">
   <section class="section" id="new">
     <h2>New on BuildStack</h2>
@@ -1519,6 +1556,8 @@ const TOOL_V2_CSS = `
 .howrank { margin-left: auto; font-size: .88rem; }
 .tv2-head .why { margin: .9rem 0 0; max-width: 70ch; font-size: 1rem; line-height: 1.5; color: var(--bs-ink-2); }
 .tv2-head .why strong { color: var(--bs-ink); }
+.tv2-head .reason { margin: .6rem 0 0; max-width: 70ch; font-size: 1rem; line-height: 1.5; color: var(--bs-ink-2); }
+.tv2-head .reason strong { color: var(--bs-ink); }
 .bf { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .9rem; margin: 1rem 0 0; font-size: .95rem; }
 .bf strong { color: var(--bs-ink); }
 .bf ul { display: flex; flex-wrap: wrap; gap: .25rem 1rem; list-style: none; margin: 0; padding: 0; color: var(--bs-ink-2); }
@@ -1660,6 +1699,7 @@ app.get('/tool/:slug', (c) => {
       <a class="howrank" href="/methodology">How we rank</a>
     </div>
     ${rankReason(t)}
+    ${editorReason(t)}
     ${(t.bestFor || []).length ? `<div class="bf"><strong id="bf-label">Best for</strong><ul aria-labelledby="bf-label">${t.bestFor.map((b) => `<li>${esc(b)}</li>`).join('')}</ul></div>` : ''}
     ${t.strength || t.watchOut ? `<div class="sw">${t.strength ? `<div><h2>Strength</h2><p>${esc(t.strength)}</p></div>` : ''}${t.watchOut ? `<div><h2>Watch-out</h2><p>${esc(t.watchOut)}</p></div>` : ''}</div>` : ''}
   </section>
@@ -1667,14 +1707,14 @@ app.get('/tool/:slug', (c) => {
     <div class="pbox">
       ${freeKnown ? `<p class="freefirst${t.freeTier ? ' yes' : ''}">Free tier: ${t.freeTier ? 'yes' : 'no'}</p>` : ''}
       ${priceTag(t, true, true)}
-      <p class="visit"><a class="btn" href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">Visit ${esc(t.name)} <span aria-hidden="true">↗</span></a></p>
+      <p class="visit"><a class="btn" href="${esc(t.url)}" rel="${t.affiliate ? 'sponsored ' : ''}noopener noreferrer" target="_blank">Visit ${esc(t.name)} <span aria-hidden="true">↗</span></a></p>
       <p class="site">Official site: <a href="${esc(t.url)}" rel="noopener noreferrer" target="_blank">${esc(t.url.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a></p>
       <ul class="facts-list">
-        <li class="paid">${t.featured ? 'Featured listing. It does not change the rank.' : 'Paid placement: none.'} <a href="/methodology">Ranks are never for sale</a></li>
+        <li class="paid">${t.featured ? 'Sponsor label. It does not change the rank.' : 'Paid placement: none.'} <a href="/methodology">Rank and search position are never sold</a></li>
         <li>Listing last changed: ${esc(fmtDate(t.updated || UPDATED))}</li>
         ${t.added ? `<li>Added to ${NAME}: ${esc(fmtDate(t.added))}</li>` : ''}
       </ul>
-      ${t.affiliate ? '<p class="muted">Affiliate link: we may earn a commission if you use the link on this page.</p>' : ''}
+      ${t.affiliate ? '<p class="muted"><span class="tag aff">Affiliate link</span> We may earn a commission if you use the link on this page. <a href="/money">How we label them</a></p>' : ''}
     </div>
     <nav class="toc" aria-label="On this page"><h2>On this page</h2><ul>${toc.map(([id, label]) => `<li><a href="#${id}">${esc(label)}</a></li>`).join('')}</ul></nav>
   </aside>
@@ -1735,22 +1775,141 @@ app.get('/tool/:slug', (c) => {
   }))
 })
 
-app.get('/get-featured', (c) => {
+// Trust pages (2026-11-21): free submissions at /submit (the old /get-featured redirects there),
+// how BuildStack earns at /money, and a dated rank changelog. Counts and dates come from tools.json.
+const RANK_CHANGELOG = [
+  {
+    date: '2026-11-21',
+    title: 'Rank reasons published',
+    summary: 'Each of the top 30 tools now has a one-line reason on its tool page and in /tools.json (the rankReason field), and the ranking criteria are on the methodology page. No rank changed in this update.',
+  },
+  {
+    date: '2026-11-21',
+    title: 'Catalog add: 12 tools',
+    summary: 'Twelve tools were added, taking the catalog from 162 to 174 tools. Each new tool was placed at one rank, and every tool below it moved down one place for each new tool above it. Existing tools kept their order relative to each other, and none of the 12 entered the top 30.',
+    slugs: ['acrobat-ai-assistant', 'chatpdf', 'adobe-express', 'dia', 'opera-neon', 'retell-ai', 'bland-ai', 'chatbase', 'tidio', 'zendesk-ai', 'voiceflow', 'google-translate'],
+    notes: ['Earlier the same day, Scite, Undermind, Semantic Scholar, Genie 4, and Inkling 2 Mini were added. They are already part of the 162.'],
+  },
+]
+
+app.get('/get-featured', (c) => c.redirect('/submit', 301))
+
+app.get('/submit', (c) => {
+  const PD = pageDate('/submit')
+  const description = 'Submit an AI tool to the BuildStack directory for free. Submissions are reviewed like every other listing, and rank and search position are never sold.'
   const body = `
   <section class="hero">
-    <h1>List your tool on BuildStack</h1>
-    <p>Listings are free and editorial. Paid placements are not offered yet, and ranks are never for sale.</p>
+    <h1>Submit your tool to BuildStack</h1>
+    <p>Submitting is free. There are no listing fees and no paid fast-track, and rank and search position are never sold.</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   <section class="panel prose">
-    <p>Built an AI tool that does a real job well? Tell us what it does, who it is for, and where its pricing lives. If it fits a category, we review it like every other listing and place it on its merits.</p>
-    <p>To suggest a tool, or to tell us you would be interested in a clearly labeled sponsorship later, email <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a> with the name, URL, and a one-line description.</p>
-    <p class="muted">See <a href="/methodology">how we rank</a>.</p>
+    <h2 style="margin-top:0">What to send</h2>
+    <p>Built an AI tool that does a real job well? Email <a href="mailto:buildstack@tier11.com?subject=Tool%20submission">buildstack@tier11.com</a> with the tool name, its official URL, who it is for, and where its pricing lives. A one-line description of the job it does is enough.</p>
+    <h2>What happens next</h2>
+    <p>If the tool fits a category, it is reviewed like every other listing: an AI agent drafts the write-up and checks the pricing page, and Sampson reviews it and sets the rank. We do not promise a listing or a rank, and we do not take payment to change either.</p>
+    <p>Corrections to an existing listing are welcome at the same address. A maker can correct a fact, such as a price or a link, but cannot ask for a rank.</p>
+    <p class="muted">Read <a href="/methodology">how we rank</a> and <a href="/money">how BuildStack earns</a>.</p>
   </section>`
   return c.html(layout({
-    title: `List your tool | ${NAME}`,
-    description: 'Suggest an AI tool for the BuildStack directory. Listings are free and editorial, and ranks are never for sale.',
-    path: '/get-featured',
+    title: `Submit your AI tool, free | ${NAME}`,
+    description,
+    path: '/submit',
     body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'WebPage',
+        name: 'Submit your tool to BuildStack',
+        url: `${SITE}/submit`,
+        description,
+        dateModified: PD,
+        isPartOf: { '@type': 'WebSite', name: NAME, url: SITE },
+      }, breadcrumbs([['Home', '/'], ['Submit a tool', '/submit']])],
+    },
+  }))
+})
+
+app.get('/money', (c) => {
+  const PD = pageDate('/money')
+  const description = `How BuildStack earns money: $0 today, what is planned, and what we will never do. Rank and search position are never sold. Updated ${fmtDate(PD)}.`
+  const body = `
+  <section class="hero">
+    <h1>How BuildStack makes money</h1>
+    <p><strong>BuildStack earns $0 today.</strong> There are no ads, no paid listings, no sponsors, and no live affiliate links. Rank and search position are never sold.</p>
+    <p class="muted">As of ${fmtDate(PD)} · Edited by <a href="/about">Sampson Brueher</a></p>
+  </section>
+  <section class="panel prose">
+    <h2 style="margin-top:0">Planned</h2>
+    <ul class="clean">
+      <li><strong>Labeled affiliate links, starting about Dec 8, 2026.</strong> If a tool maker pays a commission when you sign up through us, its card and tool page show a visible "Affiliate link" label, the link is marked rel="sponsored", and <a href="/tools.json">/tools.json</a> sets affiliate to true for that tool. Search and ranking never read that flag, so an affiliate link cannot change a rank or a search result. No tool has an affiliate link yet.</li>
+      <li><strong>Possibly one labeled sponsor slot, from Jan 4, 2027, and only if BuildStack passes 1,000 human visits a month.</strong> If it happens, the slot carries a "Sponsor" label, sits outside ranked lists and search results, and changes no rank. If traffic is lower, there is no sponsor slot.</li>
+    </ul>
+    <h2>Never</h2>
+    <ul class="clean">
+      <li>Paid rank, or paid position in search.</li>
+      <li>Listing fees. <a href="/submit">Submitting a tool</a> is free.</li>
+      <li>A paid fast-track for reviews or ranks.</li>
+      <li>Sponsored comparison pages, guides, or price pages.</li>
+      <li>Sponsors inside ranked lists or search results.</li>
+    </ul>
+    <h2>How you will know</h2>
+    <p>Any affiliate link or sponsor label appears on the page where it applies, and this page is updated before it goes live. Changes that add, move, or remove ranked tools are logged on the <a href="/rank-changelog">rank changelog</a>. The full ranking method is on <a href="/methodology">How we rank</a>.</p>
+    <p class="muted">Questions: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a></p>
+  </section>`
+  return c.html(layout({
+    title: `How BuildStack makes money | ${NAME}`,
+    description,
+    path: '/money',
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'WebPage',
+        name: 'How BuildStack makes money',
+        url: `${SITE}/money`,
+        description,
+        dateModified: PD,
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
+        isPartOf: { '@type': 'WebSite', name: NAME, url: SITE },
+      }, breadcrumbs([['Home', '/'], ['How BuildStack makes money', '/money']])],
+    },
+  }))
+})
+
+app.get('/rank-changelog', (c) => {
+  const PD = pageDate('/rank-changelog')
+  const description = `A dated log of every change that adds, moves, or removes a ranked tool on ${NAME}. ${tools().length} tools, updated ${fmtDate(PD)}.`
+  const entries = RANK_CHANGELOG.map((e) => {
+    const items = (e.slugs || []).map((s) => bySlug(s)).filter(Boolean)
+    const list = items.length ? `<ul class="clean">${items.map((t) => `<li><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>, now #${t.rank} overall in ${esc(CATEGORIES[t.category].label)}</li>`).join('')}</ul>` : ''
+    const notes = (e.notes || []).map((n) => `<p class="muted">${esc(n)}</p>`).join('')
+    return `<h2>${esc(fmtDate(e.date))}: ${esc(e.title)}</h2><p>${esc(e.summary)}</p>${list}${notes}`
+  }).join('')
+  const body = `
+  <section class="hero">
+    <h1>Rank changelog</h1>
+    <p>Every change that adds, moves, or removes a ranked tool is logged here, newest first. Sampson Brueher sets the ranks. Read <a href="/methodology">how we rank</a>.</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · ${tools().length} tools</p>
+  </section>
+  <section class="panel prose">${entries}</section>`
+  return c.html(layout({
+    title: `Rank changelog | ${NAME}`,
+    description,
+    path: '/rank-changelog',
+    body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'WebPage',
+        name: 'Rank changelog',
+        url: `${SITE}/rank-changelog`,
+        description,
+        dateModified: PD,
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
+        isPartOf: { '@type': 'WebSite', name: NAME, url: SITE },
+      }, breadcrumbs([['Home', '/'], ['Rank changelog', '/rank-changelog']])],
+    },
   }))
 })
 
@@ -1761,17 +1920,37 @@ app.get('/methodology', (c) => {
     .map(([k, v]) => ({ k, label: v.label, n: all.filter((t) => t.category === k).length }))
   const featuredCount = all.filter((t) => t.featured).length
   const newCount = newTools().length
-  const description = `How ${NAME} ranks AI tools: one editorial rank per tool, category pages in rank order, use-case search scoring, and ranks that are never for sale. ${all.length} tools, updated ${fmtDate(PD)}.`
+  const pc = priceCoverage()
+  const top30 = all.filter((t) => t.rankReason).sort((a, b) => a.rank - b.rank)
+  const description = `How ${NAME} ranks AI tools: one editorial rank per tool, category pages in rank order, use-case search scoring, and a promise that rank and search position are never sold. ${all.length} tools, updated ${fmtDate(PD)}.`
   const body = `
   <section class="hero">
     <h1>How BuildStack ranks AI tools</h1>
-    <p>Short answer: every tool gets one editorial rank, from #1 to #${all.length}. Category pages and the full list show tools in that order. Search reorders tools by how well they match your words, and uses rank only to break ties. Ranks are never for sale.</p>
+    <p>Short answer: every tool gets one editorial rank, from #1 to #${all.length}. Category pages and the full list show tools in that order. Search reorders tools by how well they match your words, and uses rank only to break ties. Rank and search position are never sold.</p>
     <p class="muted">Last updated: ${fmtDate(PD)} · ${all.length} tools · Edited by <a href="/about">Sampson Brueher</a></p>
   </section>
   <section class="panel prose">
     <h2 style="margin-top:0">One rank per tool</h2>
     <p>Each listing in the BuildStack data has a single rank number. Ranks are unique across the whole directory, so #1 is the top pick overall and no two tools share a number. The rank is an editorial judgment. It is not a benchmark score, a user vote, or a traffic count, and BuildStack does not publish scores behind it.</p>
     <p>When a new tool is added, it is placed at a rank and the tools below it move down one place. Ranks are set across categories, so a coding tool at #11 and a video tool at #33 sit on the same overall list.</p>
+
+    <h2 id="criteria">Ranking criteria</h2>
+    <p>Sampson sets each rank by hand. He weighs these things:</p>
+    <ul class="clean">
+      <li><strong>The job.</strong> How well the tool does its main job for a typical person, judged from the tool maker's own docs and plans and from public use.</li>
+      <li><strong>Available today.</strong> Tools you can use now sit above waitlists, previews, and APIs that are not live.</li>
+      <li><strong>Range.</strong> Tools that fit many people and jobs sit above narrower ones, within reason.</li>
+      <li><strong>Access and price.</strong> A real free plan, clear published prices, and honest limits help a tool. Costs and limits we find are listed as the watch-out.</li>
+      <li><strong>Upkeep.</strong> Tools that keep shipping and keep their docs and pricing current sit higher. Discontinued tools are marked and left out of search results.</li>
+    </ul>
+    <p>These are not scores, and we do not publish scores. What does not count: payment of any kind, affiliate status, sponsor status, requests from tool makers, and traffic. A tool maker can correct a fact, such as a price or a link, but cannot ask for a rank. Every change that adds, moves, or removes a ranked tool is logged on the <a href="/rank-changelog">rank changelog</a>.</p>
+
+    <h2 id="who">Who does what</h2>
+    <p>Sampson Brueher sets every rank. An AI agent writes the write-ups, the price checks, and the comparison pages, and Sampson reviews them. The agent can make mistakes, so please send corrections to <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>.</p>
+
+    <h2 id="top30">Why the top ${top30.length} sit where they do</h2>
+    <p>One line for each of the first ${top30.length} ranks. The same line is on the tool's page and in <a href="/tools.json">/tools.json</a> as rankReason.</p>
+    <ul class="clean">${top30.map((t) => `<li>#${t.rank} <a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>: ${esc(t.rankReason)}</li>`).join('')}</ul>
 
     <h2>Categories</h2>
     <p>Every tool belongs to exactly one of ${Object.keys(CATEGORIES).length} categories. A category page lists only that category's tools, still in overall rank order, so the first tool on a category page is the highest ranked tool in that category.</p>
@@ -1808,17 +1987,20 @@ app.get('/methodology', (c) => {
     <p>Each tool page shows when its listing last changed, meaning its name, link, category, tagline, description, best-for tags, or pricing note. A tool moving down one place because another tool was added above it does not count as a change. A guide shows the later of its own last edit and the newest listing change among the tools it covers. The sitemap uses the same dates, so a page is only marked as changed when its content changed. The site-wide date in /tools.json and /llms.txt is the last day any listing changed.</p>
 
     <h2>Prices and pricing links</h2>
-    <p>Pricing notes are short summaries in our own words. Where we have confirmed that the tool maker's own pricing page loads, the tool page, its FAQ, and its list card link to that page. When the prices in our note matched that page on the day we looked, the link carries a price checked date. A link without a date means the page is official but we have not yet matched every price on it. ${all.filter((t) => t.pricingUrl).length} tools have an official pricing link and ${all.filter((t) => t.priceChecked).length} carry a price checked date right now. A tool page's date in the sitemap is the later of its last listing change and its last price check.</p>
+    <p>Pricing notes are short summaries in our own words. Where we have confirmed that the tool maker's own pricing page loads, the tool page, its FAQ, and its list card link to that page. When the prices in our note matched that page on the day we looked, the link carries a price checked date. A link without a date means the page is official but we have not yet matched every price on it. Right now ${coverageText()}, so ${pc.total - pc.checked} tools have no price checked date, and we do not claim they do. ${all.filter((t) => t.pricingUrl).length} tools have an official pricing link. A tool page's date in the sitemap is the later of its last listing change and its last price check.</p>
     <p>When a tool maker changes a price, we record it on the <a href="/price-changes">AI price changes log</a> with the old price, the new price, the date it took effect, and a link to the official source. Launch prices of new models, limited-time discounts, and corrections of our own notes are not counted as changes.</p>
 
     <h2>New releases</h2>
     <p>Tools added to BuildStack in the last ${NEW_DAYS} days carry a New tag and appear in the New section of the homepage, newest first. Each tool page shows the day it was added. The tag does not change rank. ${newCount} tools carry it right now.</p>
 
-    <h2>Ranks are not for sale</h2>
-    <p>BuildStack does not sell placements right now, and no payment can change a tool's rank or its place in search. If a clearly labeled sponsorship is ever offered, it will carry a Featured tag and still leave the rank number alone. ${featuredCount ? `${featuredCount} tools are featured right now.` : 'No tools are featured right now.'} Tool makers can <a href="/get-featured">suggest a listing</a> for free.</p>
+    <h2>Rank and search position are never sold</h2>
+    <p>BuildStack does not sell placements, and no payment can change a tool's rank or its place in search. If a clearly labeled sponsor slot is ever offered, it carries a Sponsor label, sits outside ranked lists and search results, and leaves every rank number alone. ${featuredCount ? `${featuredCount} tools carry a Sponsor label right now.` : 'No tool carries a Sponsor label right now.'} Tool makers can <a href="/submit">submit a tool</a> for free. The full plan, including what we will never do, is on <a href="/money">how BuildStack makes money</a>. BuildStack earns $0 today.</p>
 
-    <h2>Open data</h2>
-    <p>The same ranks and listings are published for people and AI assistants at <a href="/tools.json">/tools.json</a>, <a href="/llms.txt">/llms.txt</a>, and <a href="/llms-full.txt">/llms-full.txt</a>. When you quote BuildStack, quote the rank as published and link to the official tool site. Do not add scores or test results the site does not publish.</p>
+    <h2 id="affiliate">Affiliate links</h2>
+    <p>No affiliate links are live today. If one is added, the tool's card and page show a visible "Affiliate link" label, the link is marked rel="sponsored", and /tools.json sets affiliate to true for that tool. Search and ranking never read the affiliate flag. See <a href="/money">how BuildStack makes money</a>.</p>
+
+    <h2>Open data and license</h2>
+    <p>The same ranks and listings are published for people and AI assistants at <a href="/tools.json">/tools.json</a>, <a href="/llms.txt">/llms.txt</a>, and <a href="/llms-full.txt">/llms-full.txt</a>. The data in those files is licensed <a href="${LICENSE_URL}" rel="license noopener">${LICENSE_NAME}</a>: you may copy and reuse it, including commercially, if you credit ${NAME} and link to ${SITE.replace('https://', '')}. When you quote BuildStack, quote the rank as published and link to the official tool site. Do not add scores or test results the site does not publish.</p>
     <p class="muted">Questions or corrections: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a></p>
   </section>`
   return c.html(layout({
@@ -2203,7 +2385,7 @@ app.get('/alternatives/cursor', (c) => {
         <li>Try one real task in the new tool before you cancel anything.</li>
       </ul>
       <h2>How we chose</h2>
-      <p>This page lists the coding tools on ${NAME} that can replace Cursor for at least one job, grouped by how you work. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. Featured listings do not affect rank. Read the full <a href="/methodology">methodology</a> or browse every <a href="/category/coding">coding tool</a>.</p>
+      <p>This page lists the coding tools on ${NAME} that can replace Cursor for at least one job, grouped by how you work. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. Sponsor labels do not affect rank. Read the full <a href="/methodology">methodology</a> or browse every <a href="/category/coding">coding tool</a>.</p>
       <p>New to coding? Start with the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>, which compares the browser app builders.</p>
       <p class="muted">Also worth knowing, not yet ranked on ${NAME}: Aider and Tabnine.</p>
     </div>
@@ -2368,7 +2550,7 @@ app.get('/alternatives/:slug', (c) => {
   <section class="section">
     <div class="panel prose">
       <h2 style="margin-top:0">How we chose</h2>
-      <p>This page lists the top ${alts.length} of the ${total} other ${esc(lab)} tools on ${NAME}, in the same editorial rank order used across the site. Every rank, price, and pick comes from each tool's listing. Featured listings and affiliate links do not affect rank. Read the full <a href="/methodology">methodology</a>, browse every <a href="/category/${esc(t.category)}">${esc(lab)} tool</a>, or see <a href="/alternatives">alternatives to other tools</a>.</p>
+      <p>This page lists the top ${alts.length} of the ${total} other ${esc(lab)} tools on ${NAME}, in the same editorial rank order used across the site. Every rank, price, and pick comes from each tool's listing. Sponsor labels and affiliate links do not affect rank. Read the full <a href="/methodology">methodology</a>, browse every <a href="/category/${esc(t.category)}">${esc(lab)} tool</a>, or see <a href="/alternatives">alternatives to other tools</a>.</p>
       ${vs.length ? `<p>Head to head: ${vs.map((v) => `<a href="${v.path}">${esc(v.a.name)} vs ${esc(v.b.name)}</a>`).join(' · ')}</p>` : ''}
     </div>
   </section>
@@ -2554,7 +2736,7 @@ app.get(BEGINNER_PATH, (c) => {
         <li><strong>Building everything at once.</strong> Ship the smallest useful version first, then add features.</li>
       </ul>
       <h2>How we chose</h2>
-      <p>This page lists the tools on ${NAME} that let someone with no coding experience build and publish an app from a browser, with no local setup. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. Featured listings do not affect rank. Read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page lists the tools on ${NAME} that let someone with no coding experience build and publish an app from a browser, with no local setup. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. Sponsor labels do not affect rank. Read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -2770,7 +2952,7 @@ app.get(RESEARCH_PATH, (c) => {
       <h2 style="margin-top:0">How to check an AI summary before you cite it</h2>
       <ol>${RESEARCH_CHECKS.map((s) => `<li><strong>${esc(s.name)}.</strong> ${esc(s.text)}</li>`).join('')}</ol>
       <h2>How we chose</h2>
-      <p>This page lists the tools on ${NAME} that help you find, read, and summarize sources, from web search to academic papers and your own files. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. ${rl('claude')} is filed under ${catLink(find('claude') || { category: 'writing' })}; the other picks are under ${catLink({ category: 'research' })}. Featured listings do not affect rank. We do not publish accuracy scores. Read the full <a href="/methodology">methodology</a>, or browse every <a href="/category/research">research tool</a>.</p>
+      <p>This page lists the tools on ${NAME} that help you find, read, and summarize sources, from web search to academic papers and your own files. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. ${rl('claude')} is filed under ${catLink(find('claude') || { category: 'writing' })}; the other picks are under ${catLink({ category: 'research' })}. Sponsor labels do not affect rank. We do not publish accuracy scores. Read the full <a href="/methodology">methodology</a>, or browse every <a href="/category/research">research tool</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -2986,7 +3168,7 @@ app.get(FREE_PATH, (c) => {
       <h2 style="margin-top:0">Watch-outs before you rely on a free plan</h2>
       <ol>${FREE_WATCH.map((w) => `<li><strong>${esc(w.name)}.</strong> ${esc(w.text)}</li>`).join('')}</ol>
       <h2>How we chose</h2>
-      <p>This page lists the tools on ${NAME} that have a lasting free plan, free credits, or free open weights. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. Featured listings do not affect rank. Read the full <a href="/methodology">methodology</a>, browse the <a href="/categories">categories</a> (${Object.entries(CATEGORIES).map(([k, v]) => `<a href="/category/${k}">${esc(v.label)}</a>`).join(', ')}), or describe your task in the <a href="/">tool finder</a> to see every match.</p>
+      <p>This page lists the tools on ${NAME} that have a lasting free plan, free credits, or free open weights. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. Sponsor labels do not affect rank. Read the full <a href="/methodology">methodology</a>, browse the <a href="/categories">categories</a> (${Object.entries(CATEGORIES).map(([k, v]) => `<a href="/category/${k}">${esc(v.label)}</a>`).join(', ')}), or describe your task in the <a href="/">tool finder</a> to see every match.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -3155,7 +3337,7 @@ app.get(VOICE_PATH, (c) => {
         <li><strong>Disclose synthetic voices</strong> where your platform asks you to, and never use a cloned voice to impersonate someone.</li>
       </ul>
       <h2>How we chose</h2>
-      <p>This page covers the voice tools ranked on ${NAME} that generate speech or vocals. Ranks are the same editorial ranks used across the site; featured listings do not affect rank. Voice tools that are not yet ranked on ${NAME}, such as Murf and Cartesia, are left out until they are reviewed. For meeting notes and transcription, see the <a href="/best/ai-transcription-tool">best AI transcription tools</a>, or browse the full <a href="/category/voice">voice category</a>. For free options across every category, see the <a href="/best/free-ai-tools#voice">best free AI tools</a>. Read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page covers the voice tools ranked on ${NAME} that generate speech or vocals. Ranks are the same editorial ranks used across the site; sponsor labels do not affect rank. Voice tools that are not yet ranked on ${NAME}, such as Murf and Cartesia, are left out until they are reviewed. For meeting notes and transcription, see the <a href="/best/ai-transcription-tool">best AI transcription tools</a>, or browse the full <a href="/category/voice">voice category</a>. For free options across every category, see the <a href="/best/free-ai-tools#voice">best free AI tools</a>. Read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -3333,7 +3515,7 @@ app.get(CODING_PATH, (c) => {
       <p>A <strong>coding agent</strong> takes a whole task. It plans the steps, edits many files, and runs commands and tests until the job is done, and you review the result. ${rl('claude-code')}, ${rl('openai-codex')}, and ${rl('opencode')} work this way from the terminal, and ${rl('cursor')} and ${rl('google-antigravity')} offer it inside an editor or app.</p>
       <p>Most tools now do both. If you are new to coding, start with the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a>. If you already use Cursor and want something else, see the <a href="/alternatives/cursor">best Cursor alternatives</a>. To supervise several agents at once, look at ${rl('harness-autonomous')}.</p>
       <h2 id="how-we-rank">How we rank</h2>
-      <p>This page lists every tool in the ${esc(NAME)} <a href="/category/coding">coding category</a>, using the same editorial ranks as the rest of the site. Featured listings do not affect rank. We do not run lab tests or publish benchmark scores; the ranking is a maintained editorial list that we update as tools ship. Read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page lists every tool in the ${esc(NAME)} <a href="/category/coding">coding category</a>, using the same editorial ranks as the rest of the site. Sponsor labels do not affect rank. We do not run lab tests or publish benchmark scores; the ranking is a maintained editorial list that we update as tools ship. Read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -3542,7 +3724,7 @@ app.get(AGENT_PATH, (c) => {
       <p>An <strong>autonomous agent</strong> is ready to use: you give it a goal and it plans and does the work. ${rl('manus')} and ${rl('claude-duet')} are examples, and ${rl('local-code')} does the same on your own Mac. ${rl('nod')} is an open-source personal agent that runs in its own sandbox on your Mac or Windows PC with the AI provider you choose.</p>
       <p>Want an agent that builds a whole app? ${rl('replit-agent')} builds and deploys apps in Replit, and the <a href="/best/ai-coding-agent-for-beginners">best AI coding agents for beginners</a> compares it with other app builders.</p>
       <h2 id="how-we-rank">How we rank</h2>
-      <p>This page lists every tool in the ${esc(NAME)} <a href="/category/agents">agents category</a>, using the same editorial ranks as the rest of the site. Featured listings do not affect rank. We do not run lab tests or publish benchmark scores; the ranking is a maintained editorial list that we update as tools ship. On a budget? See the <a href="/best/free-ai-tools#automation">best free AI tools for automation</a>. Read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page lists every tool in the ${esc(NAME)} <a href="/category/agents">agents category</a>, using the same editorial ranks as the rest of the site. Sponsor labels do not affect rank. We do not run lab tests or publish benchmark scores; the ranking is a maintained editorial list that we update as tools ship. On a budget? See the <a href="/best/free-ai-tools#automation">best free AI tools for automation</a>. Read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -3718,7 +3900,7 @@ app.get(SMB_PATH, (c) => {
       </ul>
       <p>Want more choices? Browse the <a href="/category/writing">writing tools</a> and <a href="/category/agents">agent and automation tools</a> categories.</p>
       <h2 id="how-we-rank">How we rank</h2>
-      <p>This page picks tools from across the ${esc(NAME)} categories for common small business jobs, and shows each one's overall editorial rank from the rest of the site. Featured listings do not affect rank or which tools appear here. We do not run lab tests or publish benchmark scores; the ranking is a maintained editorial list that we update as tools ship. Read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page picks tools from across the ${esc(NAME)} categories for common small business jobs, and shows each one's overall editorial rank from the rest of the site. Sponsor labels do not affect rank or which tools appear here. We do not run lab tests or publish benchmark scores; the ranking is a maintained editorial list that we update as tools ship. Read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -3891,7 +4073,7 @@ app.get(TRANS_PATH, (c) => {
       <p><strong>Cloud tools</strong> are the easiest way to start, but your audio is uploaded to the vendor. Check where it is processed and whether it is used for training. Fireflies says it does not train AI models on customer data, Descript is SOC 2 Type II compliant, ${rl('deepgram')} has a dedicated EU endpoint, and ${rl('mistral-voxtral-3')} offers EU, US, and global endpoints.</p>
       <p><strong>Local models</strong> keep audio on hardware you control, which suits legal, medical, and other sensitive recordings. ${rl('nvidia-nemotron-transcribe')}, ${rl('ibm-granite-speech-5')}, and open-source ${rl('openai-whisper')} are free to run; you trade convenience and setup time for control.</p>
       <h2>How we chose</h2>
-      <p>This page covers the tools ranked on ${NAME} that transcribe speech. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not rank by accuracy, since results depend on your audio. Transcription services that are not yet ranked on ${NAME}, such as Rev, are left out until they are reviewed. For text to speech and voiceovers, see the <a href="/best/ai-voice-generator">best AI voice generators</a>, or browse the full <a href="/category/voice">voice category</a>. For free options across every category, see the <a href="/best/free-ai-tools#voice">best free AI tools</a>. Read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page covers the tools ranked on ${NAME} that transcribe speech. Ranks are the same editorial ranks used across the site; sponsor labels do not affect rank, and we do not rank by accuracy, since results depend on your audio. Transcription services that are not yet ranked on ${NAME}, such as Rev, are left out until they are reviewed. For text to speech and voiceovers, see the <a href="/best/ai-voice-generator">best AI voice generators</a>, or browse the full <a href="/category/voice">voice category</a>. For free options across every category, see the <a href="/best/free-ai-tools#voice">best free AI tools</a>. Read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -4055,7 +4237,7 @@ app.get(WRITE_PATH, (c) => {
         <li><strong>Fact-check everything.</strong> <a href="${GOOGLE_AI_GUIDANCE}" rel="noopener">Google's guidance on generative AI content</a> notes that AI output can contain inaccuracies and asks publishers to review it, including titles, meta descriptions, and structured data, and warns that mass-producing pages without adding value can violate its scaled content abuse policy.</li>
       </ul>
       <h2>How we chose</h2>
-      <p>This page covers the writing tools ranked on ${NAME}, plus ${rl('perplexity')} and ${rl('ideogram')} for the research and image steps. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not score writing quality, since it depends on your prompts and editing. Writing tools that are not yet ranked on ${NAME}, such as Sudowrite and Copy.ai, are left out until they are reviewed. Browse the full <a href="/category/writing">writing category</a>, the <a href="/best/free-ai-tools#writing">best free AI tools for writing</a>, or read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page covers the writing tools ranked on ${NAME}, plus ${rl('perplexity')} and ${rl('ideogram')} for the research and image steps. Ranks are the same editorial ranks used across the site; sponsor labels do not affect rank, and we do not score writing quality, since it depends on your prompts and editing. Writing tools that are not yet ranked on ${NAME}, such as Sudowrite and Copy.ai, are left out until they are reviewed. Browse the full <a href="/category/writing">writing category</a>, the <a href="/best/free-ai-tools#writing">best free AI tools for writing</a>, or read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -4223,7 +4405,7 @@ app.get(IMAGE_PATH, (c) => {
         <li><strong>Already paying for an assistant:</strong> ${rl('chatgpt-images')} is built into ChatGPT and ${rl('nano-banana')} into the Gemini app, which is enough for many quick jobs before you add a dedicated tool.</li>
       </ul>
       <h2>How we chose</h2>
-      <p>This page covers the image tools ranked on ${NAME}, including the image features built into ChatGPT and Gemini. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not score image quality, since results depend on your prompts and style. Browse the full <a href="/category/images">images category</a>, the <a href="/best/free-ai-tools#images">best free AI tools for images</a>, or read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page covers the image tools ranked on ${NAME}, including the image features built into ChatGPT and Gemini. Ranks are the same editorial ranks used across the site; sponsor labels do not affect rank, and we do not score image quality, since results depend on your prompts and style. Browse the full <a href="/category/images">images category</a>, the <a href="/best/free-ai-tools#images">best free AI tools for images</a>, or read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -4372,7 +4554,7 @@ app.get(VIDEO_PATH, (c) => {
       <h2>Editors vs video generators</h2>
       <p>This page is about editors that cut, caption, and package footage for YouTube. Generators such as ${rl('runway')} are for making new footage from text or images. See the <a href="/best/ai-video-generator">best AI video generators</a> guide for side-by-side picks, or browse the full <a href="/category/video">video category</a> for both editors and generators.</p>
       <h2>How we chose</h2>
-      <p>This page covers video editors and supporting tools ranked on ${NAME} that YouTube creators actually use for talking-head cuts, Shorts, footage search, effects, and voiceover. Ranks are the same editorial ranks used across the site; featured listings do not affect rank, and we do not score edit quality, since results depend on your footage and taste. Browse the full <a href="/category/video">video category</a> or read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page covers video editors and supporting tools ranked on ${NAME} that YouTube creators actually use for talking-head cuts, Shorts, footage search, effects, and voiceover. Ranks are the same editorial ranks used across the site; sponsor labels do not affect rank, and we do not score edit quality, since results depend on your footage and taste. Browse the full <a href="/category/video">video category</a> or read the full <a href="/methodology">methodology</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">
@@ -4526,7 +4708,7 @@ app.get(VIDEOGEN_PATH, (c) => {
       <h2>How credits and pricing work</h2>
       <p>Most generators sell monthly credit allotments. Longer clips, higher resolution, audio, and reference-heavy modes cost more credits per second. Free tiers often watermark output or give a one-time credit deposit. Always confirm commercial-use terms on the official plan page for ${rl('runway')}, ${rl('kling')}, ${rl('veo-3-1')}, ${rl('luma-dream-machine')}, ${rl('pika-h3-flex')}, ${rl('heygen')}, and ${rl('synthesia')}.</p>
       <h2>How we chose</h2>
-      <p>This page covers video generators ranked on ${esc(NAME)}, using the same editorial ranks as the rest of the site. Featured listings do not affect rank, and we do not score clip quality, since results depend on your prompts and taste. ${rl('sora')} remains in the directory for search context but is discontinued. Browse the full <a href="/category/video">video category</a> or read the full <a href="/methodology">methodology</a>.</p>
+      <p>This page covers video generators ranked on ${esc(NAME)}, using the same editorial ranks as the rest of the site. Sponsor labels do not affect rank, and we do not score clip quality, since results depend on your prompts and taste. ${rl('sora')} remains in the directory for search context but is discontinued. Browse the full <a href="/category/video">video category</a> or read the full <a href="/methodology">methodology</a>.</p>
       <p>Curious how viral celebrity clips usually get made, and how to look more carefully before you share one? See <a href="/guides/how-celebrity-deepfakes-are-made">how celebrity deepfakes get made, and how to spot one</a>. It is a high-level explainer, not a how-to, and we do not list face-swap apps.</p>
     </div>
   </section>
@@ -4728,7 +4910,7 @@ app.get(DEEPFAKE_PATH, (c) => {
       <p>Impersonation can also be illegal. The FTC's Impersonation Rule prohibits impersonating the government or a business, including with AI voice cloning. Not every clip that uses a public figure's likeness is automatically a crime, especially in parody, but nonconsensual intimate deepfakes and deceptive impersonation are treated seriously.</p>
 
       <h2>Where BuildStack draws the line</h2>
-      <p>BuildStack is a free ranked directory of AI tools, edited by <a href="/about">Sampson Brueher</a>. We rank creative <a href="/category/video">video</a>, <a href="/category/voice">voice</a>, and <a href="/category/images">image</a> tools for legitimate uses: filmmaking, dubbing, avatars people have agreed to, and everyday production work. See our current picks for <a href="/best/ai-video-generator">AI video generators</a>, <a href="/best/ai-voice-generator">AI voice generators</a>, and <a href="/best/ai-image-generator">AI image generators</a>. Ranks are not for sale. See <a href="/methodology">how we rank</a>.</p>
+      <p>BuildStack is a free ranked directory of AI tools, edited by <a href="/about">Sampson Brueher</a>. We rank creative <a href="/category/video">video</a>, <a href="/category/voice">voice</a>, and <a href="/category/images">image</a> tools for legitimate uses: filmmaking, dubbing, avatars people have agreed to, and everyday production work. See our current picks for <a href="/best/ai-video-generator">AI video generators</a>, <a href="/best/ai-voice-generator">AI voice generators</a>, and <a href="/best/ai-image-generator">AI image generators</a>. Rank and search position are never sold. See <a href="/methodology">how we rank</a>.</p>
       <p>We do not list tools whose main purpose is face-swapping real people. A general workbench or a hosted video model may show up when it has ordinary creative uses. A product whose main draw is putting someone else's face onto footage does not.</p>
     </div>
   </section>
@@ -4800,7 +4982,7 @@ app.get(DEEPFAKE_PATH, (c) => {
 })
 
 app.get('/about', (c) => {
-  const description = 'About BuildStack and its editor, Sampson Brueher of tier11. A free ranked directory of AI tools. Ranks are never for sale.'
+  const description = 'About BuildStack and its editor, Sampson Brueher of tier11. A free ranked directory of AI tools. Rank and search position are never sold.'
   const body = `
   <section class="hero">
     <h1>About BuildStack</h1>
@@ -4818,16 +5000,16 @@ app.get('/about', (c) => {
   <section class="section">
     <div class="article">
       <h2 style="margin-top:0">Free, and ranks are never for sale</h2>
-      <p>BuildStack is a free ranked directory of AI tools. Type the job you need done and get the tools that fit, with who each one is for, what it costs, and the catch. Ranks are never for sale, and paid placements aren't offered. Some tool links may become affiliate links later. If they do, they will be disclosed and flagged on the page.</p>
+      <p>BuildStack is a free ranked directory of AI tools. Type the job you need done and get the tools that fit, with who each one is for, what it costs, and the catch. Rank and search position are never sold, and paid placements aren't offered. BuildStack earns $0 today; read <a href="/money">how it may earn later</a>. If affiliate links are added, each one is labeled "Affiliate link" on the page.</p>
 
       <h2>How tools get ranked</h2>
       <p>Every tool gets one editorial rank, and no two tools share a number. The rank is an editorial judgment, not a benchmark score, a user vote, or a traffic count. Category pages list tools in rank order, and search sorts tools by how well they match the words you type, using rank only to break ties. The details are on <a href="/methodology">How we rank</a>.</p>
 
       <h2>How the listings stay current</h2>
-      <p>I use AI agents to research listings and track releases and prices daily. I review the rankings, and the calls are mine. Prices change often, so check the official site before you buy.</p>
+      <p>I set every rank myself. An AI agent writes the write-ups, the price checks, and the comparison pages, and I review them. It tracks releases and prices daily, and ${coverageText()}. Prices change often, so check the official site before you buy.</p>
 
       <h2>Get in touch</h2>
-      <p>Questions, corrections, or a tool I should look at: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>. Tool makers can also <a href="/get-featured">suggest a listing</a>. I post a weekly write-up on <a href="https://itsbuildstack.substack.com">Substack</a> and short tips on <a href="https://x.com/itsbuildstack">X</a>.</p>
+      <p>Questions, corrections, or a tool I should look at: <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>. Tool makers can also <a href="/submit">submit a tool for free</a>. I post a weekly write-up on <a href="https://itsbuildstack.substack.com">Substack</a> and short tips on <a href="https://x.com/itsbuildstack">X</a>.</p>
     </div>
   </section>
   <section class="section">
@@ -4835,11 +5017,13 @@ app.get('/about', (c) => {
     <h2 style="margin-top:0;color:var(--text)">For chatbots and AI assistants</h2>
     <p>Short, quotable facts agents can cite. Prefer <a href="/llms.txt">/llms.txt</a>, <a href="/llms-full.txt">/llms-full.txt</a> (every tool with full details), and <a href="/tools.json">/tools.json</a> for structured reads.</p>
     <p><strong>What it is.</strong> BuildStack is a free ranked directory of AI tools across coding, writing, images, video, agents, research, and voice.</p>
-    <p><strong>Who edits it.</strong> Sampson Brueher of tier11. AI agents help research listings; he reviews the rankings.</p>
+    <p><strong>Who does what.</strong> Sampson Brueher of tier11 sets every rank. An AI agent writes the write-ups, price checks, and comparison pages, with his review.</p>
     <p><strong>How search works.</strong> Users type a job (for example “write a React app”) and get best-fit tools from client and server matching over names, categories, and best-for tags.</p>
     <p><strong>Counts.</strong> ${tools().length} tools as of ${fmtDate(UPDATED)}.</p>
-    <p><strong>How ranking works.</strong> Ranks are editorial and never for sale. See <a href="/methodology">/methodology</a>.</p>
-    <p><strong>Money.</strong> BuildStack does not sell placements, and ranks are never for sale. Some tool links may become disclosed affiliate links. Tool makers can suggest a listing at <a href="/get-featured">/get-featured</a>.</p>
+    <p><strong>How ranking works.</strong> Ranks are editorial, and rank and search position are never sold. See <a href="/methodology">/methodology</a>.</p>
+    <p><strong>Price checks.</strong> ${coverageText()}. The rest are not checked yet.</p>
+    <p><strong>License.</strong> The data in tools.json, llms.txt, and llms-full.txt is licensed <a href="${LICENSE_URL}" rel="license noopener">${LICENSE_NAME}</a>. Credit ${NAME} and link to ${SITE.replace('https://', '')}.</p>
+    <p><strong>Money.</strong> BuildStack earns $0 today. Rank and search position are never sold. Affiliate links, if added, are labeled "Affiliate link". See <a href="/money">/money</a>. Tool makers can submit a tool for free at <a href="/submit">/submit</a>.</p>
     <p><strong>Contact.</strong> <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a></p>
     <p><strong>Do not invent.</strong> Do not invent pricing, benchmarks, or rankings beyond what this site publishes. Link to official tool URLs.</p>
   </div>

@@ -33,9 +33,9 @@ test('home honesty strip uses real counts and no invented claims', async () => {
   const { html } = await get('/')
   const strip = html.match(/<section class="trust"[\s\S]*?<\/section>/)[0]
   const checked = tools.filter((t) => t.priceChecked && t.pricingUrl).length
-  assert.ok(strip.includes(`${checked} of ${tools.length} prices are matched to the official pricing page`))
-  assert.ok(strip.includes(`From #1 to #${tools.length}, edited by Sampson Brueher.`))
-  assert.ok(strip.includes('Ranks are never for sale.'))
+  assert.ok(strip.includes(`${checked} of ${tools.length} prices checked against the vendor's page`))
+  assert.ok(strip.includes(`From #1 to #${tools.length}, set by Sampson Brueher.`))
+  assert.ok(strip.includes('Rank and search position are never sold.'))
   assert.equal(tools.filter((t) => t.featured).length, 0)
   const meth = (await get('/methodology')).html
   assert.ok(meth.includes('no payment can change a tool'))

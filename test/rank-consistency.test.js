@@ -111,7 +111,7 @@ test('home Top ranked: big number is the overall rank', async () => {
 })
 
 test('a11y basics: one main landmark, labeled search, visible focus, no outline reset', async () => {
-  const pages = ['/', '/?q=write%20blog%20posts', '/tool/claude', '/best/ai-coding-assistant', '/guides/how-celebrity-deepfakes-are-made', '/about', '/methodology', '/categories', '/category/coding', '/alternatives/cursor', '/get-featured']
+  const pages = ['/', '/?q=write%20blog%20posts', '/tool/claude', '/best/ai-coding-assistant', '/guides/how-celebrity-deepfakes-are-made', '/about', '/methodology', '/categories', '/category/coding', '/alternatives/cursor', '/submit', '/money', '/rank-changelog']
   for (const p of pages) {
     const { status, html } = await get(p)
     assert.equal(status, 200, p)
