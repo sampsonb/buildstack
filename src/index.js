@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import toolsData from './tools.json' with { type: 'json' }
 import { rankTools } from './search.js'
+import { INDEXNOW_KEY } from './indexnow.js'
 
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
@@ -265,7 +266,7 @@ const SECTION_DATES = {
   '/methodology': '2026-11-20',
   '/alternatives/cursor': '2026-10-30',
   '/best/ai-coding-agent-for-beginners': '2026-11-13',
-  '/best/ai-research-assistant': '2026-11-13',
+  '/best/ai-research-assistant': '2026-11-21',
   '/best/free-ai-tools': '2026-11-13',
   '/best/ai-voice-generator': '2026-11-13',
   '/best/ai-coding-assistant': '2026-11-13',
@@ -957,6 +958,9 @@ Allow: /
 
 Sitemap: ${SITE}/sitemap.xml
 `))
+
+// IndexNow key file (SEO item 7). Public by design; see src/indexnow.js and scripts/indexnow.mjs.
+app.get(`/${INDEXNOW_KEY}.txt`, (c) => c.text(INDEXNOW_KEY, 200, { 'cache-control': 'public, max-age=3600' }))
 
 app.get('/sitemap.xml', (c) => {
   const urls = [
@@ -2555,6 +2559,9 @@ const RESEARCH_PICKS = [
   { slug: 'notebooklm', group: 'docs', sources: 'Only the documents and sources you add', best: 'Studying and questioning your own documents' },
   { slug: 'elicit', group: 'papers', sources: 'More than 138 million academic papers', best: 'Literature reviews and pulling data out of studies' },
   { slug: 'consensus', group: 'papers', sources: 'Peer-reviewed research papers', best: 'Seeing what studies say on a yes or no question' },
+  { slug: 'semantic-scholar', group: 'find', sources: 'More than 241 million papers from all fields of science', best: 'Free paper search and citation trails' },
+  { slug: 'scite', group: 'find', sources: 'Full-text articles and the citations between them', best: 'Checking whether later papers supported or contrasted a finding' },
+  { slug: 'undermind', group: 'find', sources: 'The scientific literature, read by a deep search agent', best: 'Finding niche papers on a narrow question' },
   { slug: 'scispace', group: 'papers', sources: 'Academic literature and the papers you pick', best: 'Summarizing and comparing many papers, then checking citations' },
   { slug: 'scholarcy', group: 'papers', sources: 'Papers, articles, chapters, and videos you add', best: 'Turning papers into summary flashcards and notes' },
   { slug: 'claude', group: 'papers', sources: 'PDFs and files you upload, plus web search', best: 'Close reading and discussion of long PDFs' },
@@ -2566,6 +2573,9 @@ const RESEARCH_TASKS = [
   ['Ask questions about my own notes, PDFs, or slides', 'notebooklm'],
   ['Run a literature review or extract data from studies', 'elicit'],
   ['See what peer-reviewed studies say on a question', 'consensus'],
+  ['Find papers on a topic for free', 'semantic-scholar'],
+  ['Find hard-to-find papers on a narrow question', 'undermind'],
+  ['Check whether a finding held up in later papers', 'scite'],
   ['Summarize and compare a stack of papers, then check my citations', 'scispace'],
   ['Turn papers into flashcards and study notes', 'scholarcy'],
   ['Discuss one long PDF in depth', 'claude'],
@@ -2615,6 +2625,14 @@ function researchFaq(d) {
     a: 'Use them as a starting point, not as the final word. AI summaries can drop key limits, misread numbers, or attach a citation to the wrong claim. Open each source, find the passage that supports the claim, check the study design and sample size, and cite the original paper.',
   })
   faq.push({
+    q: 'How do I check whether a paper still holds up?',
+    a: `Look it up in ${r('scite')}. Its Smart Citations show the sentences in later papers that cite it and label each one as supporting, contrasting, or mentioning. Read the contrasting citations yourself: one may challenge only a method or a single result.`,
+  })
+  faq.push({
+    q: 'What is the best free tool to find research papers?',
+    a: `${r('semantic-scholar')} is free, run by the nonprofit Ai2, and searches more than 241 million papers. For a hard, narrow question, ${r('undermind')} has a free plan and a deep search that reads and ranks papers for a plain-language description.`,
+  })
+  faq.push({
     q: 'Is there a free AI research assistant?',
     a: `Yes. These picks have a free plan: ${free.map((p) => `${p.t.name} (${p.t.pricingNote})`).join('; ')}. Free plans have usage limits, so check each official pricing page.`,
   })
@@ -2658,7 +2676,7 @@ app.get(RESEARCH_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.best)}</td><td>${esc(p.sources)}</td><td>${esc(p.t.pricingNote || 'See official site')}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${fmtDate(SD)}. Prices and limits change, so check the official site before you pay.</p>
+    <p class="muted" style="font-size:.88rem">Pricing notes come from each tool's official site; each tool page shows the date we last checked its price where we have one. Prices and limits change, so check the official site before you pay.</p>
   </section>
   <section class="section">
     <h2>Best for web research with citations</h2>
@@ -2669,6 +2687,11 @@ app.get(RESEARCH_PATH, (c) => {
     <h2>Best for working with your own documents</h2>
     <p>When the answer has to come from your own files, use a tool that stays inside the sources you give it. ${rl('notebooklm')} answers only from the notes, PDFs, and links you add to a notebook.</p>
     ${panel('notebooklm')}
+  </section>
+  <section class="section" id="find-and-check-papers">
+    <h2>Best for finding papers and checking citations</h2>
+    <p>Before you summarize, find the right papers and check how they were received. ${rl('semantic-scholar')} is a free search engine for papers, ${rl('undermind')} runs a slower deep search for narrow questions, and ${rl('scite')} shows whether later papers supported or contrasted a finding.</p>
+    ${panel('semantic-scholar')}${panel('undermind')}${panel('scite')}
   </section>
   <section class="section">
     <h2>Best for summarizing research papers</h2>

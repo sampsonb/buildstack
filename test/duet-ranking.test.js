@@ -161,7 +161,7 @@ const ADDED = [
 
 test('2026-11-20 coverage tools exist with full fields and consecutive ranks', () => {
   assert.ok(tools.every((t, i) => t.rank === i + 1))
-  assert.equal(tools.length, 157)
+  assert.ok(tools.length >= 157)
   for (const [slug, cat] of ADDED) {
     const t = tools.find((x) => x.slug === slug)
     assert.ok(t, slug)
@@ -191,8 +191,10 @@ test('2026-11-20 coverage tool pages return 200 and site-wide date is honest', a
   for (const [slug] of ADDED) assert.equal((await app.request(`http://local/tool/${slug}`)).status, 200, slug)
   const json = await (await app.request('http://local/tools.json')).json()
   assert.equal(json.count, tools.length)
-  assert.equal(json.updated, '2026-11-20')
+  const latest = tools.reduce((m, t) => (t.updated > m ? t.updated : m), '')
+  assert.ok(latest >= '2026-11-20')
+  assert.equal(json.updated, latest)
   const llms = await (await app.request('http://local/llms.txt')).text()
-  assert.match(llms, /Updated: 2026-11-20/)
-  assert.match(llms, /Tools: 157/)
+  assert.ok(llms.includes(`Updated: ${latest}`))
+  assert.ok(llms.includes(`Tools: ${tools.length}`))
 })
