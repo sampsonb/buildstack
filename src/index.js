@@ -1389,7 +1389,6 @@ app.get('/', (c) => {
       <a class="pill" href="/best/ai-image-generator">Best AI image generators</a>
       <a class="pill" href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>
       <a class="pill" href="/best/ai-video-generator">Best AI video generators</a>
-      <a class="pill" href="/guides/how-celebrity-deepfakes-are-made">How celebrity deepfakes get made</a>
     </div>
   </section>
   <section class="section" id="faq">
@@ -1848,6 +1847,17 @@ app.get('/tool/:slug', (c) => {
 const RANK_CHANGELOG = [
   {
     date: '2026-11-21',
+    title: 'Three tools left the top 30 under the Available today rule',
+    summary: 'Wix Studio Two, Qwen Code, and Junie were moved below the generally available tools in the coding category, so they left the top 30. Expo Simulators is now #30. Tools already below Expo Simulators kept their ranks.',
+    slugs: ['wix-studio-two', 'qwen-code', 'junie'],
+    notes: [
+      'Wix Studio Two: parts of it are still in beta or coming soon.',
+      'Qwen Code: it is a 1.0 preview.',
+      'Junie: JetBrains is retiring the standalone plugin, which stops working Dec 3, 2026.',
+    ],
+  },
+  {
+    date: '2026-11-21',
     title: 'Rank reasons published',
     summary: 'Each of the top 30 tools now has a one-line reason on its tool page and in /tools.json (the rankReason field), and the ranking criteria are on the methodology page. No rank changed in this update.',
   },
@@ -2005,16 +2015,17 @@ app.get('/methodology', (c) => {
     <h2 id="criteria">Ranking criteria</h2>
     <p>Sampson sets each rank by hand. He weighs these things:</p>
     <ul class="clean">
-      <li><strong>The job.</strong> How well the tool does its main job for a typical person, judged from the tool maker's own docs and plans and from public use.</li>
-      <li><strong>Available today.</strong> Tools you can use now sit above waitlists, previews, and APIs that are not live.</li>
-      <li><strong>Range.</strong> Tools that fit many people and jobs sit above narrower ones, within reason.</li>
-      <li><strong>Access and price.</strong> A real free plan, clear published prices, and honest limits help a tool. Costs and limits we find are listed as the watch-out.</li>
-      <li><strong>Upkeep.</strong> Tools that keep shipping and keep their docs and pricing current sit higher. Discontinued tools are marked and left out of search results.</li>
+      <li><strong>The job.</strong> How well it does its main job for a typical person. We go by the maker's docs and plans, public reviews, and hands-on use where we have it.</li>
+      <li><strong>Available today.</strong> Tools anyone can sign up for and use now rank above waitlists, invite-only rollouts, previews, and APIs that are not live.</li>
+      <li><strong>Range.</strong> Tools that serve many people and jobs rank above single-purpose ones, unless the narrow tool is clearly better at its one job.</li>
+      <li><strong>Access and price.</strong> A usable free plan, prices published on the maker's site, and stated usage limits all help. The main cost or limit goes in the watch-out.</li>
+      <li><strong>Upkeep.</strong> Tools with regular updates and current docs and prices rank higher. Discontinued or retiring tools are marked, and discontinued ones are left out of search.</li>
     </ul>
+    <p>When criteria pull in different directions, The job wins, then Available today, then Access and price, then Range, then Upkeep.</p>
     <p>These are not scores, and we do not publish scores. What does not count: payment of any kind, affiliate status, sponsor status, requests from tool makers, and traffic. A tool maker can correct a fact, such as a price or a link, but cannot ask for a rank. Every change that adds, moves, or removes a ranked tool is logged on the <a href="/rank-changelog">rank changelog</a>.</p>
 
     <h2 id="who">Who does what</h2>
-    <p>Sampson Brueher sets every rank. An AI agent writes the write-ups, the price checks, and the comparison pages, and Sampson reviews them. The agent can make mistakes, so please send corrections to <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>.</p>
+    <p>Sampson Brueher sets every rank. Write-ups and price checks are drafted with AI help and checked against the maker's pages, and Sampson reviews them. Comparison pages are drafted the same way. The drafts can contain mistakes, so please send corrections to <a href="mailto:buildstack@tier11.com">buildstack@tier11.com</a>.</p>
 
     <h2 id="top30">Why the top ${top30.length} sit where they do</h2>
     <p>One line for each of the first ${top30.length} ranks. The same line is on the tool's page and in <a href="/tools.json">/tools.json</a> as rankReason.</p>
@@ -2031,7 +2042,7 @@ app.get('/methodology', (c) => {
     <h3>Words matched come first</h3>
     <p>BuildStack counts how many of your own words each tool matches anywhere in its listing. Words that only say what kind of thing you want, such as assistant, generator, maker, software, or platform, do not count. When at least three tools match two or more of your words, tools that match only one are listed after the rest, under Show all, instead of in the numbered results. If fewer than three tools match two or more words, the numbered list is filled up to three from the next best matches in the chosen category, when those matches are in the name, tagline, best-for tags, or keywords.</p>
     <p>Each listing has a type. Raw models (API or open-weight) are listed after apps unless your search asks for an API, a model, an SDK, local or offline use, open source, open weights, or self-hosting, and when at least one app is a strong match they wait under Show all. Developer tools, browser extensions, and infrastructure are also listed after apps, unless your search names that kind of tool (such as extension, CLI, or API) or the tool matches more of your words than every app, or as many words with a higher score.</p>
-    <p>Each listing also has a status. Discontinued tools are left out unless you search for one by name. Tools on a waitlist, and tools whose API is announced but not live, come after tools you can use today.</p>
+    <p>Each listing also has a status. Discontinued tools are left out unless you search for one by name. Tools on a waitlist, and tools whose API is announced but not live, come after tools you can use today. Retiring tools are marked and stay in search until they are discontinued.</p>
     <h3>Category group</h3>
     <p>Words of one or two letters still match, but they do not choose the category. BuildStack sees which category the other matches support. The word with the fewest name or best-for matches wins when it points at one category, so a narrower word beats a broader one, and tools in that category are listed first. If that word's matches spread across two or more categories and no category holds two thirds of them, no category group is used. A category word such as coding, video, or voice picks its own category unless a job word such as blog, chatbot, browser, logo, or translate points elsewhere. Inside the group, a tool that matches a narrower word in its name or best-for tags comes before one that only matches a broad word.</p>
     <h3>Points</h3>

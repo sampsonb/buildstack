@@ -84,7 +84,7 @@ test('real catalog: release 3 data fields', () => {
     if ('freePlan' in x) assert.equal(typeof x.freePlan, 'boolean', x.slug)
     if ('byoModel' in x) assert.equal(typeof x.byoModel, 'boolean', x.slug)
     if (x.type) assert.ok(['app', 'browser', 'api-model', 'open-weight-model', 'infrastructure', 'developer-tool', 'extension'].includes(x.type), x.slug)
-    if (x.status) assert.ok(['live', 'discontinued', 'api-not-live', 'waitlist'].includes(x.status), x.slug)
+    if (x.status) assert.ok(['live', 'discontinued', 'api-not-live', 'waitlist', 'retiring'].includes(x.status), x.slug)
   }
   const shown = (q) => slugs(topShown(rankTools(tools, q), 6))
   assert.equal(shown('run coding agents in parallel')[0], 'harness-autonomous')

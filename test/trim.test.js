@@ -50,7 +50,10 @@ test('home: no full cards, every guide and category still linked, top 12 linked 
   const sm = (await get('/sitemap.xml')).html
   const guides = [...sm.matchAll(/<loc>https:\/\/buildstack\.tier11\.com(\/(?:best|alternatives|guides)\/[^<]+)<\/loc>/g)].map((m) => m[1])
   assert.ok(guides.length >= 14)
-  for (const g of guides) assert.ok(html.includes(`href="${g}"`), g)
+  const featured = guides.filter((g) => g !== '/guides/how-celebrity-deepfakes-are-made')
+  assert.ok(guides.includes('/guides/how-celebrity-deepfakes-are-made'), 'deepfake guide stays in the sitemap')
+  assert.equal(html.includes('href="/guides/how-celebrity-deepfakes-are-made"'), false, 'deepfake guide is not featured on the homepage')
+  for (const g of featured) assert.ok(html.includes(`href="${g}"`), g)
   for (const c of new Set(tools.map((t) => t.category))) assert.ok(html.includes(`href="/category/${c}"`), c)
   for (const t of byRank.slice(0, 12)) assert.ok(html.includes(`href="/tool/${t.slug}"`), t.slug)
 })

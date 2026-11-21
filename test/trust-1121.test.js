@@ -124,7 +124,7 @@ test('methodology states criteria, who does what, affiliate labeling, license, a
   const text = visible(html)
   assert.ok(html.includes('id="criteria"') && text.includes('Ranking criteria'))
   assert.ok(text.includes('Sampson sets each rank by hand'))
-  assert.ok(text.includes('Sampson Brueher sets every rank. An AI agent writes the write-ups, the price checks, and the comparison pages, and Sampson reviews them.'))
+  assert.ok(text.includes('Sampson Brueher sets every rank. Write-ups and price checks are drafted with AI help and checked against the maker\'s pages, and Sampson reviews them.'))
   assert.ok(text.includes('visible "Affiliate link" label') && text.includes('affiliate flag'))
   assert.ok(text.includes('No affiliate links are live today'))
   assert.ok(text.includes('CC BY 4.0'))

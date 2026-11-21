@@ -50,7 +50,7 @@ test('deepfake explainer is published with metadata, FAQ, sources, and listings'
   assert.match(videogen, /href="\/guides\/how-celebrity-deepfakes-are-made"/)
   const home = await (await app.request('http://local/')).text()
   const guides = home.match(/id="guides"[\s\S]*?<\/section>/)[0]
-  assert.match(guides, /href="\/guides\/how-celebrity-deepfakes-are-made"/)
+  assert.equal(guides.includes('href="/guides/how-celebrity-deepfakes-are-made"'), false, 'deepfake guide stays live but is not featured on the homepage')
 
   assert.match(html, /<figure class="hero-art capped">/)
   assert.match(html, /<source type="image\/avif" srcset="\/guides\/deepfake-hero-800\.avif 800w, \/guides\/deepfake-hero-1200\.avif 1200w, \/guides\/deepfake-hero\.avif 2172w"/)
