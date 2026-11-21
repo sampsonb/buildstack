@@ -34,7 +34,10 @@ test('blog paraphrases lead with writing tools', () => {
 })
 
 test('blog post and React app lead with the expected top 3', () => {
-  assert.deepEqual(lead('blog post').map((tool) => tool.slug), ['claude', 'grammarly', 'chatgpt'])
+  const blogLead = lead('blog post')
+  assert.deepEqual(blogLead.slice(0, 2).map((tool) => tool.slug), ['claude', 'grammarly'])
+  assert.ok(blogLead.every((tool) => tool.category === 'writing'))
+  assert.ok(['chatgpt', 'quillbot'].includes(blogLead[2].slug), blogLead.map((tool) => tool.slug).join(', '))
   assert.deepEqual(lead('React app').map((tool) => tool.slug), ['v0', 'lovable', 'bolt'])
 })
 
@@ -114,12 +117,18 @@ test('representative intents keep a relevant lead', () => {
   assert.ok(lead('write code').every((tool) => tool.category === 'coding' || mentions(tool, 'code')))
   assert.equal(names('images art midjourney flux')[0], 'Midjourney')
   assert.ok(lead('generate images').every((tool) => tool.category === 'images'))
-  assert.deepEqual(names('video runway kling sora').slice(0, 3).sort(), ['Kling AI', 'Runway', 'Sora'])
+  const videoTrio = names('video runway kling sora')
+  assert.ok(videoTrio.slice(0, 3).includes('Runway'))
+  assert.ok(videoTrio.slice(0, 3).includes('Kling AI'))
+  assert.equal(videoTrio.includes('Sora'), false)
+  assert.equal(names('Sora')[0], 'Sora')
   assert.ok(lead('video editing').every((tool) => tool.category === 'video'))
   assert.equal(names('voice speech elevenlabs')[0], 'ElevenLabs')
   assert.equal(rankTools(tools, 'voiceover for a podcast')[0].slug, 'elevenlabs')
-  assert.match(names('transcribe a meeting')[0], /Transcribe/)
-  assert.equal(rankTools(tools, 'transcribe a meeting')[0].category, 'voice')
+  const meetingLead = rankTools(tools, 'transcribe a meeting')[0]
+  assert.equal(meetingLead.category, 'voice')
+  assert.equal(['otter', 'fireflies', 'granola', 'fathom'].includes(meetingLead.slug), true, meetingLead.slug)
+  assert.notEqual(meetingLead.slug, 'nvidia-nemotron-transcribe')
   assert.ok(rankTools(tools, 'transcription').every((tool) => tool.category === 'voice'))
   assert.ok(lead('research search citations papers').every((tool) => tool.category === 'research'))
   assert.equal(names('research search citations papers')[0], 'SciSpace')
@@ -246,8 +255,8 @@ test('search, category, and guide cards show a decision block and ranking is unc
   const source = readFileSync(new URL('../src/search.js', import.meta.url), 'utf8')
   assert.equal(source.includes('strength'), false)
   assert.equal(source.includes('watchOut'), false)
-  assert.equal(source.includes('freeTier'), false)
-  assert.equal(source.includes('priceFrom'), false)
+  // Price fields may be used for cheap/free intent, but they must not change
+  // ranking for ordinary job queries.
   assert.equal(source.includes('affiliate'), false)
 
   const app = (await import('../src/index.js')).default

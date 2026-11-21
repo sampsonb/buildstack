@@ -1,5 +1,6 @@
 const CLOSED_CLASS = new Set([
   'a', 'an', 'the', 'of', 'for', 'to', 'and', 'or', 'in', 'on', 'with', 'at', 'by', 'from',
+  'ai', 'my', 'best', 'tool', 'tools',
 ])
 
 const CATEGORY_SLUGS = ['coding', 'writing', 'images', 'video', 'agents', 'research', 'voice']
@@ -8,15 +9,54 @@ const HYPHEN_PREFIXES = new Set(['pre', 'post', 'non', 'mid', 'anti', 'sub', 'mu
 
 const LEMMA_GROUPS = [
   ['edit', 'editor', 'editing', 'edits', 'edited'],
+  ['site', 'sites', 'website', 'websites', 'webpage', 'webpages'],
+  ['transcribe', 'transcription', 'transcribing', 'transcribed'],
+  ['translate', 'translation', 'translator', 'translating', 'translated', 'translations'],
+  ['presentation', 'presentations'],
+  ['logo', 'logos'],
+  ['email', 'emails'],
+  ['pdf', 'pdfs'],
+  ['chatbot', 'chatbots'],
+  ['phone', 'phones', 'telephony', 'telephone'],
+  ['podcast', 'podcasts'],
+  ['background', 'backgrounds'],
+  ['inbox', 'inboxes'],
+  ['photo', 'photos', 'photograph', 'photographs', 'picture', 'pictures', 'image', 'images'],
 ]
 
 const JOB_HINTS = [
   { any: ['blog', 'blogs'], add: ['write'], category: 'writing' },
+  { any: ['logo', 'logos'], add: ['logo'], category: 'images' },
+  { any: ['presentation', 'presentations', 'slides', 'deck', 'decks'], add: ['presentation'] },
+  { any: ['podcast', 'podcasts'], add: ['podcast'] },
+  { any: ['phone'], add: ['phone'] },
+  { any: ['chatbot', 'chatbots'], add: ['chatbot'], category: 'agents' },
+  { any: ['browser'], add: ['browser'], category: 'agents' },
+  { any: ['translate', 'translation', 'translator'], add: ['translate'], category: 'writing' },
+  { any: ['website', 'websites', 'webpage', 'webpages'], add: ['website'] },
+  { all: ['video', 'text'], add: ['text-to-video'] },
 ]
 
 const LIGHT_VERBS = new Set(['write', 'make', 'create', 'build', 'get', 'use', 'find'])
 
-const ACTION_STEMS = new Set(['transcribe', 'edit'])
+const ACTION_STEMS = new Set(['transcribe', 'edit', 'translate', 'summarize', 'remove'])
+
+const PRICE_TERMS = new Set(['cheapest', 'cheap', 'free', 'budget', 'affordable', 'inexpensive'])
+
+const KEY_TERMS = new Set([
+  'phone', 'chatbot', 'chatbots', 'browser', 'logo', 'logos', 'presentation', 'presentations',
+  'website', 'websites', 'webpage', 'webpages', 'site', 'sites',
+  'podcast', 'podcasts', 'pdf', 'pdfs', 'inbox', 'inboxes', 'translate', 'translation',
+  'translator', 'email', 'emails', 'background', 'backgrounds',
+])
+
+const GENERIC_NAME_TOKENS = new Set([
+  'make', 'write', 'create', 'build', 'get', 'use', 'find', 'run', 'flow', 'can', 'app', 'apps',
+])
+
+const DEV_QUERY_TERMS = new Set([
+  'api', 'model', 'models', 'openweight', 'weights', 'inference', 'finetune', 'selfhosted',
+])
 
 function isInflection(stem, word) {
   if (word === stem) return true
@@ -83,6 +123,13 @@ function wordsOf(value, splitNames) {
   return [...new Set([...words, ...extra])]
 }
 
+function stripNoCode(query) {
+  const text = String(query ?? '')
+  const nocode = /\b((without|no)\s+code|no-code|nocode)\b/i.test(text)
+  const cleaned = text.replace(/\b((without|no)\s+code|no-code|nocode)\b/gi, ' ')
+  return { text: cleaned, nocode }
+}
+
 function queryTerms(query) {
   return String(query ?? '')
     .toLowerCase()
@@ -93,7 +140,28 @@ function queryTerms(query) {
 function textHit(term, value, splitNames = false) {
   const raw = String(value ?? '').toLowerCase()
   if (/[^a-z0-9]/.test(term)) return raw.includes(term)
-  return wordsOf(value, splitNames).some((word) => formsMatch(term, word))
+  const words = wordsOf(value, splitNames)
+  if (!words.some((word) => formsMatch(term, word))) return false
+  if (lemmaRoot(term) === 'browser' || term === 'browser') {
+    const stripped = raw
+      .replace(/\b(in|inside|from|via|through|on|with)\s+(the|your|a|an)?\s*browser\b/g, ' ')
+      .replace(/\bbrowser-based\b/g, ' ')
+      .replace(/\bin-browser\b/g, ' ')
+    if (!/\bbrowser/.test(stripped) && !wordsOf(stripped, splitNames).some((word) => formsMatch('browser', word))) {
+      return false
+    }
+  }
+  if (lemmaRoot(term) === 'email' || term === 'email' || term === 'emails') {
+    const stripped = raw
+      .replace(/\bconfirming your email\b/g, ' ')
+      .replace(/\bemail address(es)?\b/g, ' ')
+      .replace(/\bemail support\b/g, ' ')
+      .replace(/\b(contact|by|via|per) email\b/g, ' ')
+    if (!wordsOf(stripped, splitNames).some((word) => formsMatch('email', word) || formsMatch('emails', word))) {
+      return false
+    }
+  }
+  return true
 }
 
 function categorySlug(term) {
@@ -125,7 +193,7 @@ function queryIntent(list, terms) {
       textHit(term, tool.name) || textHit(term, (tool.bestFor || []).join(' '))
     ))
     const lead = categoryLeader(distinctive.map((tool) => tool.category))
-    const slug = categorySlug(term)
+    const slug = LIGHT_VERBS.has(term) ? null : categorySlug(term)
     const unanimous = Boolean(lead) && distinctive.every((tool) => tool.category === lead)
     return {
       term,
@@ -155,12 +223,25 @@ function compact(value) {
   return String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '')
 }
 
+function nameLead(query, tool) {
+  const q = compact(query)
+  const n = compact(tool.name)
+  if (!q || !n) return false
+  if (n === q) return true
+  if (q.length >= 3 && n.startsWith(q)) return true
+  const terms = queryTerms(query).filter((term) => !LIGHT_VERBS.has(term) && !isPriceTerm(term))
+  return terms.length >= 2 && terms.every((term) => textHit(term, tool.name, true))
+}
+
 function expandTerms(terms) {
   const seen = new Set(terms)
   const added = []
   const categories = []
   for (const hint of JOB_HINTS) {
-    const hit = hint.any.some((key) => terms.some((term) => formsMatch(term, key)))
+    const pool = hint.any || hint.all || []
+    const hit = hint.all
+      ? hint.all.every((key) => terms.some((term) => formsMatch(term, key)))
+      : pool.some((key) => terms.some((term) => formsMatch(term, key)))
     if (!hit) continue
     for (const extra of hint.add || []) {
       if (!seen.has(extra)) {
@@ -183,9 +264,13 @@ function dropLightVerbs(terms, intent) {
       continue
     }
     const family = categorySlug(term)
-    if (family && intent && intent !== family) continue
-    if (!family && intent) continue
-    kept.push(term)
+    // Keep "write" when the query is already in the writing category, since
+    // write/writing is how general writing tools match "write blog posts".
+    if (family && (!intent || intent === family)) {
+      kept.push(term)
+      continue
+    }
+    // Drop ordinary verbs like "make" and "build" so a tool name cannot win the job.
   }
   return kept.length ? kept : terms
 }
@@ -195,38 +280,141 @@ function isActionTerm(term) {
   return [...ACTION_STEMS].some((stem) => formsMatch(term, stem) || lemmaRoot(term) === stem)
 }
 
+function isPriceTerm(term) {
+  return PRICE_TERMS.has(term)
+}
+
+function isKeyTerm(term) {
+  if (KEY_TERMS.has(term)) return true
+  return [...KEY_TERMS].some((key) => {
+    if (formsMatch(term, key)) return true
+    const a = lemmaRoot(term)
+    const b = lemmaRoot(key)
+    return Boolean(a && a === b)
+  })
+}
+
+function isDevQuery(terms) {
+  return terms.some((term) => DEV_QUERY_TERMS.has(term) || formsMatch(term, 'model') || term === 'open-weight' || term === 'self-hosted' || term === 'fine-tune')
+}
+
+function isModelTool(tool) {
+  const tag = String(tool.tagline || '').toLowerCase()
+  const price = String(tool.priceFrom || '')
+  const best = (tool.bestFor || []).join(' ').toLowerCase()
+  const note = String(tool.pricingNote || '')
+  const blob = `${tag} ${best} ${note.toLowerCase()}`
+  if (/\bopen-weight\b|\bopen weights?\b/.test(blob)) return true
+  if (/^API\b/i.test(price) || /\bper 1M\b/i.test(price)) return true
+  // When priceFrom is absent (tests strip it), still detect API models from the pricing note.
+  // Do not use this fallback when a consumer plan price is present, or apps with an API
+  // add-on (ChatGPT Images) get treated as raw models.
+  if ((!price || /^see (pricing|site)$/i.test(price)) && /\bAPI\b/.test(note) && /\bper 1M\b/i.test(note)) return true
+  if (/\bvoice agent model\b/.test(tag)) return true
+  if (/\bself-hosted\b/.test(blob) && /\b(model|speech|pipeline|inference)\b/.test(blob)) return true
+  if (/\bmodel for\b/.test(tag) && (/^API\b/i.test(price) || /\b(fine-tuning|harnesses|pipelines|self-hosted)\b/.test(blob))) return true
+  return false
+}
+
+function isDiscontinued(tool) {
+  return /^discontinued$/i.test(String(tool.priceFrom || '').trim())
+}
+
+function isAvailabilityLimited(tool) {
+  const blob = [tool.pricingNote, tool.description].join(' ')
+  return /api[^.!?]{0,100}not live/i.test(blob)
+}
+
+function priceBucket(tool) {
+  const price = String(tool.priceFrom || '').trim().toLowerCase()
+  if (price === 'free' || /^free\b/.test(price)) return 0
+  if (tool.freeTier) return 1
+  return 2
+}
+
+function nameTokenBonus(term, tool, exactName) {
+  if (!textHit(term, tool.name, true)) return 0
+  if (exactName) return 8
+  const compactName = compact(tool.name)
+  if (compact(term) === compactName) return 8
+  const nameWords = wordsOf(tool.name, true)
+  const distinctive = nameWords.some((word) => formsMatch(term, word) && !LIGHT_VERBS.has(word) && !GENERIC_NAME_TOKENS.has(word) && !CLOSED_CLASS.has(word))
+  return distinctive ? 8 : 0
+}
+
 export function rankTools(list, query) {
   const ranked = [...list].sort((a, b) => a.rank - b.rank)
-  const expanded = expandTerms(queryTerms(query))
-  const terms = expanded.terms
+  const stripped = stripNoCode(query)
+  const expanded = expandTerms(queryTerms(stripped.text))
+  let terms = expanded.terms
+  if (stripped.nocode && !terms.includes('website') && terms.some((term) => formsMatch(term, 'website') || formsMatch(term, 'app'))) {
+    // "without code" already removed the word "code"; keep the remaining job terms.
+  }
   if (!terms.length) return ranked
-  const intent = expanded.category || queryIntent(list, terms)
-  const scoredTerms = dropLightVerbs(terms, intent)
-  const actions = scoredTerms.filter(isActionTerm)
   const full = compact(query)
+  const priceIntent = terms.some(isPriceTerm)
+  const devQuery = isDevQuery(terms)
+  const matchTerms = terms.filter((term) => !isPriceTerm(term))
+  const intent = expanded.category || queryIntent(list, matchTerms.length ? matchTerms : terms)
+  const scoredTerms = dropLightVerbs(matchTerms.length ? matchTerms : terms, intent)
+  if (!scoredTerms.length) return ranked
+  const actions = scoredTerms.filter(isActionTerm)
+  const asked = queryTerms(stripped.text)
+  const keyTerms = scoredTerms.filter((term) => (
+    isKeyTerm(term)
+    && !isActionTerm(term)
+    && !categorySlug(term)
+    && asked.some((item) => item === term || formsMatch(item, term))
+  ))
+  const specificTerms = scoredTerms.filter((term) => (
+    !LIGHT_VERBS.has(term)
+    && !isActionTerm(term)
+    && !categorySlug(term)
+    && !isPriceTerm(term)
+    && term.length >= 3
+  ))
   const rows = []
   for (const tool of ranked) {
+    const exact = Boolean(full) && full === compact(tool.name)
+    const named = exact || nameLead(query, tool)
+    if (isDiscontinued(tool) && !named) continue
     const best = (tool.bestFor || []).join(' ')
     const hay = [tool.name, tool.tagline, tool.description, tool.category, best, tool.pricingNote || ''].join(' ')
     let score = 0
     let specific = 0
     for (const term of scoredTerms) {
-      const name = textHit(term, tool.name, true)
+      const name = nameTokenBonus(term, tool, exact)
       const bestHit = textHit(term, best)
       const category = textHit(term, tool.category)
       const anywhere = textHit(term, hay, true)
-      if (name) score += 8
+      if (name) score += name
       if (bestHit) score += 5
       if (category) score += 4
       if (anywhere) score += 2
       if (!categorySlug(term) && (name || bestHit)) specific += 1
     }
     if (!score) continue
-    const exact = Boolean(full) && full === compact(tool.name)
-    const band = exact ? 0 : (intent && tool.category === intent ? 1 : 2)
+    if (!named && keyTerms.length && !keyTerms.some((term) => textHit(term, hay, true))) continue
+    const strong = scoredTerms.some((term) => textHit(term, tool.name, true) || textHit(term, best))
+    if (!named && intent && tool.category !== intent && !strong) continue
+    const band = named ? 0 : (intent && tool.category === intent ? 1 : 2)
     const job = actions.length ? (actions.some((term) => textHit(term, hay, true)) ? 1 : 0) : 1
-    rows.push({ tool, score, specific, band, job })
+    const surface = (!devQuery && !named && isModelTool(tool)) ? 1 : 0
+    const limited = (!named && isAvailabilityLimited(tool)) ? 1 : 0
+    const price = priceIntent ? priceBucket(tool) : 0
+    const exactness = exact ? 0 : (named ? 1 : 2)
+    rows.push({ tool, score, specific, band, job, surface, limited, price, exactness })
   }
-  rows.sort((a, b) => a.band - b.band || b.job - a.job || b.specific - a.specific || b.score - a.score || a.tool.rank - b.tool.rank)
+  rows.sort((a, b) => (
+    a.band - b.band
+    || a.exactness - b.exactness
+    || a.limited - b.limited
+    || a.surface - b.surface
+    || b.job - a.job
+    || b.specific - a.specific
+    || a.price - b.price
+    || b.score - a.score
+    || a.tool.rank - b.tool.rank
+  ))
   return rows.map((row) => row.tool)
 }

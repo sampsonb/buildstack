@@ -5,7 +5,7 @@ import { rankTools } from './search.js'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
-const UPDATED = '2026-11-13'
+const UPDATED = toolsData.reduce((latest, t) => (t.updated && t.updated > latest ? t.updated : latest), '2026-11-13')
 
 const CATEGORIES = {
   coding: { label: 'Coding', blurb: 'Editors, agents, and coding assistants' },
@@ -1009,6 +1009,8 @@ app.get('/llms.txt', (c) => {
     `> Free ranked directory of AI tools. Type a use case, get best-fit tools. Ranks are not for sale.`,
     ``,
     `Site: ${SITE}`,
+    `Updated: ${UPDATED}`,
+    `Tools: ${tools().length}`,
     `Machine-readable: ${SITE}/tools.json`,
     `Full tool details for LLMs: ${SITE}/llms-full.txt`,
     `Human summary for bots: ${SITE}/about`,

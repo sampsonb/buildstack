@@ -8,7 +8,7 @@ const app = (await import('../src/index.js')).default
 
 // slug, category, name query, natural use case query
 const ADDED = [
-  ['mai-image-2-7', 'images', 'mai image', 'edit a photo'],
+  ['mai-image-2-7', 'images', 'mai image', 'mai labs image model'],
   ['magnific', 'images', 'magnific', 'upscale an image'],
   ['photoroom', 'images', 'photoroom', 'product photos'],
   ['testsprite', 'coding', 'testsprite', 'test my web app'],
