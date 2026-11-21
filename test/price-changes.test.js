@@ -12,7 +12,7 @@ test('price changes page lists dated entries with old, new and official source',
   assert.equal(status, 200)
   assert.match(text, /<h1>AI Price Changes Log<\/h1>/)
   assert.match(text, /Edited by <a href="\/about">Sampson Brueher<\/a>/)
-  assert.match(text, /<tr id="deepseek-2026-11-18"><td>2026-11-18<\/td><td><a href="\/tool\/deepseek">DeepSeek<\/a>/)
+  assert.match(text, /<tr id="deepseek-2026-11-18"><td><a href="\/price-changes\/deepseek-2026-11-18">2026-11-18<\/a><\/td><td><a href="\/tool\/deepseek">DeepSeek<\/a>/)
   assert.ok(text.includes('$0.75 per 1,000 searches and $0.75 per 1,000 fetches'))
   assert.ok(text.includes('href="https://api-docs.deepseek.com/quick_start/pricing/"'))
   assert.ok(text.includes('href="https://web.archive.org/web/20261116200941/https://api-docs.deepseek.com/quick_start/pricing/"'))
@@ -20,7 +20,7 @@ test('price changes page lists dated entries with old, new and official source',
   const ld = [...text.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]))
   const art = ld.flatMap((x) => x['@graph'] || [x]).find((x) => x['@type'] === 'Article')
   assert.equal(art.author.name, 'Sampson Brueher')
-  assert.equal(art.dateModified, '2026-11-20')
+  assert.equal(art.dateModified, '2026-11-21')
 })
 
 test('every logged change points at a listed tool and an official https source, with no future dates', () => {
@@ -35,11 +35,11 @@ test('every logged change points at a listed tool and an official https source, 
 
 test('price changes page is in the sitemap with its own date, llms files, home, methodology and tool page', async () => {
   const sm = (await get('/sitemap.xml')).text
-  assert.match(sm, /<loc>https:\/\/buildstack\.tier11\.com\/price-changes<\/loc><lastmod>2026-11-20<\/lastmod>/)
+  assert.match(sm, /<loc>https:\/\/buildstack\.tier11\.com\/price-changes<\/loc><lastmod>2026-11-21<\/lastmod>/)
   assert.ok((await get('/llms.txt')).text.includes('https://buildstack.tier11.com/price-changes'))
   assert.ok((await get('/llms-full.txt')).text.includes('2026-11-18, DeepSeek:'))
   assert.ok((await get('/')).text.includes('href="/price-changes"'))
   assert.ok((await get('/methodology')).text.includes('href="/price-changes"'))
-  assert.ok((await get('/tool/deepseek')).text.includes('href="/price-changes#deepseek-2026-11-18"'))
+  assert.ok((await get('/tool/deepseek')).text.includes('href="/price-changes/deepseek-2026-11-18"'))
   assert.ok(!(await get('/tool/cursor')).text.includes('Price changes:'))
 })

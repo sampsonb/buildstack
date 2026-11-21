@@ -281,25 +281,25 @@ function editorReason(t) {
 const SECTION_DATES = {
   '/methodology': '2026-11-21',
   '/alternatives/cursor': '2026-10-30',
-  '/best/ai-coding-agent-for-beginners': '2026-11-13',
+  '/best/ai-coding-agent-for-beginners': '2026-11-21',
   '/best/ai-research-assistant': '2026-11-21',
-  '/best/free-ai-tools': '2026-11-13',
-  '/best/ai-voice-generator': '2026-11-13',
-  '/best/ai-coding-assistant': '2026-11-13',
-  '/best/ai-agent-builder': '2026-11-13',
-  '/best/ai-tools-for-small-business': '2026-11-13',
-  '/best/ai-transcription-tool': '2026-11-13',
-  '/best/ai-writing-tool': '2026-11-13',
-  '/best/ai-image-generator': '2026-11-20',
-  '/best/ai-video-editor-for-youtube': '2026-11-13',
-  '/best/ai-video-generator': '2026-11-13',
+  '/best/free-ai-tools': '2026-11-21',
+  '/best/ai-voice-generator': '2026-11-21',
+  '/best/ai-coding-assistant': '2026-11-21',
+  '/best/ai-agent-builder': '2026-11-21',
+  '/best/ai-tools-for-small-business': '2026-11-21',
+  '/best/ai-transcription-tool': '2026-11-21',
+  '/best/ai-writing-tool': '2026-11-21',
+  '/best/ai-image-generator': '2026-11-21',
+  '/best/ai-video-editor-for-youtube': '2026-11-21',
+  '/best/ai-video-generator': '2026-11-21',
   '/guides/how-celebrity-deepfakes-are-made': '2026-11-13',
   '/submit': '2026-11-21',
   '/money': '2026-11-21',
   '/rank-changelog': '2026-11-21',
   '/vs': '2026-11-18',
   '/alternatives': '2026-11-19',
-  '/price-changes': '2026-11-20',
+  '/price-changes': '2026-11-21',
 }
 
 // Public AI price-change log (SEO item 6, 2026-11-20). Only changes shown on the tool maker's own
@@ -324,6 +324,68 @@ function priceChanges() {
   return PRICE_CHANGES
     .map((x) => ({ ...x, t: all.find((t) => t.slug === x.slug) || null, id: `${x.slug}-${x.date}` }))
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.tool.localeCompare(b.tool)))
+}
+
+// The 20 well-known tools keep a name-and-tagline title. Every other tool page uses a pricing-intent
+// title and a two-line price answer at the top. The skip list is the names Fable called giants.
+const GIANT_SLUGS = new Set(['chatgpt', 'claude', 'gemini', 'github-copilot', 'microsoft-copilot', 'midjourney', 'perplexity', 'grok', 'meta-ai', 'cursor', 'elevenlabs', 'runway', 'nano-banana', 'chatgpt-images', 'openai-codex', 'claude-code', 'notebooklm', 'canva', 'notion-ai', 'deepl-translator'])
+function isGiant(t) {
+  return GIANT_SLUGS.has(t.slug)
+}
+function toolPageTitle(t) {
+  if (isGiant(t)) return `${t.name}: ${t.tagline} | ${NAME}`
+  const checked = t.priceChecked ? `checked ${fmtDate(t.priceChecked)}` : 'not yet checked'
+  return `${t.name} pricing: free plan, starting price, ${checked} | ${NAME}`
+}
+function priceLead(t) {
+  if (isGiant(t)) return ''
+  const plan = typeof t.freePlan === 'boolean' ? (t.freePlan ? 'yes' : 'no') : typeof t.freeTier === 'boolean' ? (t.freeTier ? 'yes' : 'no') : 'see the official site'
+  const start = String(t.priceFrom || '').trim() || 'See pricing'
+  const link = t.pricingUrl
+    ? `${pricingLink(t, 'Official pricing page')}${t.priceChecked ? `, checked ${esc(fmtDate(t.priceChecked))}` : '. This price is not yet checked'}.`
+    : 'No official pricing page is linked yet, and this price is not yet checked.'
+  return `<div class="price-lead"><p>Free plan: ${esc(plan)}. Starting price: ${esc(start)}.</p><p>${link}</p></div>`
+}
+
+// /best guide claims: only name tools that have a priceChecked date and a pricing link, generated
+// from the tools actually shown on that page.
+function guideTools(list) {
+  const seen = new Map()
+  for (const x of list || []) {
+    const t = x && (x.slug ? x : x.t)
+    if (t && t.slug && !seen.has(t.slug)) seen.set(t.slug, t)
+  }
+  return [...seen.values()]
+}
+function guidePriceText(list) {
+  const all = guideTools(list)
+  const checked = all.filter((t) => t.priceChecked && t.pricingUrl)
+  const rest = all.length - checked.length
+  if (!checked.length) return 'Pricing notes on this page have not yet been matched to an official pricing page.'
+  const core = checked.length <= 8
+    ? `Pricing for ${listNames(checked.map((t) => t.name))} was checked against the official pricing page, each with the day we checked.`
+    : `Pricing for ${checked.length} of ${all.length} tools on this page was checked against the official pricing page, each with the day we checked.`
+  if (!rest) return checked.length <= 8 ? core : `Pricing for all ${all.length} tools on this page was checked against the official pricing page, each with the day we checked.`
+  if (checked.length <= 8) return `${core} The other ${rest} ${rest === 1 ? 'note comes' : 'notes come'} from each tool's listing and ${rest === 1 ? 'has' : 'have'} not yet been checked.`
+  return `${core} The other ${rest} have not yet been checked.`
+}
+
+function subscribePanel(source) {
+  const id = `nl-email-${String(source).replace(/[^a-z0-9-]+/gi, '-')}`
+  return `
+  <section class="section" id="newsletter">
+    <div class="panel">
+      <h2 style="margin-top:0">Weekly AI price changes</h2>
+      <p class="muted" style="margin:0">A short weekly note when AI tool prices change, plus a link to the log. We store your email and do not sell it. Nothing has been sent yet.</p>
+      <form class="formrow" data-source="${esc(source)}" onsubmit="subscribe(event)">
+        <label class="sr-only" for="${esc(id)}">Email address</label>
+        <input id="${esc(id)}" type="email" name="email" required placeholder="you@company.com" autocomplete="email"/>
+        <button type="submit">Subscribe</button>
+        <div class="notice" style="flex-basis:100%"></div>
+      </form>
+      <p class="muted" style="margin:.75rem 0 0"><a href="${PRICE_PATH}/rss.xml">RSS feed</a> · <a href="https://itsbuildstack.substack.com">Weekly write-up on Substack</a></p>
+    </div>
+  </section>`
 }
 
 function maxDate(dates) {
@@ -366,7 +428,13 @@ function pageDate(path) {
   if (path.startsWith('/tool/')) { const t = bySlug(path.slice(6)); return (t && maxDate([t.updated, t.priceChecked])) || UPDATED }
   if (path.startsWith('/category/')) return maxDate(all.filter((t) => t.category === path.slice(10)).map((t) => t.updated)) || UPDATED
   if (['', '/', '/categories', '/about', '/tools.json', '/llms.txt', '/llms-full.txt'].includes(path)) return maxDate(all.map((t) => t.updated)) || UPDATED
-  if (path === PRICE_PATH) return maxDate([SECTION_DATES[PRICE_PATH], PRICE_RECHECK.date, ...PRICE_CHANGES.map((x) => x.date)]) || UPDATED
+  if (path === PRICE_PATH || path === `${PRICE_PATH}/rss.xml` || path === '/feed.xml') return maxDate([SECTION_DATES[PRICE_PATH], PRICE_RECHECK.date, ...PRICE_CHANGES.map((x) => x.date)]) || UPDATED
+  if (path.startsWith(`${PRICE_PATH}/`)) {
+    const id = path.slice(PRICE_PATH.length + 1)
+    if (/^\d{4}-\d{2}$/.test(id)) return maxDate(priceChanges().filter((x) => x.date.startsWith(id)).map((x) => x.date)) || UPDATED
+    const x = priceChanges().find((e) => e.id === id)
+    return (x && x.date) || UPDATED
+  }
   if (path === '/vs') return maxDate([SECTION_DATES['/vs'], ...vsPairs().map((p) => maxDate([p.a.updated, p.b.updated]))]) || UPDATED
   if (path.startsWith('/vs/')) { const p = vsPairs().find((x) => x.path === path); return (p && maxDate([SECTION_DATES['/vs'], p.a.updated, p.b.updated, p.a.priceChecked, p.b.priceChecked])) || UPDATED }
   if (path === '/alternatives') return maxDate([SECTION_DATES['/alternatives'], pageDate('/alternatives/cursor'), ...altPages().map((p) => pageDate(p.path))]) || UPDATED
@@ -513,6 +581,7 @@ ${robots ? `<meta name="robots" content="${esc(robots)}"/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32"/>
 <link rel="alternate" type="application/json" href="/tools.json"/>
+<link rel="alternate" type="application/rss+xml" title="Weekly AI price changes" href="${PRICE_PATH}/rss.xml"/>
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>
 <style>
 @font-face { font-family: "Archivo"; src: url("/fonts/archivo-v1.woff2") format("woff2"); font-weight: 400 850; font-stretch: 62% 100%; font-style: normal; font-display: swap; }
@@ -623,6 +692,13 @@ details.more > summary { cursor: pointer; color: var(--ink); font-weight: 700; m
 .footrow a:hover { color: var(--ink); }
 .footlic { margin: 1rem 0 0; color: var(--ink-3); font-size: .82rem; }
 .footlic a { color: var(--ink-2); }
+.price-lead { margin: .75rem 0 0; max-width: 70ch; font-size: 1.02rem; line-height: 1.45; }
+.price-lead p { margin: 0 0 .3rem; }
+dl.facts { display: grid; gap: .65rem 1.25rem; margin: 0 0 1.1rem; }
+dl.facts div { display: grid; grid-template-columns: 9.5rem 1fr; gap: .35rem 1rem; }
+dl.facts dt { margin: 0; color: var(--ink-3); font-weight: 650; }
+dl.facts dd { margin: 0; }
+@media (max-width: 600px) { dl.facts div { grid-template-columns: 1fr; } }
 .decide { margin: .7rem 0 0; display: grid; gap: .35rem; font-size: .84rem; line-height: 1.4; }
 .decide div { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr); gap: .35rem; align-items: start; }
 .decide dt { margin: 0; color: var(--ink); font-weight: 700; }
@@ -1022,7 +1098,7 @@ app.get(`/${INDEXNOW_KEY}.txt`, (c) => c.text(INDEXNOW_KEY, 200, { 'cache-contro
 
 app.get('/sitemap.xml', (c) => {
   const urls = [
-    '', '/categories', '/methodology', PRICE_PATH, '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/submit', '/money', '/rank-changelog', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', PRICE_PATH, `${PRICE_PATH}/rss.xml`, ...priceMonths().map((m) => `${PRICE_PATH}/${m}`), ...priceChanges().map((x) => `${PRICE_PATH}/${x.id}`), '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/submit', '/money', '/rank-changelog', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     '/vs', ...vsPairs().map((p) => p.path),
     '/alternatives', ...altPages().map((p) => p.path),
@@ -1090,6 +1166,8 @@ app.get('/llms.txt', (c) => {
     `Human summary for bots: ${SITE}/about`,
     `How rankings work: ${SITE}/methodology`,
     `AI price changes log (dated, official sources only): ${SITE}${PRICE_PATH}`,
+    `AI price changes RSS: ${SITE}${PRICE_PATH}/rss.xml`,
+    `Each logged change also has its own page under ${SITE}${PRICE_PATH}/`,
     `List your tool (free): ${SITE}/submit`,
     `How BuildStack earns money (nothing today): ${SITE}/money`,
     `Rank changelog: ${SITE}/rank-changelog`,
@@ -1355,19 +1433,7 @@ app.get('/', (c) => {
   </section>
   </div>`}
   ${lowerBlock}
-  <section class="section">
-    <div class="panel">
-      <h2 style="margin-top:0">Newsletter</h2>
-      <p class="muted" style="margin:0">Leave your email to hear about new tools by email. We store your email and do not sell it. The weekly write-up lives on Substack for now.</p>
-      <form class="formrow" data-source="home" onsubmit="subscribe(event)">
-        <label class="sr-only" for="nl-email">Email address</label>
-        <input id="nl-email" type="email" name="email" required placeholder="you@company.com" autocomplete="email"/>
-        <button type="submit">Subscribe</button>
-        <div class="notice" style="flex-basis:100%"></div>
-      </form>
-      <p class="muted" style="margin:.75rem 0 0"><a href="https://itsbuildstack.substack.com">Weekly write-up on Substack</a></p>
-    </div>
-  </section>`
+  ${subscribePanel('home')}`
   return c.html(layout({
     title: q ? `Best AI tools for ${q} | ${NAME}` : `AI Tool Finder: Which AI Tool Should You Use? | ${NAME}`,
     description: q
@@ -1693,6 +1759,7 @@ app.get('/tool/:slug', (c) => {
   <section class="hero tv2-head">
     <h1>${esc(t.name)}</h1>
     <p class="one">${esc(t.tagline)}</p>
+    ${priceLead(t)}
     <div class="rankrow">
       <p class="bigrank"><a href="/category/${esc(t.category)}"><b>${esc(ordinal(catRank(t)))}</b> of ${nInCat} in ${esc(catLabel)}</a></p>
       <span class="ochip">${esc(overallPlace(t))}</span>${isNew(t) ? '<span class="tag new">New</span>' : ''}
@@ -1732,7 +1799,7 @@ app.get('/tool/:slug', (c) => {
         ${altPageFor(t.slug) ? `<p><strong>Compare.</strong> See the <a href="/alternatives/${esc(t.slug)}">best ${esc(t.name)} alternatives, ranked</a>.</p>` : ''}
         ${(() => { const g = []; if (t.slug !== 'cursor' && CURSOR_ALT_GROUPS.some((x) => x.slugs.includes(t.slug))) g.push('<a href="/alternatives/cursor">Best Cursor alternatives</a>'); if (BEGINNER_PICKS.some((x) => x.slug === t.slug) || BEGINNER_GROW.includes(t.slug) || BEGINNER_PUBLISH.includes(t.slug)) g.push('<a href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>'); if (RESEARCH_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-research-assistant">Best AI research assistants</a>'); if (FREE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/free-ai-tools">Best free AI tools</a>'); if (VOICE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-voice-generator">Best AI voice generators</a>'); if (t.category === 'coding') g.push('<a href="/best/ai-coding-assistant">Best AI coding assistants</a>'); if (t.category === 'agents') g.push('<a href="/best/ai-agent-builder">Best AI agent builders</a>'); if (SMB_STACK.some((x) => x.slug === t.slug) || SMB_SECTIONS.some((x) => x.items.some((it) => it.slug === t.slug))) g.push('<a href="/best/ai-tools-for-small-business">Best AI tools for small business</a>'); if (TRANS_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-transcription-tool">Best AI transcription tools</a>'); if (WRITE_PICKS.some((x) => x.slug === t.slug) || WRITE_WORKFLOW.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-writing-tool">Best AI writing tools</a>'); if (IMAGE_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-image-generator">Best AI image generators</a>'); if (VIDEO_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-editor-for-youtube">Best AI video editors for YouTube</a>'); if (VIDEOGEN_PICKS.some((x) => x.slug === t.slug)) g.push('<a href="/best/ai-video-generator">Best AI video generators</a>'); return g.length ? `<p class="muted">Listed in: ${g.join(' · ')}</p>` : '' })()}
     </section>
-    ${PRICE_CHANGES.some((x) => x.slug === t.slug) ? `<p class="muted">Price changes: ${priceChanges().filter((x) => x.slug === t.slug).map((x) => `<a href="/price-changes#${esc(x.id)}">${esc(fmtDate(x.date))}: ${esc(x.item)}</a>`).join(' · ')}</p>` : ''}${vsPairsFor(t.slug).length ? `<p class="muted">Compare: ${vsPairsFor(t.slug).map((p) => `<a href="${p.path}">${esc(p.a.name)} vs ${esc(p.b.name)}</a>`).join(' · ')}</p>` : ''}
+    ${PRICE_CHANGES.some((x) => x.slug === t.slug) ? `<p class="muted">Price changes: ${priceChanges().filter((x) => x.slug === t.slug).map((x) => `<a href="${priceChangePath(x)}">${esc(fmtDate(x.date))}: ${esc(x.item)}</a>`).join(' · ')}</p>` : ''}${vsPairsFor(t.slug).length ? `<p class="muted">Compare: ${vsPairsFor(t.slug).map((p) => `<a href="${p.path}">${esc(p.a.name)} vs ${esc(p.b.name)}</a>`).join(' · ')}</p>` : ''}
     ${related.length ? `<section class="tsec" id="alternatives">
       <h2>Ranked alternatives in ${esc(catLabel)}</h2>
       ${altTable(t, related, catLabel)}
@@ -1745,9 +1812,10 @@ app.get('/tool/:slug', (c) => {
     </section>
     ${faqHtml}
   </div>
-  </div>`
+  </div>
+  ${subscribePanel(`tool-${t.slug}`)}`
   return c.html(layout({
-    title: `${t.name}: ${t.tagline} | ${NAME}`,
+    title: toolPageTitle(t),
     description: toolMetaDescription(t),
     path: `/tool/${t.slug}`,
     body,
@@ -2165,13 +2233,164 @@ function vsFaq(a, b) {
   return faq
 }
 
+// Price-change permalinks, monthly roll-ups, and RSS (traffic plan move 1, 2026-11-21).
+function priceChangePath(x) {
+  return `${PRICE_PATH}/${x.id}`
+}
+function priceMonths() {
+  const seen = []
+  for (const x of priceChanges()) {
+    const m = x.date.slice(0, 7)
+    if (!seen.includes(m)) seen.push(m)
+  }
+  return seen
+}
+function rfc822Date(iso) {
+  const [y, mo, d] = iso.split('-').map(Number)
+  const dt = new Date(Date.UTC(y, mo - 1, d))
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${days[dt.getUTCDay()]}, ${pad(d)} ${months[mo - 1]} ${y} 00:00:00 GMT`
+}
+function xmlEsc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+function priceChangeTitle(x) {
+  return `${x.tool} price change: ${x.item}, ${fmtDate(x.date)}`
+}
+function monthLabel(ym) {
+  const [y, mo] = ym.split('-').map(Number)
+  return `${['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][mo - 1]} ${y}`
+}
+function priceEntryBody(x) {
+  const toolLink = x.t ? `<a href="/tool/${esc(x.t.slug)}">${esc(x.tool)} listing</a>` : esc(x.tool)
+  return `
+    <dl class="facts">
+      <div><dt>Tool</dt><dd>${x.t ? `<a href="/tool/${esc(x.t.slug)}">${esc(x.tool)}</a>` : esc(x.tool)}</dd></div>
+      <div><dt>What changed</dt><dd>${esc(x.item)}</dd></div>
+      <div><dt>Old price</dt><dd>${esc(x.oldPrice)}</dd></div>
+      <div><dt>New price</dt><dd>${esc(x.newPrice)}</dd></div>
+      <div><dt>Took effect</dt><dd>${esc(fmtDate(x.date))}</dd></div>
+      <div><dt>Official source</dt><dd><a href="${esc(x.source)}" rel="nofollow noopener noreferrer" target="_blank">Official pricing page</a>${x.archived ? ` · <a href="${esc(x.archived)}" rel="nofollow noopener noreferrer" target="_blank">Archived old page</a>` : ''}</dd></div>
+    </dl>
+    ${x.note ? `<p>${esc(x.note)}</p>` : ''}
+    <p>See the ${toolLink}, the <a href="${PRICE_PATH}">full price-change log</a>, and the <a href="${PRICE_PATH}/${x.date.slice(0, 7)}">${esc(monthLabel(x.date.slice(0, 7)))} roll-up</a>.</p>`
+}
+function priceFeed() {
+  const list = priceChanges()
+  const updated = pageDate(`${PRICE_PATH}/rss.xml`)
+  const items = list.map((x) => {
+    const link = `${SITE}${priceChangePath(x)}`
+    const desc = `${x.tool}: ${x.item}. Old price: ${x.oldPrice}. New price: ${x.newPrice}. Took effect ${fmtDate(x.date)}. Official source: ${x.source}`
+    return `    <item>
+      <title>${xmlEsc(priceChangeTitle(x))}</title>
+      <link>${xmlEsc(link)}</link>
+      <guid isPermaLink="true">${xmlEsc(link)}</guid>
+      <pubDate>${rfc822Date(x.date)}</pubDate>
+      <description>${xmlEsc(desc)}</description>
+    </item>`
+  }).join('\n')
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>${xmlEsc(`${NAME}: weekly AI price changes`)}</title>
+    <link>${SITE}${PRICE_PATH}</link>
+    <description>${xmlEsc(`Dated AI tool price changes on ${NAME}, from official pricing pages only. Old price, new price, the day it took effect, and the official source.`)}</description>
+    <language>en-us</language>
+    <lastBuildDate>${rfc822Date(updated)}</lastBuildDate>
+    <ttl>180</ttl>
+${items}
+  </channel>
+</rss>
+`
+}
+
+app.get(`${PRICE_PATH}/rss.xml`, (c) => c.body(priceFeed(), 200, { 'content-type': 'application/rss+xml; charset=utf-8' }))
+app.get('/feed.xml', (c) => c.redirect(`${PRICE_PATH}/rss.xml`, 301))
+
+app.get(`${PRICE_PATH}/:id`, (c) => {
+  const id = c.req.param('id')
+  if (/^\d{4}-\d{2}$/.test(id)) {
+    const list = priceChanges().filter((x) => x.date.startsWith(id))
+    if (!list.length) return c.notFound()
+    const PD = pageDate(`${PRICE_PATH}/${id}`)
+    const label = monthLabel(id)
+    const title = `AI price changes in ${label} | ${NAME}`
+    const description = `${list.length} ${list.length === 1 ? 'dated price change' : 'dated price changes'} for AI tools listed on ${NAME} in ${label}, each with the old price, the new price, and the official source.`
+    const items = list.map((x) => `<li><a href="${priceChangePath(x)}"><strong>${esc(priceChangeTitle(x))}</strong></a>. ${esc(x.oldPrice)} → ${esc(x.newPrice)}.</li>`).join('')
+    const body = `
+  <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="${PRICE_PATH}">AI price changes</a> › <span aria-current="page">${esc(label)}</span></nav>
+  <section class="hero">
+    <div class="meta"><span class="tag">Pricing</span></div>
+    <h1>AI price changes in ${esc(label)}</h1>
+    <p>${list.length} ${list.length === 1 ? 'change' : 'changes'} logged this month, from official pricing pages only.</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · <a href="${PRICE_PATH}">Full log</a> · <a href="${PRICE_PATH}/rss.xml">RSS feed</a> · Edited by <a href="/about">Sampson Brueher</a></p>
+  </section>
+  <section class="panel prose">
+    <ul class="clean">${items}</ul>
+  </section>
+  ${subscribePanel(`price-${id}`)}`
+    return c.html(layout({
+      title, description, path: `${PRICE_PATH}/${id}`, body,
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@graph': [{
+          '@type': 'CollectionPage',
+          name: `AI price changes in ${label}`,
+          url: `${SITE}${PRICE_PATH}/${id}`,
+          description,
+          dateModified: PD,
+          isPartOf: { '@type': 'WebSite', name: NAME, url: SITE },
+        }, breadcrumbs([['Home', '/'], ['AI price changes', PRICE_PATH], [label, `${PRICE_PATH}/${id}`]])],
+      },
+    }))
+  }
+  const x = priceChanges().find((e) => e.id === id)
+  if (!x) return c.notFound()
+  const PD = pageDate(priceChangePath(x))
+  const title = `${priceChangeTitle(x)} | ${NAME}`
+  const description = `${x.tool} changed its price on ${fmtDate(x.date)}: ${x.item}. Old price: ${x.oldPrice}. New price: ${x.newPrice}. Official source linked.`
+  const body = `
+  <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="${PRICE_PATH}">AI price changes</a> › <span aria-current="page">${esc(x.tool)}, ${esc(fmtDate(x.date))}</span></nav>
+  <section class="hero">
+    <div class="meta"><span class="tag">Pricing</span>${x.t ? `<a class="tag" href="/tool/${esc(x.t.slug)}">${esc(x.tool)}</a>` : ''}</div>
+    <h1>${esc(priceChangeTitle(x))}</h1>
+    <p class="muted">Took effect ${esc(fmtDate(x.date))} · Edited by <a href="/about">Sampson Brueher</a></p>
+  </section>
+  <section class="panel prose">
+    ${priceEntryBody(x)}
+  </section>
+  ${subscribePanel(`price-${x.id}`)}`
+  return c.html(layout({
+    title, description, path: priceChangePath(x), body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'NewsArticle',
+        headline: priceChangeTitle(x),
+        description,
+        url: `${SITE}${priceChangePath(x)}`,
+        datePublished: x.date,
+        dateModified: PD,
+        author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
+        publisher: { '@type': 'Organization', name: NAME, url: SITE },
+        mainEntityOfPage: `${SITE}${priceChangePath(x)}`,
+      }, breadcrumbs([['Home', '/'], ['AI price changes', PRICE_PATH], [priceChangeTitle(x), priceChangePath(x)]])],
+    },
+  }))
+})
+
+
 app.get(PRICE_PATH, (c) => {
   const PD = pageDate(PRICE_PATH)
   const list = priceChanges()
   const title = `AI Price Changes Log: Dated Changes From Official Pricing Pages | ${NAME}`
   const description = `A dated log of price changes for AI tools listed on ${NAME}: the old price, the new price, when it changed, and a link to the official source. ${list.length} ${list.length === 1 ? 'change' : 'changes'} logged. Updated ${fmtDate(PD)}.`
   const toolCell = (x) => x.t ? `<a href="/tool/${esc(x.t.slug)}">${esc(x.tool)}</a>` : esc(x.tool)
-  const rows = list.map((x) => `<tr id="${esc(x.id)}"><td>${esc(x.date)}</td><td>${toolCell(x)}</td><td>${esc(x.item)}. ${esc(x.note)}</td><td>${esc(x.oldPrice)}</td><td>${esc(x.newPrice)}</td><td><a href="${esc(x.source)}" rel="nofollow">Official pricing page</a>${x.archived ? ` · <a href="${esc(x.archived)}" rel="nofollow">Archived old page</a>` : ''}</td></tr>`).join('\n        ')
+  const months = priceMonths()
+  const monthNav = months.length ? `<p class="muted">By month: ${months.map((m) => `<a href="${PRICE_PATH}/${m}">${esc(monthLabel(m))}</a>`).join(' · ')} · <a href="${PRICE_PATH}/rss.xml">RSS feed</a></p>` : `<p class="muted"><a href="${PRICE_PATH}/rss.xml">RSS feed</a></p>`
+  const rows = list.map((x) => `<tr id="${esc(x.id)}"><td><a href="${priceChangePath(x)}">${esc(x.date)}</a></td><td>${toolCell(x)}</td><td><a href="${priceChangePath(x)}">${esc(x.item)}</a>. ${esc(x.note)}</td><td>${esc(x.oldPrice)}</td><td>${esc(x.newPrice)}</td><td><a href="${esc(x.source)}" rel="nofollow">Official pricing page</a>${x.archived ? ` · <a href="${esc(x.archived)}" rel="nofollow">Archived old page</a>` : ''}</td></tr>`).join('\n        ')
   const body = `
   <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <span aria-current="page">AI price changes</span></nav>
   <section class="hero">
@@ -2179,6 +2398,7 @@ app.get(PRICE_PATH, (c) => {
     <h1>AI Price Changes Log</h1>
     <p>A dated record of price changes for the AI tools listed on ${NAME}. Each entry shows the old price, the new price, the day the change took effect, and a link to the tool maker's own pricing page. We only log a change when the official source shows it.</p>
     <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} ${list.length === 1 ? 'change' : 'changes'} logged · Last full re-check: ${fmtDate(PRICE_RECHECK.date)} · Edited by <a href="/about">Sampson Brueher</a></p>
+    ${monthNav}
   </section>
   <section class="section">
     <h2>Price changes, newest first</h2>
@@ -2200,9 +2420,10 @@ app.get(PRICE_PATH, (c) => {
         <li><strong>Not counted:</strong> launch prices of brand new models, limited-time discounts, regional prices, and corrections of our own pricing notes.</li>
         <li><strong>Re-checked.</strong> On ${fmtDate(PRICE_RECHECK.date)} we compared the prices in our notes with ${PRICE_RECHECK.pages} official pricing pages and found no other changes.</li>
       </ul>
-      <p>Each tool page shows the current pricing note, a link to the official pricing page, and the date we last matched it. Read <a href="/methodology">how we rank and check prices</a>, or browse the <a href="/categories">categories</a>. Ranks are not for sale and do not change with price.</p>
+      <p>Each tool page shows the current pricing note, a link to the official pricing page, and the date we last matched it. Each change also has its own page, and changes are grouped by month. Read <a href="/methodology">how we rank and check prices</a>, or browse the <a href="/categories">categories</a>. Rank and search position are never sold, and do not change with price.</p>
     </div>
-  </section>`
+  </section>
+  ${subscribePanel('price-log')}`
   return c.html(layout({
     title, description, path: PRICE_PATH, body,
     jsonLd: {
@@ -2689,7 +2910,7 @@ app.get(BEGINNER_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.build)}</td><td>${esc(p.where)}</td><td>${esc(p.t.pricingNote || 'See official site')}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Pricing notes were checked on each official pricing page on ${fmtDate(SD)}. Prices and limits change, so check the official site before you pay.</p>
+    <p class="muted" style="font-size:.88rem">${guidePriceText(byRank)} Prices and limits change, so check the official site before you pay.</p>
   </section>
   <section class="section">
     <h2>One-line verdict for each pick</h2>
@@ -2906,7 +3127,7 @@ app.get(RESEARCH_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.best)}</td><td>${esc(p.sources)}</td><td>${esc(p.t.pricingNote || 'See official site')}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Pricing notes come from each tool's official site; each tool page shows the date we last checked its price where we have one. Prices and limits change, so check the official site before you pay.</p>
+    <p class="muted" style="font-size:.88rem">${guidePriceText(byRank)} Prices and limits change, so check the official site before you pay.</p>
   </section>
   <section class="section">
     <h2>Best for web research with citations</h2>
@@ -3152,7 +3373,7 @@ app.get(FREE_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${catLink(p.t)}</td><td>${esc(kindLabel(p))}</td><td>${esc(p.free)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Free plans were checked against each official pricing page or the pricing note on BuildStack. Free limits change often, so check the official site before you rely on one.</p>
+    <p class="muted" style="font-size:.88rem">${guidePriceText(byRank)} Free limits change often, so check the official site before you rely on one.</p>
   </section>
   <section class="section">
     <div class="panel prose">
@@ -3313,7 +3534,7 @@ app.get(VOICE_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(VOICE_TYPES[p.type])}</td><td>${esc(listNames(p.t.bestFor || []))}</td><td>${esc(p.price)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Prices were checked against each official pricing page or launch post. Voice pricing changes often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">${guidePriceText(byRank)} Voice pricing changes often, so check the official site before you buy.</p>
   </section>
   ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
     <h2>${esc(p.heading)}</h2>
@@ -3464,7 +3685,6 @@ app.get(CODING_PATH, (c) => {
   const short = (f) => `For most developers, start with ${f('cursor')}, an AI-first code editor built on VS Code. To keep the IDE you already use, add ${f('github-copilot')}. For agents that work from the terminal, use ${f('claude-code')} or ${f('openai-codex')}, and to run a model yourself, look at ${f('mistral-large-4')} or ${f('recursive-flint')}`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const checked = CODING_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
   const description = `Best AI coding assistants in 2026, ranked: ${list.slice(0, 5).map((t) => `${t.name} (#${t.rank})`).join(', ')} and ${list.length - 5} more, with what each is best for and pricing notes. Updated ${fmtDate(PD)}.`
   const title = `Best AI Coding Assistants in 2026, Ranked | ${NAME}`
   const body = `
@@ -3483,7 +3703,7 @@ app.get(CODING_PATH, (c) => {
         <tbody>${list.map((t) => `<tr><td>${link(t)}</td><td>#${t.rank}</td><td>${esc(CODING_TYPES[t.slug] || 'Coding tool')}</td><td>${esc(listNames(t.bestFor || []))}</td><td>${esc(t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/coding">coding category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${fmtDate(SD)}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/coding">coding category</a>. ${guidePriceText(list)} Prices change often, so check the official site before you buy.</p>
   </section>
   ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
     <h2>${esc(g.heading)}</h2>
@@ -3677,7 +3897,6 @@ app.get(AGENT_PATH, (c) => {
   const short = (f) => `For most people, start with ${f('lindy')}, a no-code agent builder for email, calendar, and business workflows. To connect apps with fixed steps, use ${f('zapier')} or ${f('make')}, or self-host ${f('n8n')}. For an agent that takes a goal and works through the steps itself, try ${f('manus')}, and for companies on Microsoft 365, look at ${f('copilot-studio')}`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const checked = AGENT_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
   const description = `Best AI agent builders and automation tools in 2026: Lindy, Zapier, Make, n8n, Manus, Copilot Studio and ${list.length - 6} more, compared by no-code or technical, best use, and pricing. Updated ${fmtDate(PD)}.`
   const title = `Best AI Agent Builders and Automation Tools in 2026 | ${NAME}`
   const body = `
@@ -3696,7 +3915,7 @@ app.get(AGENT_PATH, (c) => {
         <tbody>${list.map((t) => `<tr><td>${link(t)}</td><td>#${t.rank}</td><td>${esc(AGENT_TYPES[t.slug] || 'Agent tool')}</td><td>${esc(listNames(t.bestFor || []))}</td><td>${esc(t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/agents">agents category</a>. Pricing for ${esc(listNames(checked))} was checked against official pricing pages or launch posts on ${fmtDate(SD)}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category, listed in the same order as the <a href="/category/agents">agents category</a>. ${guidePriceText(list)} Prices change often, so check the official site before you buy.</p>
   </section>
   ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
     <h2>${esc(g.heading)}</h2>
@@ -3856,7 +4075,6 @@ app.get(SMB_PATH, (c) => {
   const short = (f) => `A simple starter stack for a small business is ${f('chatgpt')} for writing, email, and questions, ${f('canva')} for graphics and social posts, ${f('notion-ai')} for notes and meeting summaries, ${f('zapier')} for connecting apps and automating admin, and ${f('perplexity')} for research with sources. All five have a free plan or trial, so you can start at no cost and pay only for the ones your team uses`
   const shortText = short(rt)
   const shortHtml = short(rl)
-  const checked = SMB_PRICE_CHECKED.map(find).filter(Boolean).map((t) => t.name)
   const description = `Best AI tools for small business in 2026: a starter stack of ChatGPT, Canva, Notion AI, Zapier and Perplexity, plus ${list.length - 5} more picks by job, with pricing notes. Updated ${fmtDate(PD)}.`
   const title = `Best AI Tools for Small Business: A Starter Stack by Job | ${NAME}`
   const body = `
@@ -3876,7 +4094,7 @@ app.get(SMB_PATH, (c) => {
         <tbody>${stack.map((x) => `<tr><td>${esc(x.job)}</td><td>${link(x.t)}</td><td>#${x.t.rank}</td><td>${esc(x.t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category. Pricing for ${esc(listNames(checked))} was checked against official pricing pages on ${fmtDate(SD)}; other notes come from each tool's listing. Prices change often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">Ranks are overall ${esc(NAME)} ranks across every category. ${guidePriceText(list)} Prices change often, so check the official site before you buy.</p>
   </section>
   ${sections.map((g) => `<section class="section" id="${esc(g.id)}">
     <h2>${esc(g.heading)}</h2>
@@ -4051,7 +4269,7 @@ app.get(TRANS_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(TRANS_TYPES[p.type])}</td><td>${esc(listNames(p.t.bestFor || []))}</td><td>${esc(p.t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Prices come from each official pricing page or launch post. Transcription pricing changes often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">${guidePriceText(byRank)} Transcription pricing changes often, so check the official site before you buy.</p>
   </section>
   ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
     <h2>${esc(p.heading)}</h2>
@@ -4209,7 +4427,7 @@ app.get(WRITE_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.role)}</td><td>${esc(listNames(p.t.bestFor || []))}</td><td>${esc(p.t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Prices come from each official pricing page. AI pricing changes often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">${guidePriceText(byRank)} AI pricing changes often, so check the official site before you buy.</p>
   </section>
   ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
     <h2>${esc(p.heading)}</h2>
@@ -4379,7 +4597,7 @@ app.get(IMAGE_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.role)}</td><td>${esc(listNames(p.t.bestFor || []))}</td><td>${esc(p.t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Prices come from each official pricing page. AI pricing changes often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">${guidePriceText(byRank)} AI pricing changes often, so check the official site before you buy.</p>
   </section>
   ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
     <h2>${esc(p.heading)}</h2>
@@ -4533,7 +4751,7 @@ app.get(VIDEO_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.role)}</td><td>${esc(listNames(p.t.bestFor || []))}</td><td>${esc(p.t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Prices come from each official pricing page. AI pricing changes often, so check the official site before you buy.</p>
+    <p class="muted" style="font-size:.88rem">${guidePriceText(byRank)} AI pricing changes often, so check the official site before you buy.</p>
   </section>
   ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
     <h2>${esc(p.heading)}</h2>
@@ -4688,7 +4906,7 @@ app.get(VIDEOGEN_PATH, (c) => {
         <tbody>${byRank.map((p) => `<tr><td>${link(p.t)}</td><td>#${p.t.rank}</td><td>${esc(p.mode)}</td><td>${esc(p.role)}</td><td>${esc(p.t.pricingNote)}</td></tr>`).join('')}</tbody>
       </table>
     </div>
-    <p class="muted" style="font-size:.88rem">Prices come from each official pricing page. AI pricing changes often, so check the official site before you buy. OpenAI Sora is listed for context but is discontinued.</p>
+    <p class="muted" style="font-size:.88rem">${guidePriceText(byRank)} AI pricing changes often, so check the official site before you buy. OpenAI Sora is listed for context but is discontinued.</p>
   </section>
   ${picks.map((p) => `<section class="section" id="${esc(p.id)}">
     <h2>${esc(p.heading)}</h2>
