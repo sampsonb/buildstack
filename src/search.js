@@ -23,6 +23,18 @@ const LEMMA_GROUPS = [
   ['inbox', 'inboxes'],
   ['summarize', 'summarise', 'summarizes', 'summarizing', 'summarized', 'summary', 'summaries', 'brief', 'briefs'],
   ['photo', 'photos', 'photograph', 'photographs', 'picture', 'pictures', 'image', 'images'],
+  ['remove', 'removal', 'remover', 'removes', 'removing', 'removed'],
+]
+
+// Query synonyms: a search word also matches these listing words. They score and count as the
+// same matched word, but the category group is chosen from the literal words only.
+const SYNONYM_GROUPS = [
+  ['presentation', 'presentations', 'slides', 'slide', 'slideshow', 'slideshows', 'deck', 'decks'],
+]
+
+// Two-word ideas that count as one matched word (R1) when a listing says them any of these ways.
+const CONCEPTS = [
+  { query: /\b(ai|agentic|web)[\s-]+browsers?\b/i, listing: /\b(ai|agentic|web|ai-powered)[\s-]+browsers?\b/i },
 ]
 
 const JOB_HINTS = [
@@ -45,7 +57,7 @@ const LIGHT_VERBS = new Set(['write', 'make', 'create', 'build', 'get', 'use', '
 
 const ACTION_STEMS = new Set(['transcribe', 'edit', 'translate', 'summarize', 'remove'])
 
-const PRICE_TERMS = new Set(['cheapest', 'cheap', 'free', 'budget', 'affordable', 'inexpensive'])
+const PRICE_TERMS = new Set(['cheapest', 'cheap', 'cheaper', 'free', 'budget', 'affordable', 'inexpensive', 'lowcost'])
 
 const KEY_TERMS = new Set([
   'phone', 'chatbot', 'chatbots', 'browser', 'logo', 'logos', 'presentation', 'presentations',
@@ -59,8 +71,17 @@ const GENERIC_NAME_TOKENS = new Set([
 ])
 
 const DEV_QUERY_TERMS = new Set([
-  'api', 'model', 'models', 'openweight', 'weights', 'inference', 'finetune', 'selfhosted',
+  'api', 'apis', 'model', 'models', 'openweight', 'weights', 'inference', 'finetune', 'selfhosted',
+  'sdk', 'sdks', 'local', 'locally', 'offline', 'opensource', 'selfhost', 'self-host', 'self-hosting',
 ])
+
+// R5: listing types that wait behind apps. A search that names the kind of tool keeps it in place.
+const NON_APP_TYPES = new Set(['api-model', 'open-weight-model', 'infrastructure', 'developer-tool', 'extension'])
+const TYPE_WORDS = {
+  extension: ['extension', 'plugin', 'addon', 'chrome', 'mcp'],
+  'developer-tool': ['cli', 'terminal', 'sdk', 'devtool', 'mcp'],
+  infrastructure: ['api', 'crawl', 'crawler', 'scrape', 'scraper', 'scraping', 'rag', 'markdown', 'infrastructure'],
+}
 
 // Filler words from /methodology. Phrase pairs (R3) skip these but keep short words like "ai".
 const PHRASE_FILLER = new Set(['a', 'an', 'the', 'of', 'for', 'to', 'and', 'or', 'in', 'on', 'with', 'at', 'by', 'from', 'my', 'your'])
@@ -91,11 +112,21 @@ function lemmaRoot(word) {
   return null
 }
 
-function formsMatch(left, right) {
+function synonymRoot(word) {
+  for (const group of SYNONYM_GROUPS) {
+    if (group.includes(word)) return group[0]
+  }
+  return null
+}
+
+function formsMatch(left, right, literal = false) {
   if (isInflection(left, right) || isInflection(right, left)) return true
   const a = lemmaRoot(left)
   const b = lemmaRoot(right)
-  return Boolean(a && a === b)
+  if (a && a === b) return true
+  if (literal) return false
+  const c = synonymRoot(left)
+  return Boolean(c && c === synonymRoot(right))
 }
 
 function rawWords(value) {
@@ -148,11 +179,11 @@ function queryTerms(query) {
     .filter((term) => term && !CLOSED_CLASS.has(term))
 }
 
-function textHit(term, value, splitNames = false) {
+function textHit(term, value, splitNames = false, literal = false) {
   const raw = String(value ?? '').toLowerCase()
   if (/[^a-z0-9]/.test(term)) return raw.includes(term)
   const words = wordsOf(value, splitNames)
-  if (!words.some((word) => formsMatch(term, word))) return false
+  if (!words.some((word) => formsMatch(term, word, literal))) return false
   if (lemmaRoot(term) === 'browser' || term === 'browser') {
     const stripped = raw
       .replace(/\b(in|inside|from|via|through|on|with)\s+(the|your|a|an)?\s*browser\b/g, ' ')
@@ -161,6 +192,10 @@ function textHit(term, value, splitNames = false) {
     if (!/\bbrowser/.test(stripped) && !wordsOf(stripped, splitNames).some((word) => formsMatch('browser', word))) {
       return false
     }
+  }
+  if (synonymRoot(term) === 'presentation') {
+    const stripped = raw.replace(/\b(turn|turns|turning|convert|converts|converting)\b[^.;|]{0,80}?\binto\b/g, ' ')
+    if (!wordsOf(stripped, splitNames).some((word) => formsMatch(term, word))) return false
   }
   if (lemmaRoot(term) === 'email' || term === 'email' || term === 'emails') {
     const stripped = raw
@@ -201,7 +236,7 @@ function queryIntent(list, terms) {
       return { term, count: 0, spread: 0, share: 0, lead: null, slug: null, specific: false, unanimous: false }
     }
     const distinctive = list.filter((tool) => (
-      textHit(term, tool.name) || textHit(term, (tool.bestFor || []).join(' '))
+      textHit(term, tool.name, false, true) || textHit(term, (tool.bestFor || []).join(' '), false, true)
     ))
     const lead = categoryLeader(distinctive.map((tool) => tool.category))
     const slug = LIGHT_VERBS.has(term) ? null : categorySlug(term)
@@ -311,7 +346,24 @@ function isKeyTerm(term) {
 }
 
 function isDevQuery(terms) {
-  return terms.some((term) => DEV_QUERY_TERMS.has(term) || formsMatch(term, 'model') || term === 'open-weight' || term === 'self-hosted' || term === 'fine-tune')
+  if (terms.some((term, i) => term === 'open' && ['source', 'weight', 'weights'].includes(terms[i + 1]))) return true
+  return terms.some((term) => DEV_QUERY_TERMS.has(term) || formsMatch(term, 'model') || term === 'open-weight' || term === 'open-source' || term === 'self-hosted' || term === 'fine-tune')
+}
+
+// R5: a listing's type decides whether it is an app. Listings without a type fall back to the
+// older model and API checks. Raw models wait behind apps; developer tools, extensions, and
+// infrastructure wait behind apps unless they match the search better than every app.
+const MODEL_TYPES = new Set(['api-model', 'open-weight-model'])
+function isModelListing(tool) {
+  return tool.type ? MODEL_TYPES.has(tool.type) : isModelTool(tool)
+}
+function isToolListing(tool, terms) {
+  if (!tool.type || MODEL_TYPES.has(tool.type) || !NON_APP_TYPES.has(tool.type)) return false
+  return !(TYPE_WORDS[tool.type] || []).some((word) => terms.some((term) => formsMatch(term, word)))
+}
+
+function keywordsOf(tool) {
+  return Array.isArray(tool.keywords) ? tool.keywords : (tool.keywords ? String(tool.keywords).split(/\s*,\s*/) : [])
 }
 
 function isModelTool(tool) {
@@ -332,20 +384,37 @@ function isModelTool(tool) {
   return false
 }
 
+// R7: discontinued tools are left out; waitlists and APIs that are not live come after live tools.
 function isDiscontinued(tool) {
-  return /^discontinued$/i.test(String(tool.priceFrom || '').trim())
+  return tool.status === 'discontinued' || /^discontinued$/i.test(String(tool.priceFrom || '').trim())
 }
 
 function isAvailabilityLimited(tool) {
+  if (tool.status === 'api-not-live' || tool.status === 'waitlist') return true
+  if (tool.status === 'live') return false
   const blob = [tool.pricingNote, tool.description].join(' ')
   return /api[^.!?]{0,100}not live/i.test(blob)
 }
 
-function priceBucket(tool) {
-  const price = String(tool.priceFrom || '').trim().toLowerCase()
-  if (price === 'free' || /^free\b/.test(price)) return 0
-  if (tool.freeTier) return 1
-  return 2
+// R6: price words sort by plan first: a free plan with the AI included, then a free plan whose
+// model use is not confirmed, then a listed free tier, then a free plan that needs your own
+// model, then the rest. Inside a group, the lowest starting price comes first.
+function priceTier(tool) {
+  const price = String(tool.priceFrom || '').trim()
+  const freeish = tool.freeTier === true || /^free\b/i.test(price)
+  if (tool.freePlan === true && tool.byoModel === false) return 0
+  if (tool.freePlan === true && tool.byoModel !== true) return 1
+  if (tool.freePlan == null && freeish && tool.byoModel !== true) return 2
+  if ((tool.freePlan === true || (tool.freePlan == null && freeish)) && tool.byoModel === true) return 3
+  return 4
+}
+
+function priceCost(tool) {
+  const price = String(tool.priceFrom || '').trim()
+  if (/^free\b/i.test(price)) return 0
+  if (/^api\b/i.test(price)) return 1e9
+  const m = price.match(/\$\s?([\d,]+(?:\.\d+)?)/)
+  return m ? Number(m[1].replace(/,/g, '')) : 1e9
 }
 
 // R3: adjacent query words, including short ones like "ai", side by side in a field.
@@ -382,6 +451,7 @@ function nameTokenBonus(term, tool, exactName) {
 
 export function rankTools(list, query) {
   const ranked = [...list].sort((a, b) => a.rank - b.rank)
+  query = String(query ?? '').replace(/\blow[\s-]+cost\b/gi, 'lowcost')
   const stripped = stripNoCode(query)
   const expanded = expandTerms(queryTerms(stripped.text))
   let terms = expanded.terms
@@ -414,6 +484,7 @@ export function rankTools(list, query) {
     contentTerms.push(term)
   }
   const pairs = phrasePairs(stripped.text)
+  const concepts = CONCEPTS.filter((concept) => concept.query.test(stripped.text))
   const specificTerms = scoredTerms.filter((term) => (
     !LIGHT_VERBS.has(term)
     && !isActionTerm(term)
@@ -427,7 +498,9 @@ export function rankTools(list, query) {
     const named = exact || nameLead(query, tool)
     if (isDiscontinued(tool) && !named) continue
     const best = (tool.bestFor || []).join(' ')
-    const hay = [tool.name, tool.tagline, tool.description, tool.category, best, tool.pricingNote || ''].join(' ')
+    const keywords = keywordsOf(tool)
+    const kw = keywords.join(' | ')
+    const hay = [tool.name, tool.tagline, tool.description, tool.category, best, kw, tool.pricingNote || ''].join(' ')
     let score = 0
     let specific = 0
     for (const term of scoredTerms) {
@@ -435,51 +508,71 @@ export function rankTools(list, query) {
       // R2: a name match on the word for the chosen category scores as a category match.
       const name = rawName && !exact && intent && categorySlug(term) === intent ? 4 : rawName
       const bestHit = textHit(term, best)
+      const kwHit = keywords.length ? textHit(term, kw) : false
       const category = textHit(term, tool.category)
       const anywhere = textHit(term, hay, true)
       if (name) score += name
       if (bestHit) score += 5
+      if (kwHit) score += 5
       if (category) score += 4
       if (anywhere) score += 2
-      if (!categorySlug(term) && (name || bestHit)) specific += 1
+      if (!categorySlug(term) && (name || bestHit || kwHit)) specific += 1
     }
     if (!score) continue
     const covered = new Set(contentTerms.filter((term) => textHit(term, hay, true)))
-    const fields = [tool.name, tool.tagline, ...(tool.bestFor || [])]
+    const fields = [tool.name, tool.tagline, ...(tool.bestFor || []), ...keywords]
     for (const pair of pairs) {
       if (fields.some((field) => phraseHit(pair, field))) score += 6
     }
-    const cover = covered.size
+    let conceptHits = 0
+    for (const concept of concepts) {
+      if (!concept.listing.test(hay)) continue
+      conceptHits += 1
+      if (fields.some((field) => concept.listing.test(field))) score += 5
+    }
+    const cover = covered.size + conceptHits
     if (!named && keyTerms.length && !keyTerms.some((term) => textHit(term, hay, true))) continue
-    const strong = scoredTerms.some((term) => textHit(term, tool.name, true) || textHit(term, best))
+    const strong = scoredTerms.some((term) => textHit(term, tool.name, true) || textHit(term, best) || (keywords.length && textHit(term, kw)))
     if (!named && intent && tool.category !== intent && !strong) continue
     const band = named ? 0 : (intent && tool.category === intent ? 1 : 2)
     const job = actions.length ? (actions.some((term) => textHit(term, hay, true)) ? 1 : 0) : 1
-    const surface = (!devQuery && !named && isModelTool(tool)) ? 1 : 0
+    const surface = (!devQuery && !named && isModelListing(tool)) ? 1 : 0
+    const toolish = (!devQuery && !named && isToolListing(tool, asked)) ? 1 : 0
     const limited = (!named && isAvailabilityLimited(tool)) ? 1 : 0
-    const price = priceIntent ? priceBucket(tool) : 0
+    const price = priceIntent ? priceTier(tool) : 0
+    const cost = priceIntent ? priceCost(tool) : 0
     const exactness = exact ? 0 : (named ? 1 : 2)
-    rows.push({ tool, score, specific, band, job, surface, limited, price, exactness, cover, named })
+    rows.push({ tool, score, specific, band, job, surface, toolish, limited, price, cost, exactness, cover, named })
   }
   // R1: when any tool matches 2+ of the query's words, tools that match only 1 are weak: they sort
   // after the rest and stay out of the numbered results. Apps come before raw models and APIs
   // unless the query asks for one; when no app is a strong match, models are not held back.
   const most = Math.max(0, ...rows.filter((row) => !row.named).map((row) => row.cover))
   for (const row of rows) row.weak = !row.named && most >= 2 && row.cover < 2 ? 1 : 0
-  const appsStrong = rows.some((row) => !row.named && !row.weak && !row.surface)
-  for (const row of rows) row.held = appsStrong ? row.surface : 0
+  const apps = rows.filter((row) => !row.named && !row.weak && !row.surface && !row.toolish)
+  const appsStrong = apps.length > 0
+  const appCover = Math.max(-1, ...apps.map((row) => row.cover))
+  const appScore = Math.max(-1, ...apps.filter((row) => row.cover === appCover).map((row) => row.score))
+  for (const row of rows) {
+    row.held = appsStrong ? row.surface : 0
+    // R5: a developer tool, extension, or infrastructure listing that beats every strong app on
+    // words matched, or ties on words and outscores them, keeps its place; otherwise it follows apps.
+    const ahead = row.cover > appCover || (row.cover === appCover && row.score > appScore)
+    row.behind = row.surface || (row.toolish && appsStrong && !ahead) ? 1 : 0
+  }
   rows.sort((a, b) => (
     (a.named ? 0 : 1) - (b.named ? 0 : 1)
     || a.exactness - b.exactness
     || a.held - b.held
     || a.weak - b.weak
+    || a.behind - b.behind
+    || a.limited - b.limited
     || a.band - b.band
     || b.cover - a.cover
-    || a.limited - b.limited
-    || a.surface - b.surface
+    || a.price - b.price
+    || a.cost - b.cost
     || b.job - a.job
     || b.specific - a.specific
-    || a.price - b.price
     || b.score - a.score
     || a.tool.rank - b.tool.rank
   ))

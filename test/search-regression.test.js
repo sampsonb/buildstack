@@ -15,13 +15,9 @@ const known = new Set(tools.map((t) => t.slug))
 // The numbered results people see: R1 keeps weak matches and held-back models under Show all.
 const top = (q, n) => topShown(rankTools(tools, q), n).map((t) => t.slug)
 
-// Cases that are expected to pass only after a later release. Empty once every rule ships.
+// Cases that cannot pass with the verified catalog data. All search rules have shipped.
 const PENDING = {
-  'ai browser': 'release 3 (synonyms: Genspark says agentic browser, not AI browser)',
-  'cheapest coding assistant': 'release 3 (R6 price intent with freePlan and byoModel)',
-  'make a presentation': 'release 3 (Gamma keywords and presentation synonyms)',
-  'remove background from a photo': 'release 3 (R5 and R7: Seedream 5.5 is an API model whose API is not live)',
-  'build a website without code': 'release 3 (without code synonyms count as a matched term)',
+  'cheapest coding assistant': 'data conflict: official pages show OpenCode (free built-in models) and Cursor (free plan, Plus $8) also qualify for R6, so Copilot ($10) lands 4th; needs a review decision',
 }
 
 export const CASES = [
@@ -60,6 +56,14 @@ for (const c of CASES) {
   const pending = PENDING[c.q]
   test(`regression: ${c.q}`, pending ? { todo: pending } : {}, () => check(c))
 }
+
+test('regression: cheapest coding assistant puts verified free plans with included AI first', () => {
+  const t6 = top('cheapest coding assistant', 6)
+  const bySlug = (s) => tools.find((x) => x.slug === s)
+  assert.ok(t6.includes('github-copilot') && t6.includes('google-antigravity'), t6.join(', '))
+  for (const s of t6.slice(0, 3)) assert.ok(bySlug(s).freePlan === true && bySlug(s).byoModel === false, s)
+  for (const s of ['opencode-browse', 'easy-lens-cli', 'harness-autonomous']) assert.ok(!t6.includes(s), `${s} in top 6`)
+})
 
 test('regression: the 5 searches the Duet audit rated good stay good', () => {
   const tm = rankTools(tools, 'transcribe meetings').slice(0, 3)

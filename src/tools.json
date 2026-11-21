@@ -7,7 +7,7 @@
     "rank": 1,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-07",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "AI-first code editor built on VS Code",
     "description": "Cursor is an AI code editor with codebase-aware chat, tab completion, and agent modes for multi-file edits. Strong fit for daily software development. Since November 5, 2026, cloud agents on paid plans can also build and publish live apps: Cursor scaffolds the web app, sets up a Postgres database if needed, adds sign-in behind Cursor SSO, runs security checks, and hosts it at a link you choose.",
@@ -22,7 +22,9 @@
     "freeTier": true,
     "priceFrom": "from $8/mo",
     "pricingUrl": "https://cursor.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "freePlan": true,
+    "byoModel": false
   },
   {
     "slug": "claude",
@@ -131,7 +133,7 @@
     "rank": 5,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-10-30",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "AI pair programmer inside your IDE and GitHub",
     "description": "GitHub Copilot suggests code as you type, answers questions in the IDE, and helps with pull requests across popular editors.",
@@ -146,7 +148,9 @@
     "freeTier": true,
     "priceFrom": "from $10/mo",
     "pricingUrl": "https://github.com/features/copilot/plans",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "freePlan": true,
+    "byoModel": false
   },
   {
     "slug": "nano-banana",
@@ -350,7 +354,7 @@
     "rank": 14,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-14",
+    "updated": "2026-11-21",
     "added": "2026-10-16",
     "tagline": "Google's agentic coding platform across App, CLI, IDE, and SDK",
     "description": "Google Antigravity is an agentic coding platform for building with AI agents across an app, CLI, IDE, and SDK. Aimed at developers who want agent-driven workflows inside Google's AI stack. Since November 10, 2026, Google AI Ultra subscribers can use Gemini 4 Carbon, Google's strongest model, in Antigravity, and Google is previewing /swarm, which turns one prompt into a coordinated team of agents working in parallel isolated workspaces that you can track in real time. On November 12, 2026, Google added Gemini 4 Hydrogen for paid Google AI Pro and Ultra subscribers and introduced Orchestrator, which switches between models such as Carbon and Hydrogen within one session; Google says Orchestrator reached near-Carbon task success on Terminal-Bench 4.0 while using 24% less quota and finishing 19% faster on average. On November 13, 2026, Google added Dynamic Workflows: type /run-workflow and the agent writes a short Python script that runs many agents in parallel or one after another, shows you the script to approve before it runs, and can save it for reuse. Dynamic Workflows are available on Google AI Pro and Ultra plans in the Antigravity app and CLI.",
@@ -363,8 +367,10 @@
     "strength": "Google's agentic coding platform across an app, CLI, IDE, and SDK.",
     "watchOut": "The free individual plan has rate limits; Google AI Pro and Ultra unlock more capacity.",
     "freeTier": true,
-    "priceFrom": "See pricing",
-    "pricingUrl": "https://antigravity.google/pricing"
+    "priceFrom": "Free",
+    "pricingUrl": "https://antigravity.google/pricing",
+    "freePlan": true,
+    "byoModel": false
   },
   {
     "slug": "grok",
@@ -468,7 +474,7 @@
     "rank": 19,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-20",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "Vercel's AI UI generator for React",
     "description": "v0 by Vercel generates UI components and full pages from prompts, geared toward Next.js and modern React stacks.",
@@ -483,7 +489,9 @@
     "freeTier": true,
     "priceFrom": "from $30/mo",
     "pricingUrl": "https://v0.app/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "freePlan": true,
+    "byoModel": false
   },
   {
     "slug": "lovable",
@@ -493,7 +501,7 @@
     "rank": 20,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-20",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "Build full-stack apps from natural language",
     "description": "Lovable turns prompts into working web apps with UI and backend scaffolding, aimed at rapid product prototyping.",
@@ -507,7 +515,9 @@
     "watchOut": "The free plan has 5 build credits a day (up to 30 a month); paid plan prices are on the official pricing page.",
     "freeTier": true,
     "priceFrom": "See pricing",
-    "pricingUrl": "https://lovable.dev/pricing"
+    "pricingUrl": "https://lovable.dev/pricing",
+    "freePlan": true,
+    "byoModel": false
   },
   {
     "slug": "bolt",
@@ -517,7 +527,7 @@
     "rank": 21,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-20",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "In-browser AI app builder by StackBlitz",
     "description": "Bolt.new lets you prompt, edit, and run full-stack web apps in the browser with StackBlitz's WebContainers.",
@@ -532,7 +542,9 @@
     "freeTier": true,
     "priceFrom": "from $25/mo",
     "pricingUrl": "https://bolt.new/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "freePlan": true,
+    "byoModel": false
   },
   {
     "slug": "wix-studio-two",
@@ -566,7 +578,7 @@
     "rank": 23,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-10",
+    "updated": "2026-11-21",
     "added": "2026-11-10",
     "tagline": "Automattic's publishing home for apps and sites your AI builds, with a live link in the chat",
     "description": "Spacefast is a new company from Automattic, the team behind WordPress.com, launched on November 9, 2026. It is not an AI builder itself: you keep working in Claude, ChatGPT, Cursor, Claude Code, Codex, or another agent, and Spacefast gives that agent building instructions, a database, and hosting, then returns a live link right in the chat. Each project gets its own Space that is private by default, saves a version with every change so you can roll back, and supports comments pinned on the page that your AI can turn into fixes. Spaces also include file uploads and built-in visitor stats. You can publish without an account, or use the drop.fast drag-and-drop page, Git pushes, or the npx spacefast CLI. It supports Next.js, TanStack Start, Astro, and PHP projects, and Automattic says app authentication, transactional email, and shared team knowledge are coming in the next few weeks.",
@@ -581,7 +593,9 @@
     "freeTier": true,
     "priceFrom": "from $1/mo",
     "pricingUrl": "https://spacefast.com/pricing/",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "freePlan": true,
+    "byoModel": true
   },
   {
     "slug": "windsurf",
@@ -591,7 +605,7 @@
     "rank": 24,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-14",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "Cognition's agentic IDE and agent command center, formerly Windsurf",
     "description": "Devin Desktop is the new name for Windsurf, Cognition's AI IDE. It keeps the full Windsurf IDE with Supercomplete tab predictions, and adds an agent command center for running and reviewing many agents, locally or in Devin Cloud, using the Agent Client Protocol. Plans, extensions, and settings carry over from Windsurf, and Windsurf for JetBrains is still available. SWE-2 Flash launched November 4, 2026, and is available in Devin Desktop and the CLI at one-fifth the price and 3x the speed of SWE-2; Cognition says it is free through November 30, 2026 for eligible paid Devin plans (Pro, Max, and Teams). On November 13, 2026, Cognition introduced Devin Apps: Devin builds private web apps, such as internal tools and dashboards, and serves them from its own cloud machine at a stable link that requires Devin sign-in. Apps sleep when nobody is using them and are billed by how long the machine is awake; they are rolling out gradually.",
@@ -606,7 +620,9 @@
     "freeTier": true,
     "priceFrom": "from $20/mo",
     "pricingUrl": "https://devin.ai/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "freePlan": true,
+    "byoModel": false
   },
   {
     "slug": "opencode",
@@ -616,7 +632,7 @@
     "rank": 25,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-10-18",
+    "updated": "2026-11-21",
     "added": "2026-10-18",
     "tagline": "Open source AI coding agent for terminal, IDE, and desktop",
     "description": "OpenCode is an open source coding agent that works in your terminal, IDE, or a desktop app and connects to 75+ model providers, including local models. OpenCode 2.0, announced October 12, 2026, added a shared background server for all clients, background subagents, a Code Mode for tool calls, and an embeddable SDK.",
@@ -629,7 +645,9 @@
     "strength": "Open source AI coding agent for terminal, IDE, and desktop.",
     "watchOut": "You bring your own model provider or subscription, or use OpenCode Zen models.",
     "freeTier": true,
-    "priceFrom": "Free"
+    "priceFrom": "Free",
+    "freePlan": true,
+    "byoModel": false
   },
   {
     "slug": "qwen-code",
@@ -639,7 +657,7 @@
     "rank": 26,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-13",
+    "updated": "2026-11-21",
     "added": "2026-11-13",
     "tagline": "Open-source terminal coding agent from Alibaba, now merged with the Qoder agent harness in a 1.0 preview",
     "description": "Qwen Code is Alibaba's open-source coding agent for your terminal. You ask it in plain language to understand code, implement features, investigate problems, and run tests, review permission prompts before it runs tool actions, and inspect its changes with /diff. On November 11, 2026, Alibaba released Qwen Code 1.0 Preview, which brings the agent harness from its Qoder coding tool into Qwen Code for code understanding, implementation, debugging, and testing. The preview works with Qwen and Qoder accounts, multiple model providers, and custom compatible endpoints, ships native packages for macOS, Linux, and Windows that do not need a separate Node.js install, and supports resuming sessions and non-interactive runs for scripts and automation. Alibaba says some interfaces, settings, and behaviors may change during the preview.",
@@ -652,7 +670,9 @@
     "strength": "Open-source terminal coding agent from Alibaba, now merged with the Qoder agent harness in a 1.0 preview.",
     "watchOut": "You sign in with a Qwen Plus or Pro subscription, or connect a model provider with your own API key.",
     "freeTier": true,
-    "priceFrom": "Free"
+    "priceFrom": "Free",
+    "freePlan": true,
+    "byoModel": true
   },
   {
     "slug": "cline",
@@ -662,7 +682,7 @@
     "rank": 27,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-10-24",
+    "updated": "2026-11-21",
     "added": "2026-10-24",
     "tagline": "Open source coding agent for VS Code and the terminal",
     "description": "Cline is an open source AI coding agent that runs as a VS Code extension and a CLI. It plans and makes multi-file changes, runs commands, and uses MCP tools, with your own API keys or the Cline provider. Version 4.1.25 (October 16, 2026) began rolling out Cline Cloud sessions, which run a task in a hosted sandbox on a GitHub repo and branch you pick and keep going after you close your editor. It also retries interrupted provider responses up to 3 times and fixes timeouts on long local-model requests.",
@@ -676,7 +696,9 @@
     "watchOut": "You pay for AI inference with your own keys or Cline credits; there is a separate Enterprise plan.",
     "freeTier": true,
     "priceFrom": "Free",
-    "pricingUrl": "https://cline.bot/pricing"
+    "pricingUrl": "https://cline.bot/pricing",
+    "freePlan": true,
+    "byoModel": true
   },
   {
     "featured": false,
@@ -711,7 +733,7 @@
     "rank": 29,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-09",
+    "updated": "2026-11-21",
     "added": "2026-10-24",
     "tagline": "Fast open source code editor with a built-in AI agent",
     "description": "Zed is a fast, open source code editor with an Agent Panel, edit predictions, and support for external agents such as Claude Agent and Codex CLI through the Agent Client Protocol (ACP). Zed 1.27.0 (November 4, 2026) writes AI commit messages in the style of your three most recent commits, cuts Agent Panel memory and CPU use on long threads, and speeds up the Git Graph. It also removed agent checkpoints (reject edits or use Git to undo) and now requires macOS 12 Monterey or later. Zed ships weekly releases.",
@@ -726,7 +748,9 @@
     "freeTier": true,
     "priceFrom": "from $10/mo",
     "pricingUrl": "https://zed.dev/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "freePlan": true,
+    "byoModel": true
   },
   {
     "slug": "kiro",
@@ -736,7 +760,7 @@
     "rank": 30,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-07",
+    "updated": "2026-11-21",
     "added": "2026-10-25",
     "tagline": "AWS's spec-driven agentic IDE, CLI, and web agent",
     "description": "Kiro is an agentic coding tool built and operated by AWS. It turns prompts into requirements, designs, and task lists (specs), then implements them with parallel agents, and checks behavior with property-based tests. It runs as an IDE that supports Open VSX extensions and VS Code settings, a CLI, and Kiro Web, and works with MCP, AGENTS.md, and the Agent Client Protocol. Recent releases added Memory across chat sessions in the IDE (October 19, 2026), workspace trust in the CLI (October 20), and MCP tools that can pause to ask for input plus Claude Haiku 5.5 support (October 23). You do not need an AWS account to use it. On November 5, 2026 AWS made Kiro bots generally available in Kiro Crew, its open source workspace: named, long-running agents with their own memory and workspace that run and monitor parallel sessions and can work on a schedule.",
@@ -751,7 +775,9 @@
     "freeTier": true,
     "priceFrom": "from $20/mo",
     "pricingUrl": "https://kiro.dev/pricing/",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "freePlan": true,
+    "byoModel": false
   },
   {
     "featured": false,
@@ -1134,7 +1160,8 @@
     "strength": "A proactive Anthropic agent that briefs you, works on its own while you're away, and asks before acting.",
     "watchOut": "Research preview by waitlist for US Pro and Max subscribers only; it uses that plan's usage limits.",
     "freeTier": false,
-    "priceFrom": "See pricing"
+    "priceFrom": "See pricing",
+    "status": "waitlist"
   },
   {
     "slug": "ideogram",
@@ -1263,7 +1290,7 @@
     "rank": 52,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-09",
+    "updated": "2026-11-21",
     "added": "2026-11-09",
     "tagline": "ByteDance image model with stable multi-round editing and transparent-background output",
     "description": "Seedream 5.5 is the image creation model from ByteDance's Seed team, introduced on November 9, 2026. It keeps unedited regions unchanged at the pixel level, so you can keep editing the same image across 100 rounds without color shifts or detail loss. It also generates native RGBA images with full and partial transparency, so assets come out ready to drop into a layout without background removal, and it improves photo realism and the rendering of dense, small text. At launch it is available in the Doubao, Doubao Work, and Jimeng apps, with API access on Volcano Engine Ark announced as coming soon. ByteDance says a Pro version of the 5.5 series will follow.",
@@ -1277,7 +1304,9 @@
     "watchOut": "The Volcano Engine Ark API was announced but not live as of November 9, 2026; check the official site.",
     "freeTier": false,
     "priceFrom": "See pricing",
-    "pricingUrl": "https://www.byteplus.com/en/product/seedream"
+    "pricingUrl": "https://www.byteplus.com/en/product/seedream",
+    "type": "api-model",
+    "status": "api-not-live"
   },
   {
     "slug": "minimax-h3-image",
@@ -1868,7 +1897,7 @@
     "rank": 77,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-06",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "OpenAI's text-to-video model",
     "description": "Sora was OpenAI's text-to-video model for short cinematic clips from prompts. Per OpenAI Help, the Sora web and app experiences were discontinued on April 26, 2026, and the Sora API was discontinued on September 24, 2026. Export remaining content at sora.chatgpt.com/sunset while the export window remains open.",
@@ -1881,7 +1910,8 @@
     "strength": "OpenAI's text-to-video model for short cinematic clips from prompts.",
     "watchOut": "The Sora web and app experiences were discontinued April 26, 2026, and the API on September 24, 2026; export remaining content while the window is open.",
     "freeTier": false,
-    "priceFrom": "Discontinued"
+    "priceFrom": "Discontinued",
+    "status": "discontinued"
   },
   {
     "featured": false,
@@ -2144,7 +2174,8 @@
     "strength": "Open source command center for running several coding agents in parallel across Mac and Linux machines.",
     "watchOut": "You bring your own agent subscriptions and model usage; it is a desktop app, not a hosted model.",
     "freeTier": true,
-    "priceFrom": "Free"
+    "priceFrom": "Free",
+    "type": "developer-tool"
   },
   {
     "slug": "opencode-browse",
@@ -2154,7 +2185,7 @@
     "rank": 89,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-09",
+    "updated": "2026-11-21",
     "added": "2026-11-09",
     "tagline": "MCP server and browser extension that let coding agents use your real browser",
     "description": "Browse, from the team behind OpenCode, is an MIT-licensed MCP server plus a Chromium extension that lets AI agents use your real browser, with your tabs, logins, and extensions. Agents open and drive their own background tabs with Playwright, take screenshots, record the tab, and capture network traffic to a redacted HAR file. When a login, 2FA prompt, passkey, or payment comes up, the agent hands the tab back to you and continues after you click Continue. It works in Chrome, Edge, Brave, Arc, Vivaldi, Opera, and other Chromium browsers, and with OpenCode, Claude Code, Codex, Cursor, Zed, and other MCP clients. Version 0.0.16 shipped on November 8, 2026.",
@@ -2167,7 +2198,8 @@
     "strength": "MCP server and Chrome extension that let coding agents use your real browser, with human handoff for logins and payments.",
     "watchOut": "You bring your own coding agent; the agent hands the tab back to you for logins, 2FA, passkeys, or payments.",
     "freeTier": true,
-    "priceFrom": "Free"
+    "priceFrom": "Free",
+    "type": "extension"
   },
   {
     "slug": "github-replica",
@@ -2248,7 +2280,7 @@
     "rank": 93,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-19",
+    "updated": "2026-11-21",
     "added": "2026-11-19",
     "tagline": "Build, test, and publish Snapchat Lenses from the AI coding assistant you already use",
     "description": "Easy Lens CLI is a command line tool from Snap, released on November 18, 2026, that lets AI coding assistants such as Claude Code, Codex, and Cursor build Snapchat Lenses from a plain-language description. The assistant can pull from more than 100 AR building blocks and more than 50 AI asset generators, render preview videos, send Lenses to your phone to test, and publish them to Snapchat with performance tracking in the same session. It supports Web Lens games with leaderboards, camera Lenses, and beauty effects. Lenses go through the same content checks and Lens review as the Easy Lens apps, and creators enrolled in Lens+ Payouts can earn from them. It runs on Mac, Windows, and Linux.",
@@ -2261,7 +2293,8 @@
     "strength": "Turns the coding assistant you already use into a Lens studio, from building blocks to phone testing to publishing.",
     "watchOut": "Only builds for Snapchat, needs a Snapchat account, and every Lens still goes through Snap's review before it reaches users.",
     "freeTier": true,
-    "priceFrom": "Free"
+    "priceFrom": "Free",
+    "type": "developer-tool"
   },
   {
     "slug": "llama-cpp",
@@ -2363,7 +2396,7 @@
   {
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-19",
+    "updated": "2026-11-21",
     "added": "2026-11-19",
     "slug": "perplexity-comet",
     "name": "Perplexity Comet",
@@ -2381,7 +2414,12 @@
     "pricingNote": "Free to download and use with no Perplexity account needed; the optional Comet Plus is $5 a month for premium publisher content and comes with Perplexity Pro and Max",
     "strength": "A free AI browser whose assistant summarizes tabs and acts on websites, with controls over what it can access.",
     "watchOut": "A browser agent that acts on sites can touch your logged-in accounts, so review its access in Settings, and some tasks need your confirmation.",
-    "rank": 98
+    "rank": 98,
+    "type": "browser",
+    "keywords": [
+      "ai browser",
+      "web browser"
+    ]
   },
   {
     "featured": false,
@@ -2534,7 +2572,7 @@
     "rank": 105,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-07",
+    "updated": "2026-11-21",
     "added": "2026-11-07",
     "tagline": "Thinking Machines model for agentic coding, vision, and fine-tuning on Tinker",
     "description": "Inkling 2 Small is the second-generation model from Thinking Machines Lab, introduced November 5, 2026. It is a mixture-of-experts model with 594B total parameters and 17B active, with image input and variable effort settings, trained for long-horizon agentic coding, visual web and game building, and knowledge work such as finance and legal tasks. At launch it runs on Tinker for inference and fine-tuning with closed weights; Thinking Machines says it intends to release the full weights under Apache 2.0 after external safety testing. It does not support audio, and the company notes it is less optimized for chat.",
@@ -2547,7 +2585,8 @@
     "strength": "Thinking Machines model for agentic coding, vision, and fine-tuning on Tinker.",
     "watchOut": "Tinker serverless inference is in beta; fine-tuning is billed separately at $1.50 or $3.00 per 1M training tokens depending on context length.",
     "freeTier": false,
-    "priceFrom": "API from $0.30/1M in"
+    "priceFrom": "API from $0.30/1M in",
+    "type": "api-model"
   },
   {
     "featured": false,
@@ -2597,7 +2636,8 @@
     "freeTier": true,
     "priceFrom": "Free",
     "pricingUrl": "https://www.liquid.ai/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "type": "open-weight-model"
   },
   {
     "slug": "alpie-seed",
@@ -2620,7 +2660,8 @@
     "strength": "Open-weight 9B model that codes, reads images, and reasons offline on laptops and phones, with a free playground.",
     "watchOut": "The Alpie Local coding agent is invite-only with a waitlist.",
     "freeTier": true,
-    "priceFrom": "Free"
+    "priceFrom": "Free",
+    "type": "open-weight-model"
   },
   {
     "slug": "local-code",
@@ -2690,7 +2731,9 @@
     "strength": "Open-source personal agent with its own sandboxed computer and browser, running on your Mac or Windows PC.",
     "watchOut": "You pay your own model provider, or run an open-source model locally; Nod checks in once a task passes $5. It cannot make phone calls.",
     "freeTier": true,
-    "priceFrom": "Free"
+    "priceFrom": "Free",
+    "freePlan": true,
+    "byoModel": true
   },
   {
     "slug": "openbot",
@@ -2861,7 +2904,7 @@
   {
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-20",
+    "updated": "2026-11-21",
     "added": "2026-11-20",
     "slug": "intercom-fin",
     "name": "Intercom Fin",
@@ -2881,7 +2924,11 @@
     "pricingNote": "Fin is $0.99 per successful outcome (resolution, procedure handoff, or disqualification; sales qualifications are $9.99); used with the Intercom helpdesk, plans also charge per seat (Essential is listed from $19 a seat a month for new customers, or $29, on intercom.com/pricing); Fin can also run on your current helpdesk at the outcome price with a monthly minimum; 14-day free trial, no lasting free plan",
     "strength": "A dedicated customer support agent you can put on a website or helpdesk, with outcome-based pricing.",
     "watchOut": "There is no lasting free plan, and costs combine per-outcome charges with Intercom seat fees if you use the Intercom helpdesk.",
-    "rank": 119
+    "rank": 119,
+    "keywords": [
+      "live chat",
+      "helpdesk"
+    ]
   },
   {
     "slug": "constant-contact-catalyst",
@@ -3488,7 +3535,7 @@
   {
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-19",
+    "updated": "2026-11-21",
     "added": "2026-11-19",
     "slug": "gamma",
     "name": "Gamma",
@@ -3506,7 +3553,12 @@
     "pricingNote": "Free plan with 400 credits at signup that do not refill and up to 10 slides per prompt; Plus is $9 a month and Pro is $18 a month, both billed annually ($108 and $216 a year); Ultra is $90 a month billed annually; Business and Enterprise plans are for teams",
     "strength": "Fast AI presentations and documents with PowerPoint import and export, and a free plan to try it.",
     "watchOut": "Free credits run out and do not refill, free decks carry Gamma branding, and content on personal plans may train Gamma AI features unless you opt out.",
-    "rank": 145
+    "rank": 145,
+    "keywords": [
+      "slide deck",
+      "pitch deck",
+      "presentation"
+    ]
   },
   {
     "slug": "grammarly",
@@ -3536,7 +3588,7 @@
   {
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-20",
+    "updated": "2026-11-21",
     "added": "2026-11-20",
     "slug": "deepl-translator",
     "name": "DeepL Translator",
@@ -3556,7 +3608,11 @@
     "pricingNote": "Free plan with 50,000 characters per month and 1 file translation up to 5 MB; DeepL Pro Individual from 7.49 euros a month, Team 24.99 and Business 49.99 euros per user a month, billed annually (German prices on deepl.com/en/pro); Enterprise is custom",
     "strength": "Purpose-built text and document translation that preserves formatting, with a usable free plan.",
     "watchOut": "Pro prices on the German pricing page are listed in euros and billed annually; file limits are tight on the free plan.",
-    "rank": 147
+    "rank": 147,
+    "keywords": [
+      "translate pdf",
+      "translate word document"
+    ]
   },
   {
     "featured": false,
@@ -3781,7 +3837,7 @@
     "rank": 157,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-10-31",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "Turn websites into LLM-ready markdown",
     "description": "Firecrawl crawls and converts websites into clean markdown and structured data for RAG and agent pipelines.",
@@ -3796,7 +3852,8 @@
     "freeTier": true,
     "priceFrom": "from $19/mo",
     "pricingUrl": "https://www.firecrawl.dev/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-14",
+    "type": "infrastructure"
   },
   {
     "slug": "muse-spark-open",

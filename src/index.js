@@ -378,7 +378,7 @@ function searchResultsHtml(results, numbered = SEARCH_TOP) {
 // R8 (Nov 21): the list comes from the top result's category. Searches that share words with the
 // query come first, then the rest in list order.
 const RELATED_SEARCHES = {
-  writing: ['write blog posts', 'edit and polish prose', 'write marketing copy', 'write an essay', 'write emails', 'translate a pdf', 'translate text', 'translate a word document', 'make slides', 'make a pitch deck'],
+  writing: ['write blog posts', 'edit and polish prose', 'write marketing copy', 'write an essay', 'write emails', 'translate a pdf', 'translate text', 'translate a word document', 'make slides', 'make a pitch deck', 'make a presentation'],
   coding: ['write a react app', 'refactor code', 'review pull requests', 'code editor', 'build a website without code', 'build an app'],
   research: ['research with citations', 'summarize papers', 'search the web', 'research papers'],
   images: ['generate images', 'edit photos', 'make a logo', 'design graphics', 'remove background from a photo', 'upscale a photo', 'product photos'],
@@ -1035,6 +1035,11 @@ app.get('/tools.json', (c) => c.json({
     priceFrom: t.priceFrom || 'See pricing',
     pricingUrl: t.pricingUrl || null,
     priceChecked: t.priceChecked || null,
+    type: t.type || 'app',
+    status: t.status || 'live',
+    freePlan: typeof t.freePlan === 'boolean' ? t.freePlan : null,
+    byoModel: typeof t.byoModel === 'boolean' ? t.byoModel : null,
+    keywords: Array.isArray(t.keywords) ? t.keywords : [],
     page: `${SITE}/tool/${t.slug}`,
   })),
 }))
@@ -1774,28 +1779,30 @@ app.get('/methodology', (c) => {
 
     <h2>How search works</h2>
     <p>When you type a job into the search box, BuildStack splits your words on spaces and scores each tool. A dotted or hyphenated word is matched whole, so bolt.new finds Bolt.new. A name made of two longer words run together, such as OpenCode, also matches either word. It skips a, an, the, of, for, to, and, or, in, on, with, at, by, and from, plus ai, my, best, tool, and tools. Everyday verbs such as make, build, create, and get are skipped when your search has other words, so a tool named Make cannot win a search for make a presentation. If every word is skipped, the full directory is shown in rank order.</p>
-    <p>A term matches a whole word. Terms shorter than 3 letters match only that exact word. Plurals count in either direction, and so do -ing and -ed endings, including the form that drops a trailing e, so write matches writing and code matches coding. A few word families also match each other, such as website and site, photo and image, and summarize and summary. A term does not match inside a different longer word, so post does not match poster and code does not match codex.</p>
+    <p>A term matches a whole word. Terms shorter than 3 letters match only that exact word. Plurals count in either direction, and so do -ing and -ed endings, including the form that drops a trailing e, so write matches writing and code matches coding. A few word families also match each other, such as website and site, photo and image, summarize and summary, and remove and removal. A term does not match inside a different longer word, so post does not match poster and code does not match codex.</p>
+    <p>Some search words also match their synonyms: presentation matches slides and deck, and AI browser also matches agentic browser and web browser, which counts as one matched word. Synonyms score like the word itself, but the category group is chosen from the words you typed. A presentation word that only names what a tool starts from, as in turns slides into videos, does not count. Some listings also carry a few search keywords, such as pitch deck for Gamma, and a keyword match scores like a best-for match.</p>
     <h3>Words matched come first</h3>
     <p>BuildStack counts how many of your own words each tool matches anywhere in its listing. Words that only say what kind of thing you want, such as assistant, generator, maker, software, or platform, do not count. When at least one tool matches two or more of your words, tools that match only one are listed after the rest, under Show all, instead of in the numbered results.</p>
-    <p>Raw models, APIs, and developer infrastructure are listed after apps unless your search asks for an API, a model, open weights, or self-hosting. When at least one app is a strong match, they also wait under Show all.</p>
+    <p>Each listing has a type. Raw models (API or open-weight) are listed after apps unless your search asks for an API, a model, an SDK, local or offline use, open source, open weights, or self-hosting, and when at least one app is a strong match they wait under Show all. Developer tools, browser extensions, and infrastructure are also listed after apps, unless your search names that kind of tool (such as extension, CLI, or API) or the tool matches more of your words than every app, or as many words with a higher score.</p>
+    <p>Each listing also has a status. Discontinued tools are left out unless you search for one by name. Tools on a waitlist, and tools whose API is announced but not live, come after tools you can use today.</p>
     <h3>Category group</h3>
     <p>Words of one or two letters still match, but they do not choose the category. BuildStack sees which category the other matches support. The word with the fewest name or best-for matches wins when it points at one category, so a narrower word beats a broader one, and tools in that category are listed first. If that word's matches spread across two or more categories and no category holds two thirds of them, no category group is used. A category word such as coding, video, or voice picks its own category unless a job word such as blog, chatbot, browser, logo, or translate points elsewhere. Inside the group, a tool that matches a narrower word in its name or best-for tags comes before one that only matches a broad word.</p>
     <h3>Points</h3>
     <p>For each remaining term:</p>
     <ul class="clean">
       <li>A match in the tool name adds 8 points. When the term is the word for the chosen category, such as code in a coding search, a name match adds 4 points instead, the same as a category match.</li>
-      <li>A match in one of the tool's best-for tags adds 5 points.</li>
+      <li>A match in one of the tool's best-for tags adds 5 points, and a match in its search keywords adds another 5.</li>
       <li>A match in the category adds 4 points.</li>
-      <li>A match anywhere in the listing (name, tagline, description, category, best-for tags, or pricing note) adds 2 points.</li>
+      <li>A match anywhere in the listing (name, tagline, description, category, best-for tags, search keywords, or pricing note) adds 2 points.</li>
       <li>Two words from your search that sit next to each other, including a short word like ai, add 6 points when they also appear side by side in the name, tagline, or one best-for tag, as in AI browser.</li>
     </ul>
-    <p>Price words such as cheap, cheapest, free, budget, affordable, and inexpensive are not matched as text. They sort the matches so free tools come first, then tools with a free tier.</p>
-    <p>Tools with no matches are left out. An exact match for the whole name always comes first. After that the order is: apps before raw models, then strong matches before weak ones, then the category group, then the number of your words matched, then the narrower-word order, then score. When two tools are still tied, the higher ranked tool comes first. Search result pages are marked noindex so search engines index the real category and tool pages instead.</p>
+    <p>Price words such as cheap, cheapest, free, budget, affordable, low cost, and inexpensive are not matched as text. They sort the matches by plan. First come tools with a free plan that includes the AI, then tools with a free plan where that is not confirmed, then other tools with a free tier, then free tools where you bring and pay for your own model, then the rest. Inside each group the lowest starting price comes first. We record a free plan and whether you bring your own model only after checking the tool maker's own site.</p>
+    <p>Tools with no matches are left out. An exact match for the whole name always comes first. After that the order is: strong matches before weak ones, then apps before raw models and developer tools, then tools you can use today before waitlists and APIs that are not live, then the category group, then the number of your words matched, then price when your search has a price word, then the narrower-word order, then score. When two tools are still tied, the higher ranked tool comes first. Search result pages are marked noindex so search engines index the real category and tool pages instead.</p>
     <p>Under the results, related searches come from the top result's category. Ones that share words with your search come first, and the matching /best guide is linked next to them.</p>
 
     <h2>What each listing contains</h2>
     <p>Every tool page shows the overall rank, the rank inside its category, a tagline, a description, best-for tags, a short pricing note, and a link to the official site. List cards on search results, category pages, and /best guides show the rank inside the category (for example #1 in Writing) instead of the overall rank, and a compact decision block: a one-line best-for summary, a starting price with whether there is a free tier, one strength, and one honest watch-out. Those lines are written from the facts already in the listing. Pricing notes and starting prices are short summaries. Always check the official site for current prices.</p>
-    <p>The decision block is for browsing only. It does not change a tool's rank. Search scoring does not read the strength or watch-out fields, and it does not read the affiliate flag. Price words in a search sort by the starting price and free-tier fields, as described above.</p>
+    <p>The decision block is for browsing only. It does not change a tool's rank. Search scoring does not read the strength or watch-out fields, and it does not read the affiliate flag. It does read the type, status, and search keywords fields, and price words sort by the free plan, bring-your-own-model, free-tier, and starting price fields, as described above.</p>
 
     <h2>Dates on this site</h2>
     <p>Each tool page shows when its listing last changed, meaning its name, link, category, tagline, description, best-for tags, or pricing note. A tool moving down one place because another tool was added above it does not count as a change. A guide shows the later of its own last edit and the newest listing change among the tools it covers. The sitemap uses the same dates, so a page is only marked as changed when its content changed. The site-wide date in /tools.json and /llms.txt is the last day any listing changed.</p>
