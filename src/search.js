@@ -21,6 +21,7 @@ const LEMMA_GROUPS = [
   ['podcast', 'podcasts'],
   ['background', 'backgrounds'],
   ['inbox', 'inboxes'],
+  ['summarize', 'summarise', 'summarizes', 'summarizing', 'summarized', 'summary', 'summaries', 'brief', 'briefs'],
   ['photo', 'photos', 'photograph', 'photographs', 'picture', 'pictures', 'image', 'images'],
 ]
 
@@ -35,6 +36,9 @@ const JOB_HINTS = [
   { any: ['translate', 'translation', 'translator'], add: ['translate'], category: 'writing' },
   { any: ['website', 'websites', 'webpage', 'webpages'], add: ['website'] },
   { all: ['video', 'text'], add: ['text-to-video'] },
+  // Building an app is app-builder work, which BuildStack files under coding. R4 would otherwise
+  // drop the group, since "app" spreads across most categories.
+  { all: ['build', 'app'], add: [], category: 'coding' },
 ]
 
 const LIGHT_VERBS = new Set(['write', 'make', 'create', 'build', 'get', 'use', 'find'])
@@ -57,6 +61,13 @@ const GENERIC_NAME_TOKENS = new Set([
 const DEV_QUERY_TERMS = new Set([
   'api', 'model', 'models', 'openweight', 'weights', 'inference', 'finetune', 'selfhosted',
 ])
+
+// Filler words from /methodology. Phrase pairs (R3) skip these but keep short words like "ai".
+const PHRASE_FILLER = new Set(['a', 'an', 'the', 'of', 'for', 'to', 'and', 'or', 'in', 'on', 'with', 'at', 'by', 'from', 'my', 'your'])
+
+// Head nouns that say what kind of thing you want, not what it should do ("coding assistant",
+// "image generator"). They still score, but they do not count toward term coverage (R1) or phrases.
+const GENERIC_HEADS = new Set(['assistant', 'assistants', 'generator', 'generators', 'maker', 'makers', 'software', 'platform', 'platforms'])
 
 function isInflection(stem, word) {
   if (word === stem) return true
@@ -187,7 +198,7 @@ function categoryLeader(categories) {
 function queryIntent(list, terms) {
   const noted = terms.map((term) => {
     if (term.length < 3 && !/[^a-z0-9]/.test(term)) {
-      return { term, count: 0, lead: null, slug: null, specific: false, unanimous: false }
+      return { term, count: 0, spread: 0, share: 0, lead: null, slug: null, specific: false, unanimous: false }
     }
     const distinctive = list.filter((tool) => (
       textHit(term, tool.name) || textHit(term, (tool.bestFor || []).join(' '))
@@ -197,6 +208,8 @@ function queryIntent(list, terms) {
     const unanimous = Boolean(lead) && distinctive.every((tool) => tool.category === lead)
     return {
       term,
+      spread: new Set(distinctive.map((tool) => tool.category)).size,
+      share: distinctive.length ? Math.max(...distinctive.map((tool) => distinctive.filter((other) => other.category === tool.category).length)) / distinctive.length : 0,
       count: distinctive.length,
       lead,
       slug,
@@ -215,6 +228,9 @@ function queryIntent(list, terms) {
   if (!pool.length) return null
   pool.sort((a, b) => a.count - b.count || a.term.localeCompare(b.term))
   const chosen = pool[0]
+  // R4: when the narrowest word matches tools in 2+ categories and no category holds two thirds
+  // of those matches, skip the category group, unless the word is itself a category word.
+  if (!chosen.slug && chosen.spread >= 2 && chosen.share < 2 / 3) return null
   if (chosen.slug && chosen.lead !== chosen.slug) return chosen.slug
   return chosen.lead || chosen.slug
 }
@@ -332,6 +348,28 @@ function priceBucket(tool) {
   return 2
 }
 
+// R3: adjacent query words, including short ones like "ai", side by side in a field.
+function phrasePairs(query) {
+  const words = String(query ?? '').toLowerCase().split(/\s+/).map((word) => word.replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, ''))
+  const pairs = []
+  for (let i = 0; i + 1 < words.length; i++) {
+    const [a, b] = [words[i], words[i + 1]]
+    if (!a || !b || PHRASE_FILLER.has(a) || PHRASE_FILLER.has(b) || isPriceTerm(a) || isPriceTerm(b)) continue
+    if (GENERIC_HEADS.has(a) || GENERIC_HEADS.has(b)) continue
+    if (/[^a-z0-9]/.test(a) || /[^a-z0-9]/.test(b)) continue
+    pairs.push([a, b])
+  }
+  return pairs
+}
+
+function phraseHit(pair, value) {
+  const words = rawWords(value)
+  for (let i = 0; i + 1 < words.length; i++) {
+    if (formsMatch(pair[0], words[i]) && formsMatch(pair[1], words[i + 1])) return true
+  }
+  return false
+}
+
 function nameTokenBonus(term, tool, exactName) {
   if (!textHit(term, tool.name, true)) return 0
   if (exactName) return 8
@@ -366,6 +404,16 @@ export function rankTools(list, query) {
     && !categorySlug(term)
     && asked.some((item) => item === term || formsMatch(item, term))
   ))
+  // R1: the user's own scored words, one per word family. Words added by job hints, price words,
+  // light verbs, filler, and generic head nouns do not count.
+  const contentTerms = []
+  for (const term of scoredTerms) {
+    if (GENERIC_HEADS.has(term)) continue
+    if (!asked.some((item) => item === term || formsMatch(item, term))) continue
+    if (contentTerms.some((seen) => formsMatch(seen, term))) continue
+    contentTerms.push(term)
+  }
+  const pairs = phrasePairs(stripped.text)
   const specificTerms = scoredTerms.filter((term) => (
     !LIGHT_VERBS.has(term)
     && !isActionTerm(term)
@@ -383,7 +431,9 @@ export function rankTools(list, query) {
     let score = 0
     let specific = 0
     for (const term of scoredTerms) {
-      const name = nameTokenBonus(term, tool, exact)
+      const rawName = nameTokenBonus(term, tool, exact)
+      // R2: a name match on the word for the chosen category scores as a category match.
+      const name = rawName && !exact && intent && categorySlug(term) === intent ? 4 : rawName
       const bestHit = textHit(term, best)
       const category = textHit(term, tool.category)
       const anywhere = textHit(term, hay, true)
@@ -394,6 +444,12 @@ export function rankTools(list, query) {
       if (!categorySlug(term) && (name || bestHit)) specific += 1
     }
     if (!score) continue
+    const covered = new Set(contentTerms.filter((term) => textHit(term, hay, true)))
+    const fields = [tool.name, tool.tagline, ...(tool.bestFor || [])]
+    for (const pair of pairs) {
+      if (fields.some((field) => phraseHit(pair, field))) score += 6
+    }
+    const cover = covered.size
     if (!named && keyTerms.length && !keyTerms.some((term) => textHit(term, hay, true))) continue
     const strong = scoredTerms.some((term) => textHit(term, tool.name, true) || textHit(term, best))
     if (!named && intent && tool.category !== intent && !strong) continue
@@ -403,11 +459,22 @@ export function rankTools(list, query) {
     const limited = (!named && isAvailabilityLimited(tool)) ? 1 : 0
     const price = priceIntent ? priceBucket(tool) : 0
     const exactness = exact ? 0 : (named ? 1 : 2)
-    rows.push({ tool, score, specific, band, job, surface, limited, price, exactness })
+    rows.push({ tool, score, specific, band, job, surface, limited, price, exactness, cover, named })
   }
+  // R1: when any tool matches 2+ of the query's words, tools that match only 1 are weak: they sort
+  // after the rest and stay out of the numbered results. Apps come before raw models and APIs
+  // unless the query asks for one; when no app is a strong match, models are not held back.
+  const most = Math.max(0, ...rows.filter((row) => !row.named).map((row) => row.cover))
+  for (const row of rows) row.weak = !row.named && most >= 2 && row.cover < 2 ? 1 : 0
+  const appsStrong = rows.some((row) => !row.named && !row.weak && !row.surface)
+  for (const row of rows) row.held = appsStrong ? row.surface : 0
   rows.sort((a, b) => (
-    a.band - b.band
+    (a.named ? 0 : 1) - (b.named ? 0 : 1)
     || a.exactness - b.exactness
+    || a.held - b.held
+    || a.weak - b.weak
+    || a.band - b.band
+    || b.cover - a.cover
     || a.limited - b.limited
     || a.surface - b.surface
     || b.job - a.job
@@ -416,5 +483,22 @@ export function rankTools(list, query) {
     || b.score - a.score
     || a.tool.rank - b.tool.rank
   ))
-  return rows.map((row) => row.tool)
+  const out = rows.map((row) => row.tool)
+  const shown = rows.filter((row) => row.named || (!row.weak && !row.held)).length
+  Object.defineProperty(out, 'shownCount', { value: shown, enumerable: false })
+  return out
+}
+
+// The numbered results a search shows: at most n, never a weak match (R1) or a held-back model.
+// They are always the first results, so the rest follow under "Show all" in the same order.
+export function topShown(results, n) {
+  const shown = typeof results?.shownCount === 'number' && results.shownCount > 0 ? results.shownCount : results.length
+  return results.slice(0, Math.min(n, shown))
+}
+
+// R8: how many of a related search's own words appear in the given text (word forms count).
+export function sharedWords(phrase, text) {
+  const own = [...new Set(rawWords(phrase))].filter((word) => !CLOSED_CLASS.has(word) && !PHRASE_FILLER.has(word) && !LIGHT_VERBS.has(word) && !GENERIC_HEADS.has(word))
+  const words = rawWords(text)
+  return own.filter((word) => words.some((other) => formsMatch(word, other))).length
 }

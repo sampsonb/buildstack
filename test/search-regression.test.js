@@ -8,22 +8,20 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { rankTools } from '../src/search.js'
+import { rankTools, topShown } from '../src/search.js'
 
 const tools = JSON.parse(readFileSync(new URL('../src/tools.json', import.meta.url), 'utf8'))
 const known = new Set(tools.map((t) => t.slug))
-const top = (q, n) => rankTools(tools, q).slice(0, n).map((t) => t.slug)
+// The numbered results people see: R1 keeps weak matches and held-back models under Show all.
+const top = (q, n) => topShown(rankTools(tools, q), n).map((t) => t.slug)
 
 // Cases that are expected to pass only after a later release. Empty once every rule ships.
 const PENDING = {
-  'ai browser': 'release 2 (R1 term coverage, R3 adjacent-phrase bonus)',
+  'ai browser': 'release 3 (synonyms: Genspark says agentic browser, not AI browser)',
   'cheapest coding assistant': 'release 3 (R6 price intent with freePlan and byoModel)',
-  'phone calls': 'release 2 (R4 and the phone data edits)',
-  'make a presentation': 'release 2 (R4 skips the category group)',
-  'remove background from a photo': 'release 2 (R1 term coverage)',
-  'build a website without code': 'release 2 (R1 term coverage)',
-  'translate a document': 'release 2 (R1 term coverage)',
-  'customer support chatbot for my website': 'release 2 and 3 (R1, synonyms and keywords)',
+  'make a presentation': 'release 3 (Gamma keywords and presentation synonyms)',
+  'remove background from a photo': 'release 3 (R5 and R7: Seedream 5.5 is an API model whose API is not live)',
+  'build a website without code': 'release 3 (without code synonyms count as a matched term)',
 }
 
 export const CASES = [
@@ -83,4 +81,7 @@ test('regression: the data fixes keep incidental words out of listings', () => {
   assert.ok(!/phone/i.test(t('nod').description) && /cannot make phone calls/.test(t('nod').watchOut))
   assert.ok(!/atlas/i.test(t('chatgpt-work').description) && /Atlas/.test(t('chatgpt-work').watchOut))
   assert.ok(!/background/i.test(t('claude-duet').tagline + t('claude-duet').strength))
+  assert.ok(!/phone/i.test(t('liquid-lfm3').bestFor.join(' ')))
+  assert.ok(!/phone/i.test(t('alpie-seed').bestFor.join(' ')))
+  assert.ok(!/phone/i.test(t('harness-autonomous').bestFor.join(' ')))
 })

@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import toolsData from './tools.json' with { type: 'json' }
-import { rankTools } from './search.js'
+import { rankTools, topShown, sharedWords } from './search.js'
 import { INDEXNOW_KEY } from './indexnow.js'
 
 const app = new Hono()
@@ -228,7 +228,7 @@ function homeFaq() {
     },
     {
       q: 'What is the best AI tool finder?',
-      a: `Look for a finder that takes your task in plain words, ranks real tools, and links to their official sites. BuildStack works that way. It is free, needs no sign-up, and scores all ${all.length} listed tools against your words. Matches in a tool's name count most, then its best-for tags, then its category, and ties go to the higher ranked tool.`,
+      a: `Look for a finder that takes your task in plain words, ranks real tools, and links to their official sites. BuildStack works that way. It is free, needs no sign-up, and scores all ${all.length} listed tools against your words. Tools that match more of your words come first. After that, matches in a tool's name count most, then its best-for tags, then its category, and ties go to the higher ranked tool.`,
     },
     {
       q: 'Is there one AI tool that does everything?',
@@ -263,7 +263,7 @@ function bySlug(slug) {
 // editorial change (SECTION_DATES, from the git history of that guide's code) and the newest
 // `updated` among the tools it shows. Bump a guide's SECTION_DATES entry when you edit its copy.
 const SECTION_DATES = {
-  '/methodology': '2026-11-20',
+  '/methodology': '2026-11-21',
   '/alternatives/cursor': '2026-10-30',
   '/best/ai-coding-agent-for-beginners': '2026-11-13',
   '/best/ai-research-assistant': '2026-11-21',
@@ -363,39 +363,71 @@ function searchTools(q) {
 
 // Search results: top SEARCH_TOP numbered cards, the rest behind a no-JS <details> toggle.
 const SEARCH_TOP = 6
-function searchResultsHtml(results) {
+function searchResultsHtml(results, numbered = SEARCH_TOP) {
   if (!results.length) return '<p class="muted">No matches. Try a broader phrase.</p>'
-  const top = results.slice(0, SEARCH_TOP)
-  const rest = results.slice(SEARCH_TOP)
+  const k = Math.min(SEARCH_TOP, numbered || SEARCH_TOP)
+  const top = results.slice(0, k)
+  const rest = results.slice(k)
   return `<div class="rows">${top.map((t, i) => toolCardAt(t, i + 1, 'fit')).join('')}</div>${rest.length ? `
-    <details class="more"><summary>Show all ${results.length} results</summary><div class="rows">${rest.map((t, i) => toolCardAt(t, SEARCH_TOP + i + 1, 'fit')).join('')}</div></details>` : ''}`
+    <details class="more"><summary>Show all ${results.length} results</summary><div class="rows">${rest.map((t, i) => toolCardAt(t, k + i + 1, 'fit')).join('')}</div></details>` : ''}`
 }
 
 // Results header, free-tier filter, and related searches (redesign phase 5). The filter is a
 // query parameter on the noindex results page; the canonical stays the plain ?q= URL.
-// Related searches are fixed per category (four each, three shown) and each was checked to return
-// that category first.
+// Related searches are listed per category and each was checked to return that category first.
+// R8 (Nov 21): the list comes from the top result's category. Searches that share words with the
+// query come first, then the rest in list order.
 const RELATED_SEARCHES = {
-  writing: ['write blog posts', 'edit and polish prose', 'write marketing copy', 'write an essay'],
-  coding: ['write a react app', 'refactor code', 'review pull requests', 'code editor'],
+  writing: ['write blog posts', 'edit and polish prose', 'write marketing copy', 'write an essay', 'write emails', 'translate a pdf', 'translate text', 'translate a word document', 'make slides', 'make a pitch deck'],
+  coding: ['write a react app', 'refactor code', 'review pull requests', 'code editor', 'build a website without code', 'build an app'],
   research: ['research with citations', 'summarize papers', 'search the web', 'research papers'],
-  images: ['generate images', 'edit photos', 'make a logo', 'design graphics'],
-  video: ['make short videos', 'edit youtube videos', 'add captions to video', 'generate a video'],
+  images: ['generate images', 'edit photos', 'make a logo', 'design graphics', 'remove background from a photo', 'upscale a photo', 'product photos'],
+  video: ['make short videos', 'edit youtube videos', 'add captions to video', 'generate a video', 'edit a podcast'],
   voice: ['voiceover for a podcast', 'transcribe a meeting', 'text to speech', 'clone a voice'],
-  agents: ['automate workflows', 'automate email', 'build an app', 'build an ai agent'],
+  agents: ['automate workflows', 'automate email', 'build an ai agent', 'ai browser', 'phone calls', 'customer support chatbot'],
+}
+// The /best guide for a results page: a guide named by the search words, else the top result's category guide.
+const RELATED_GUIDES = [
+  { words: ['transcribe', 'transcription', 'meeting', 'meetings', 'notetaker'], path: '/best/ai-transcription-tool', label: 'Best AI transcription tools' },
+  { words: ['youtube', 'podcast', 'captions'], path: '/best/ai-video-editor-for-youtube', label: 'Best AI video editors for YouTube' },
+  { words: ['free', 'cheap', 'cheapest', 'budget', 'affordable', 'inexpensive'], path: '/best/free-ai-tools', label: 'Best free AI tools' },
+  { words: ['beginner', 'beginners', 'mvp', 'nocode', 'no-code'], path: '/best/ai-coding-agent-for-beginners', label: 'Best AI coding agents for beginners' },
+  { words: ['business', 'customer', 'customers', 'shop', 'store'], path: '/best/ai-tools-for-small-business', label: 'Best AI tools for small business' },
+]
+const CATEGORY_GUIDES = {
+  writing: { path: '/best/ai-writing-tool', label: 'Best AI writing tools' },
+  coding: { path: '/best/ai-coding-assistant', label: 'Best AI coding assistants' },
+  research: { path: '/best/ai-research-assistant', label: 'Best AI research assistants' },
+  images: { path: '/best/ai-image-generator', label: 'Best AI image generators' },
+  video: { path: '/best/ai-video-generator', label: 'Best AI video generators' },
+  voice: { path: '/best/ai-voice-generator', label: 'Best AI voice generators' },
+  agents: { path: '/best/ai-agent-builder', label: 'Best AI agent builders' },
+}
+function relatedGuide(q, cat) {
+  const words = String(q || '').toLowerCase().split(/\s+/)
+  const named = RELATED_GUIDES.find((g) => g.words.some((w) => words.includes(w)))
+  return named || (cat ? CATEGORY_GUIDES[cat] : null)
 }
 function relatedSearches(q, top) {
   const want = String(q || '').trim().toLowerCase()
   const cat = top && RELATED_SEARCHES[top.category] ? top.category : ''
-  const list = (cat ? RELATED_SEARCHES[cat] : Object.values(RELATED_SEARCHES).map((x) => x[0]))
-    .filter((x) => x !== want).slice(0, 3)
+  const pool = (cat ? RELATED_SEARCHES[cat] : Object.values(RELATED_SEARCHES).map((x) => x[0])).filter((x) => x !== want)
+  const list = pool
+    .map((x, i) => ({ x, i, n: sharedWords(x, want) }))
+    .sort((a, b) => b.n - a.n || a.i - b.i)
+    .slice(0, 3)
+    .map((r) => r.x)
   const links = list.map((x) => `<a href="/?q=${encodeURIComponent(x)}">${esc(x)}</a>`)
   const joined = links.length > 1 ? `${links.slice(0, -1).join(', ')} or ${links[links.length - 1]}` : links.join('')
+  const guide = relatedGuide(want, cat)
+  const read = guide ? `, read <a href="${guide.path}">${esc(guide.label)}</a>` : ''
   const browse = cat ? `, or browse <a href="/category/${cat}">all ${tools().filter((t) => t.category === cat).length} ${esc(CATEGORIES[cat].label)} tools</a>` : ', or <a href="/categories">browse every category</a>'
-  return `<section class="section" id="related"><h2>Related searches</h2><p class="related">Not quite it? Try ${joined}${browse}.</p></section>`
+  return `<section class="section" id="related"><h2>Related searches</h2><p class="related">Not quite it? Try ${joined}${read}${browse}.</p></section>`
 }
 function resultsBlock(q, results, free) {
   const shown = free ? results.filter((t) => t.freeTier === true) : results
+  // R1: the strong matches are always first, so they stay first after the free-tier filter too.
+  const lead = new Set(topShown(results, results.length))
   const base = `/?q=${encodeURIComponent(q)}`
   const filter = results.length ? `<nav class="filters" aria-label="Narrow results"><a href="${free ? base : `${base}&amp;free=1`}"${free ? ' aria-current="true"' : ''}>Free tier only${free ? '<span class="sr-only"> (on; select to show all)</span>' : ''}</a><a href="/">Clear search</a></nav>` : ''
   const count = results.length
@@ -403,7 +435,7 @@ function resultsBlock(q, results, free) {
     : ''
   const list = free && !shown.length
     ? `<p class="muted">None of the ${results.length} matches has a free tier. <a href="${base}">Show all ${results.length}</a>.</p>`
-    : searchResultsHtml(shown)
+    : searchResultsHtml(shown, shown.filter((t) => lead.has(t)).length)
   return `<section class="section results"><h1>Best fit for “${esc(q)}”</h1>
     <div class="rmeta">${count}${filter}</div>
     <h2 class="sr-only">Ranked results</h2>
@@ -1194,7 +1226,7 @@ app.get('/', (c) => {
   const sampleBlock = q || !sample.length ? '' : `
   <section class="sample" aria-labelledby="sample-h">
     <div class="shelf-title"><h2 id="sample-h">What you get for “${SAMPLE_Q}”</h2><p>The top 3 our search returns right now. <a href="/?q=${encodeURIComponent(SAMPLE_Q)}">See all ${sample.length}</a></p></div>
-    <ol class="shelf">${sample.slice(0, 3).map((t, i) => `<li class="slot"><span class="pos" aria-hidden="true">${i + 1}</span><span class="sr-only">Best fit number ${i + 1}. </span><h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3><p class="rankline">${esc(catPlace(t))}</p><p class="slot-best">Best for ${esc(bestForLine(t))}.</p>${priceTag(t)}</li>`).join('')}</ol>
+    <ol class="shelf">${topShown(sample, 3).map((t, i) => `<li class="slot"><span class="pos" aria-hidden="true">${i + 1}</span><span class="sr-only">Best fit number ${i + 1}. </span><h3><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></h3><p class="rankline">${esc(catPlace(t))}</p><p class="slot-best">Best for ${esc(bestForLine(t))}.</p>${priceTag(t)}</li>`).join('')}</ol>
   </section>`
   const checkedCount = all.filter((t) => t.priceChecked && t.pricingUrl).length
   const quickBlock = q ? '' : `
@@ -1741,20 +1773,29 @@ app.get('/methodology', (c) => {
     <ul class="clean">${catCounts.map((x) => `<li><a href="/category/${x.k}">${esc(x.label)}</a>: ${x.n} tools</li>`).join('')}</ul>
 
     <h2>How search works</h2>
-    <p>When you type a job into the search box, BuildStack splits your words on spaces and scores each tool. A dotted or hyphenated word is matched whole, so bolt.new finds Bolt.new. A name made of two longer words run together, such as OpenCode, also matches either word. It skips a, an, the, of, for, to, and, or, in, on, with, at, by, and from. If every word is skipped, the full directory is shown in rank order.</p>
-    <p>A term matches a whole word. Terms shorter than 3 letters match only that exact word. Plurals count in either direction, and so do -ing and -ed endings, including the form that drops a trailing e, so write matches writing and code matches coding. A term does not match inside a different longer word, so post does not match poster and code does not match codex.</p>
-    <p>Words of one or two letters still match, but they do not choose the category. BuildStack sees which category the other matches support. The word with the fewest such matches wins when it points at one category, so a narrower word beats a broader one. An exact match for the whole name comes first. Other tools in that category come next. Inside the group, a tool that matches a narrower word in its name or best-for tags comes before one that only matches a broad word. For each remaining term:</p>
+    <p>When you type a job into the search box, BuildStack splits your words on spaces and scores each tool. A dotted or hyphenated word is matched whole, so bolt.new finds Bolt.new. A name made of two longer words run together, such as OpenCode, also matches either word. It skips a, an, the, of, for, to, and, or, in, on, with, at, by, and from, plus ai, my, best, tool, and tools. Everyday verbs such as make, build, create, and get are skipped when your search has other words, so a tool named Make cannot win a search for make a presentation. If every word is skipped, the full directory is shown in rank order.</p>
+    <p>A term matches a whole word. Terms shorter than 3 letters match only that exact word. Plurals count in either direction, and so do -ing and -ed endings, including the form that drops a trailing e, so write matches writing and code matches coding. A few word families also match each other, such as website and site, photo and image, and summarize and summary. A term does not match inside a different longer word, so post does not match poster and code does not match codex.</p>
+    <h3>Words matched come first</h3>
+    <p>BuildStack counts how many of your own words each tool matches anywhere in its listing. Words that only say what kind of thing you want, such as assistant, generator, maker, software, or platform, do not count. When at least one tool matches two or more of your words, tools that match only one are listed after the rest, under Show all, instead of in the numbered results.</p>
+    <p>Raw models, APIs, and developer infrastructure are listed after apps unless your search asks for an API, a model, open weights, or self-hosting. When at least one app is a strong match, they also wait under Show all.</p>
+    <h3>Category group</h3>
+    <p>Words of one or two letters still match, but they do not choose the category. BuildStack sees which category the other matches support. The word with the fewest name or best-for matches wins when it points at one category, so a narrower word beats a broader one, and tools in that category are listed first. If that word's matches spread across two or more categories and no category holds two thirds of them, no category group is used. A category word such as coding, video, or voice picks its own category unless a job word such as blog, chatbot, browser, logo, or translate points elsewhere. Inside the group, a tool that matches a narrower word in its name or best-for tags comes before one that only matches a broad word.</p>
+    <h3>Points</h3>
+    <p>For each remaining term:</p>
     <ul class="clean">
-      <li>A match in the tool name adds 8 points.</li>
+      <li>A match in the tool name adds 8 points. When the term is the word for the chosen category, such as code in a coding search, a name match adds 4 points instead, the same as a category match.</li>
       <li>A match in one of the tool's best-for tags adds 5 points.</li>
       <li>A match in the category adds 4 points.</li>
       <li>A match anywhere in the listing (name, tagline, description, category, best-for tags, or pricing note) adds 2 points.</li>
+      <li>Two words from your search that sit next to each other, including a short word like ai, add 6 points when they also appear side by side in the name, tagline, or one best-for tag, as in AI browser.</li>
     </ul>
-    <p>Tools with no matches are left out. After the category group and the narrower-word order above, a higher score comes first. When two tools are still tied, the higher ranked tool comes first. Search result pages are marked noindex so search engines index the real category and tool pages instead.</p>
+    <p>Price words such as cheap, cheapest, free, budget, affordable, and inexpensive are not matched as text. They sort the matches so free tools come first, then tools with a free tier.</p>
+    <p>Tools with no matches are left out. An exact match for the whole name always comes first. After that the order is: apps before raw models, then strong matches before weak ones, then the category group, then the number of your words matched, then the narrower-word order, then score. When two tools are still tied, the higher ranked tool comes first. Search result pages are marked noindex so search engines index the real category and tool pages instead.</p>
+    <p>Under the results, related searches come from the top result's category. Ones that share words with your search come first, and the matching /best guide is linked next to them.</p>
 
     <h2>What each listing contains</h2>
     <p>Every tool page shows the overall rank, the rank inside its category, a tagline, a description, best-for tags, a short pricing note, and a link to the official site. List cards on search results, category pages, and /best guides show the rank inside the category (for example #1 in Writing) instead of the overall rank, and a compact decision block: a one-line best-for summary, a starting price with whether there is a free tier, one strength, and one honest watch-out. Those lines are written from the facts already in the listing. Pricing notes and starting prices are short summaries. Always check the official site for current prices.</p>
-    <p>The decision block is for browsing only. It does not change a tool's rank. Search scoring does not read the strength, watch-out, starting price, or free-tier fields, and it does not read the affiliate flag.</p>
+    <p>The decision block is for browsing only. It does not change a tool's rank. Search scoring does not read the strength or watch-out fields, and it does not read the affiliate flag. Price words in a search sort by the starting price and free-tier fields, as described above.</p>
 
     <h2>Dates on this site</h2>
     <p>Each tool page shows when its listing last changed, meaning its name, link, category, tagline, description, best-for tags, or pricing note. A tool moving down one place because another tool was added above it does not count as a change. A guide shows the later of its own last edit and the newest listing change among the tools it covers. The sitemap uses the same dates, so a page is only marked as changed when its content changed. The site-wide date in /tools.json and /llms.txt is the last day any listing changed.</p>

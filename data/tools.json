@@ -2131,14 +2131,14 @@
     "rank": 88,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-10-19",
+    "updated": "2026-11-21",
     "added": "2026-10-19",
     "tagline": "Open source command center for coding agents across your machines",
     "description": "Harness is Autonomous' open source command center for AI coding agents, launched on Product Hunt October 17, 2026. It runs Claude Code, Codex, OpenCode, and a dozen other agents side by side in real terminal sessions on your Mac and Linux machines, gives each agent its own git worktree, keeps agents running after you close the app, and links remote machines over end-to-end encrypted connections.",
     "bestFor": [
       "running several coding agents in parallel",
       "managing agents across multiple machines",
-      "supervising agents from desktop or phone"
+      "supervising agents from desktop or mobile"
     ],
     "pricingNote": "Free desktop app and MIT-licensed source; bring your own agent subscriptions and model usage",
     "strength": "Open source command center for running several coding agents in parallel across Mac and Linux machines.",
@@ -2582,12 +2582,12 @@
     "rank": 107,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-10-28",
+    "updated": "2026-11-21",
     "added": "2026-10-28",
     "tagline": "Small open-weight models for on-device agents",
     "description": "LFM3 is a family of six small open-weight models from Liquid AI, released October 27, 2026, covering text, vision, audio, omni, and two decision models, all built on one 1.7B-parameter base. The text model, LFM3-1.7B, has a 256K-token context window, fits in about 1 GB of memory at 4-bit, is post-trained to run inside agent harnesses such as Hermes Agent, Pi, and OpenClaw, and can be fine-tuned on a single GPU. Liquid AI says it is not recommended for agentic coding or complex multi-step reasoning. The models are on Hugging Face, the Liquid Playground, the Liquid AI API, and OpenRouter.",
     "bestFor": [
-      "private agents that run on a phone or laptop",
+      "private agents that run on your own device",
       "tool calling with a long 256K context",
       "fine-tuning a small model on one GPU"
     ],
@@ -2607,12 +2607,12 @@
     "rank": 108,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-07",
+    "updated": "2026-11-21",
     "added": "2026-11-07",
     "tagline": "Open-weight 9B model that codes, reads images, and reasons offline on laptops and phones",
     "description": "Alpie Seed is a 9B open-weight vision-language model from 169Pi, launched November 6, 2026. It is post-trained from Qwen3.5-9B for reasoning, coding, and visual understanding, takes text, image, and video input, has a 262K-token native context window, and offers thinking and non-thinking modes. 169Pi ships 2-bit, 3-bit, and 4-bit builds (about 5.24 GB at 4-bit) and has tested it offline on laptops and phones including the iPhone 17 Pro. It runs in llama.cpp, Ollama, LM Studio, and PocketPal, with an online Alpie Playground. A coding agent built on it, Alpie Local, is invite-only for now.",
     "bestFor": [
-      "private AI that runs offline on a laptop or phone",
+      "private AI that runs offline on your own device",
       "local coding help without an API key",
       "reading documents, screenshots, and charts on-device"
     ],
