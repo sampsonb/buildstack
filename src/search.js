@@ -11,7 +11,7 @@ const LEMMA_GROUPS = [
   ['edit', 'editor', 'editing', 'edits', 'edited'],
   ['site', 'sites', 'website', 'websites', 'webpage', 'webpages'],
   ['transcribe', 'transcription', 'transcribing', 'transcribed'],
-  ['translate', 'translation', 'translator', 'translating', 'translated', 'translations'],
+  ['translate', 'translation', 'translator', 'translating', 'translated', 'translations', 'localize', 'localise', 'localization', 'localisation'],
   ['presentation', 'presentations'],
   ['logo', 'logos'],
   ['email', 'emails'],
@@ -29,13 +29,34 @@ const LEMMA_GROUPS = [
 // Query synonyms: a search word also matches these listing words. They score and count as the
 // same matched word, but the category group is chosen from the literal words only.
 const SYNONYM_GROUPS = [
-  ['presentation', 'presentations', 'slides', 'slide', 'slideshow', 'slideshows', 'deck', 'decks'],
+  ['presentation', 'presentations', 'slides', 'slide', 'slideshow', 'slideshows', 'deck', 'decks', 'powerpoint'],
+  ['pdf', 'pdfs', 'document', 'documents', 'paper', 'papers'],
+  ['chatbot', 'chatbots', 'helpdesk', 'helpdesks'],
+  ['blog', 'blogs', 'article', 'articles'],
 ]
 
 // Two-word ideas that count as one matched word (R1) when a listing says them any of these ways.
+// Query-side patterns follow the Nov 21 synonym map (search phrase -> also match).
 const CONCEPTS = [
   { query: /\b(ai|agentic|web)[\s-]+browsers?\b/i, listing: /\b(ai|agentic|web|ai-powered)[\s-]+browsers?\b/i },
+  { query: /\b((without|no)[\s-]+code|nocode|no-code)\b/i, listing: /\b((without|no)[\s-]+code|nocode|no-code)\b/i, websiteBuild: true },
+  { query: /\bnote[\s-]*takers?\b/i, listing: /\b(note[\s-]*takers?|meeting[\s-]+notes)\b/i },
+  { query: /\b(slide[\s-]+decks?|pitch[\s-]+decks?)\b/i, listing: /\b(slide[\s-]+decks?|pitch[\s-]+decks?)\b/i },
+  { query: /\bcustomer[\s-]+support\b/i, listing: /\b(customer[\s-]+support|customer[\s-]+service|support[\s-]+desk|helpdesks?)\b/i },
+  { query: /\bphone[\s-]+calls?\b/i, listing: /\b(phone[\s-]+calls?|voice[\s-]+agents?|outbound[\s-]+calls?|receptionists?|calling)\b/i },
+  { query: /\bremove[\s-]+backgrounds?\b|\bbackground[\s-]+removers?\b/i, listing: /\b(remove[\s-]+backgrounds?|background[\s-]+removers?|cutouts?|transparent[\s-]+backgrounds?)\b/i },
+  { query: /\blanding[\s-]+pages?\b/i, listing: /\b(landing[\s-]+pages?|web[\s-]+pages?)\b/i },
+  { query: /\bblog[\s-]+posts?\b/i, listing: /\b(blog[\s-]+posts?|articles?|blogs?)\b/i },
+  { query: /\bchatbots?\b|\bchat[\s-]+bots?\b|\blive[\s-]+chats?\b|\bsupport[\s-]+agents?\b/i, listing: /\b(chatbots?|chat[\s-]+bots?|live[\s-]+chats?|support[\s-]+agents?|helpdesks?)\b/i },
 ]
+
+// One-way phrase aliases for a query word (the review's "also match" phrases).
+const TERM_PHRASES = {
+  presentation: ['slide deck', 'pitch deck'],
+  presentations: ['slide deck', 'pitch deck'],
+  website: ['landing page'],
+  websites: ['landing page'],
+}
 
 const JOB_HINTS = [
   { any: ['blog', 'blogs'], add: ['write'], category: 'writing' },
@@ -43,6 +64,8 @@ const JOB_HINTS = [
   { any: ['presentation', 'presentations', 'slides', 'deck', 'decks'], add: ['presentation'] },
   { any: ['podcast', 'podcasts'], add: ['podcast'] },
   { any: ['phone'], add: ['phone'] },
+  { any: ['notetaker', 'notetakers'], add: [], category: 'voice' },
+  { all: ['note', 'taker'], add: [], category: 'voice' },
   { any: ['chatbot', 'chatbots'], add: ['chatbot'], category: 'agents' },
   { any: ['browser'], add: ['browser'], category: 'agents' },
   { any: ['translate', 'translation', 'translator'], add: ['translate'], category: 'writing' },
@@ -159,10 +182,14 @@ function camelParts(piece) {
 
 function wordsOf(value, splitNames) {
   const words = rawWords(value)
-  if (!splitNames) return words
   const extra = []
-  for (const piece of String(value ?? '').split(/[^A-Za-z0-9]+/)) extra.push(...camelParts(piece))
-  return [...new Set([...words, ...extra])]
+  if (splitNames) {
+    for (const piece of String(value ?? '').split(/[^A-Za-z0-9]+/)) extra.push(...camelParts(piece))
+  }
+  for (const word of words) {
+    if (word === 'notetaker' || word === 'notetakers') extra.push('note', 'taker')
+  }
+  return extra.length ? [...new Set([...words, ...extra])] : words
 }
 
 function stripNoCode(query) {
@@ -183,7 +210,10 @@ function textHit(term, value, splitNames = false, literal = false) {
   const raw = String(value ?? '').toLowerCase()
   if (/[^a-z0-9]/.test(term)) return raw.includes(term)
   const words = wordsOf(value, splitNames)
-  if (!words.some((word) => formsMatch(term, word, literal))) return false
+  if (!words.some((word) => formsMatch(term, word, literal))) {
+    const phrases = !literal && (TERM_PHRASES[term] || TERM_PHRASES[lemmaRoot(term) || ''] || TERM_PHRASES[synonymRoot(term) || ''])
+    if (!phrases || !phrases.some((phrase) => raw.includes(phrase))) return false
+  }
   if (lemmaRoot(term) === 'browser' || term === 'browser') {
     const stripped = raw
       .replace(/\b(in|inside|from|via|through|on|with)\s+(the|your|a|an)?\s*browser\b/g, ' ')
@@ -208,6 +238,17 @@ function textHit(term, value, splitNames = false, literal = false) {
     }
   }
   return true
+}
+
+// Coverage hits: inflections and lemma families, plus TERM_PHRASES, but not broad synonyms
+// (document/paper for pdf, article for blog). Those still score through textHit.
+function contentHit(term, value, splitNames = false) {
+  const raw = String(value ?? '').toLowerCase()
+  if (/[^a-z0-9]/.test(term)) return raw.includes(term)
+  const words = wordsOf(value, splitNames)
+  if (words.some((word) => formsMatch(term, word, true))) return true
+  const phrases = TERM_PHRASES[term] || TERM_PHRASES[lemmaRoot(term) || '']
+  return Boolean(phrases && phrases.some((phrase) => raw.includes(phrase)))
 }
 
 function categorySlug(term) {
@@ -484,7 +525,7 @@ export function rankTools(list, query) {
     contentTerms.push(term)
   }
   const pairs = phrasePairs(stripped.text)
-  const concepts = CONCEPTS.filter((concept) => concept.query.test(stripped.text))
+  const concepts = CONCEPTS.filter((concept) => concept.query.test(query) || concept.query.test(stripped.text))
   const specificTerms = scoredTerms.filter((term) => (
     !LIGHT_VERBS.has(term)
     && !isActionTerm(term)
@@ -519,16 +560,17 @@ export function rankTools(list, query) {
       if (!categorySlug(term) && (name || bestHit || kwHit)) specific += 1
     }
     if (!score) continue
-    const covered = new Set(contentTerms.filter((term) => textHit(term, hay, true)))
+    const covered = new Set(contentTerms.filter((term) => contentHit(term, hay, true)))
     const fields = [tool.name, tool.tagline, ...(tool.bestFor || []), ...keywords]
     for (const pair of pairs) {
       if (fields.some((field) => phraseHit(pair, field))) score += 6
     }
     let conceptHits = 0
     for (const concept of concepts) {
-      if (!concept.listing.test(hay)) continue
+      const listed = concept.listing.test(hay) || (concept.websiteBuild && textHit('website', hay, true) && textHit('build', hay, true))
+      if (!listed) continue
       conceptHits += 1
-      if (fields.some((field) => concept.listing.test(field))) score += 5
+      if (fields.some((field) => concept.listing.test(field)) || (concept.websiteBuild && fields.some((field) => textHit('website', field, true) && textHit('build', field, true)))) score += 5
     }
     const cover = covered.size + conceptHits
     if (!named && keyTerms.length && !keyTerms.some((term) => textHit(term, hay, true))) continue
@@ -559,6 +601,18 @@ export function rankTools(list, query) {
     // words matched, or ties on words and outscores them, keeps its place; otherwise it follows apps.
     const ahead = row.cover > appCover || (row.cover === appCover && row.score > appScore)
     row.behind = row.surface || (row.toolish && appsStrong && !ahead) ? 1 : 0
+  }
+  // R1: do not leave fewer than 3 numbered results when more relevant tools exist. If fewer than
+  // 3 strong (2+ word) matches remain after models are held back, fill up to 3 from the best
+  // 1-term matches, preferring the chosen category.
+  const coreN = rows.filter((row) => !row.held && (row.named || row.cover >= 2)).length
+  if (most >= 2 && coreN < 3) {
+    const broad = new Set(['website', 'websites', 'site', 'sites', 'webpage', 'webpages', 'page', 'pages'])
+    const wanted = contentTerms.filter((term) => !broad.has(term) && !GENERIC_HEADS.has(term))
+    const fillers = rows.filter((row) => row.weak && !row.held && (!wanted.length || wanted.some((term) => contentHit(term, [row.tool.name, row.tool.tagline, (row.tool.bestFor || []).join(' '), (Array.isArray(row.tool.keywords) ? row.tool.keywords : []).join(' ')].join(' '), true)))).sort((a, b) => (
+      a.band - b.band || b.cover - a.cover || b.specific - a.specific || b.score - a.score || a.tool.rank - b.tool.rank
+    ))
+    for (const row of fillers.slice(0, 3 - coreN)) row.weak = 0
   }
   rows.sort((a, b) => (
     (a.named ? 0 : 1) - (b.named ? 0 : 1)

@@ -24,7 +24,12 @@ test('R1: tools matching more query words come first; single-word matches wait u
   const two = tool({ slug: 'two', name: 'Quarry', bestFor: ['harbor maps with tide tables'], rank: 2 })
   const list = rankTools([one, two], 'harbor tide')
   assert.deepEqual(slugs(list), ['two', 'one'])
-  assert.deepEqual(slugs(topShown(list, 6)), ['two'])
+  // With only one 2-word match, the numbered list is filled to 3 from the next best matches.
+  assert.deepEqual(slugs(topShown(list, 6)), ['two', 'one'])
+  const third = tool({ slug: 'three', name: 'Reef', bestFor: ['harbor tide charts'], rank: 3 })
+  const fourth = tool({ slug: 'four', name: 'Cove', bestFor: ['harbor maps'], rank: 4 })
+  const fifth = tool({ slug: 'five', name: 'Shoal', bestFor: ['harbor tide logs'], rank: 5 })
+  assert.deepEqual(slugs(topShown(rankTools([one, two, third, fourth, fifth], 'harbor tide'), 6)), ['three', 'five', 'two'])
   const flat = rankTools([one, two], 'harbor')
   assert.deepEqual(slugs(topShown(flat, 6)), ['one', 'two'])
 })

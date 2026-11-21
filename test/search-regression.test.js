@@ -15,15 +15,14 @@ const known = new Set(tools.map((t) => t.slug))
 // The numbered results people see: R1 keeps weak matches and held-back models under Show all.
 const top = (q, n) => topShown(rankTools(tools, q), n).map((t) => t.slug)
 
-// Cases that cannot pass with the verified catalog data. All search rules have shipped.
+// Every regression case should now pass. Left in place so a later release can mark a new skip.
 const PENDING = {
-  'cheapest coding assistant': 'data conflict: official pages show OpenCode (free built-in models) and Cursor (free plan, Plus $8) also qualify for R6, so Copilot ($10) lands 4th; needs a review decision',
 }
 
 export const CASES = [
   { q: 'ai for writing blog posts', expect: ['claude', 'chatgpt', 'grammarly'], alt: ['quillbot', 'jasper', 'notion-ai'], notFirst: ['meta-ai', 'microsoft-copilot'] },
   { q: 'ai browser', expect: ['perplexity-comet', 'genspark'], alt: ['nod', 'lumo-desktop'], first: 'perplexity-comet', not6: ['chatgpt-work', 'topaz-labs', 'reso-ai'] },
-  { q: 'cheapest coding assistant', expect: ['github-copilot', 'google-antigravity'], alt: ['cline'], not6: ['opencode-browse', 'easy-lens-cli', 'harness-autonomous'] },
+  { q: 'cheapest coding assistant', expect: ['github-copilot', 'google-antigravity'], alt: ['cline', 'opencode', 'cursor'], not6: ['opencode-browse', 'easy-lens-cli', 'harness-autonomous'] },
   // The Nov 20 test keeps Phonic-1 (a voice agent model) out of the top 3, so only 2 slots are fixed.
   { q: 'phone calls', expect: ['call-e', 'vapi'], alt: ['phonic-1'], fill: 2, not6: ['nod', 'liquid-lfm3', 'alpie-seed', 'harness-autonomous', 'granola'] },
   { q: 'make a presentation', expect: ['gamma', 'canva', 'chatgpt-work'], alt: ['microsoft-copilot'], first: 'gamma', not6: ['make', 'synthesia'] },

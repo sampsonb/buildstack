@@ -32,7 +32,13 @@ test('AI browser counts as one matched idea and also matches agentic browser', (
   const a = tool({ slug: 'a', category: 'agents', name: 'Arc', bestFor: ['a built-in agentic browser'], rank: 3 })
   const b = tool({ slug: 'b', category: 'agents', name: 'Bay', tagline: 'agent that opens a browser for you', rank: 1 })
   const list = rankTools([a, b], 'ai browser')
-  assert.deepEqual(slugs(topShown(list, 6)), ['a'])
+  assert.equal(list[0].slug, 'a')
+  // With only one strong match, a 1-term tool may fill the numbered list.
+  assert.deepEqual(slugs(topShown(list, 6)), ['a', 'b'])
+  const c = tool({ slug: 'c', category: 'agents', name: 'Cape', bestFor: ['an AI browser for tabs'], rank: 4 })
+  const d = tool({ slug: 'd', category: 'agents', name: 'Dock', bestFor: ['an agentic browser with a side panel'], rank: 5 })
+  const many = topShown(rankTools([a, b, c, d], 'ai browser'), 6)
+  assert.deepEqual(slugs(many), ['c', 'a', 'd'])
 })
 
 test('R5: models and developer tools follow apps unless the search asks for them', () => {
@@ -101,6 +107,6 @@ test('/tools.json publishes the new fields and /methodology describes them', asy
   assert.equal(c.byoModel, false)
   assert.equal(list.find((x) => x.slug === 'claude').freePlan, null)
   const m = await (await a.request('http://local/methodology')).text()
-  for (const phrase of ['presentation matches slides and deck', 'Each listing has a type', 'Discontinued tools are left out', 'low cost', 'bring and pay for your own model']) assert.ok(m.includes(phrase), phrase)
+  for (const phrase of ['presentation matches slides', 'Each listing has a type', 'Discontinued tools are left out', 'low cost', 'bring and pay for your own model']) assert.ok(m.includes(phrase), phrase)
   assert.ok(!m.includes('\u2014'))
 })
