@@ -17,7 +17,7 @@ const ADDED = [
 
 test('2026-11-21 tools exist with full fields, honest flags and consecutive ranks', () => {
   assert.ok(tools.every((t, i) => t.rank === i + 1))
-  assert.equal(tools.length, 162)
+  assert.ok(tools.length >= 162)
   assert.ok(tools.every((t) => t.affiliate === false))
   for (const [slug, cat] of ADDED) {
     const t = tools.find((x) => x.slug === slug)

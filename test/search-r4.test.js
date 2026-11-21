@@ -67,7 +67,7 @@ test('real catalog: the 10 regression queries stay good after the synonym map', 
   assert.equal(shown('ai browser')[0], 'perplexity-comet')
   assert.ok(shown('ai browser').includes('genspark'))
   assert.ok(!shown('ai browser').includes('chatgpt-work'))
-  assert.deepEqual(shown('translate a document').slice(0, 3), ['deepl-translator', 'claude', 'chatgpt'])
+  assert.deepEqual(shown('translate a document').slice(0, 3), ['deepl-translator', 'google-translate', 'claude'])
   assert.ok(!shown('summarize a pdf').slice(0, 3).includes('scholarcy'))
   assert.ok(!shown('summarize a pdf').slice(0, 3).includes('scispace'))
   assert.equal(shown('build a website without code')[0], 'v0')
@@ -75,7 +75,8 @@ test('real catalog: the 10 regression queries stay good after the synonym map', 
   assert.ok(!shown('build a website without code').includes('opencode-browse'))
   assert.equal(shown('make a presentation')[0], 'gamma')
   assert.ok(!shown('phone calls').includes('nod'))
-  assert.equal(shown('customer support chatbot for my website')[0], 'intercom-fin')
+  assert.equal(shown('customer support chatbot for my website')[0], 'chatbase')
+  assert.ok(['tidio', 'intercom-fin', 'zendesk-ai', 'voiceflow'].some((s) => shown('customer support chatbot for my website').includes(s)))
   assert.ok(!shown('customer support chatbot for my website').includes('nod'))
 })
 

@@ -127,10 +127,10 @@ test('translate a document leads with DeepL Translator, not video dubbing tools'
   assert.ok(!slugs('translate a document', 3).includes('synthesia'))
 })
 
-test('customer support chatbot for my website finds Intercom Fin, not voice notetakers', () => {
+test('customer support chatbot for my website finds support chatbots, not voice notetakers', () => {
   const top = slugs('customer support chatbot for my website', 6)
-  assert.ok(top.includes('intercom-fin'), top.join(','))
-  assert.equal(slugs('customer support chatbot for my website')[0], 'intercom-fin')
+  assert.ok(['chatbase', 'tidio', 'intercom-fin'].every((s) => top.includes(s)), top.join(','))
+  assert.equal(slugs('customer support chatbot for my website')[0], 'chatbase')
   assert.ok(!top.includes('phonic-1'))
   assert.ok(!top.includes('fireflies'))
   assert.ok(!top.includes('deepl-voice'))

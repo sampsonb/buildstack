@@ -38,7 +38,7 @@ test('IndexNow --since sends only pages whose lastmod is on or after the date', 
   assert.deepEqual(buildPayload(entries, { since: '2026-11-21' }).urlList, [`https://${INDEXNOW_HOST}/b`])
   const xml = await (await app.request('http://local/sitemap.xml')).text()
   const today = buildPayload(sitemapEntries(xml), { since: '2026-11-21' }).urlList
-  for (const s of ['semantic-scholar', 'scite', 'undermind', 'genie-4', 'inkling-2-mini']) assert.ok(today.includes(`https://${INDEXNOW_HOST}/tool/${s}`), s)
+  for (const s of ['semantic-scholar', 'scite', 'undermind', 'genie-4', 'inkling-2-mini', 'chatbase', 'tidio', 'zendesk-ai', 'voiceflow', 'retell-ai', 'bland-ai', 'dia', 'opera-neon', 'acrobat-ai-assistant', 'chatpdf', 'google-translate', 'adobe-express']) assert.ok(today.includes(`https://${INDEXNOW_HOST}/tool/${s}`), s)
   assert.ok(today.includes(`https://${INDEXNOW_HOST}/best/ai-research-assistant`))
 })
 

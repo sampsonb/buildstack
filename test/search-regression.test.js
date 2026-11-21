@@ -21,17 +21,16 @@ const PENDING = {
 
 export const CASES = [
   { q: 'ai for writing blog posts', expect: ['claude', 'chatgpt', 'grammarly'], alt: ['quillbot', 'jasper', 'notion-ai'], notFirst: ['meta-ai', 'microsoft-copilot'] },
-  { q: 'ai browser', expect: ['perplexity-comet', 'genspark'], alt: ['nod', 'lumo-desktop'], first: 'perplexity-comet', not6: ['chatgpt-work', 'topaz-labs', 'reso-ai'] },
+  { q: 'ai browser', expect: ['perplexity-comet', 'dia', 'opera-neon'], alt: ['genspark', 'nod', 'lumo-desktop'], first: 'perplexity-comet', not6: ['chatgpt-work', 'topaz-labs', 'reso-ai'] },
   { q: 'cheapest coding assistant', expect: ['github-copilot', 'google-antigravity'], alt: ['cline', 'opencode', 'cursor'], not6: ['opencode-browse', 'easy-lens-cli', 'harness-autonomous'] },
   // The Nov 20 test keeps Phonic-1 (a voice agent model) out of the top 3, so only 2 slots are fixed.
-  { q: 'phone calls', expect: ['call-e', 'vapi'], alt: ['phonic-1'], fill: 2, not6: ['nod', 'liquid-lfm3', 'alpie-seed', 'harness-autonomous', 'granola'] },
-  { q: 'make a presentation', expect: ['gamma', 'canva', 'chatgpt-work'], alt: ['microsoft-copilot'], first: 'gamma', not6: ['make', 'synthesia'] },
-  { q: 'summarize a pdf', expect: ['claude', 'chatgpt', 'notebooklm'], alt: ['gemini'], not3: ['scholarcy', 'scispace'] },
+  { q: 'phone calls', expect: ['retell-ai', 'bland-ai', 'call-e'], alt: ['vapi', 'phonic-1'], not6: ['nod', 'liquid-lfm3', 'alpie-seed', 'harness-autonomous', 'granola'] },
+  { q: 'make a presentation', expect: ['gamma', 'canva', 'chatgpt-work'], alt: ['adobe-express', 'microsoft-copilot'], first: 'gamma', not6: ['make', 'synthesia'] },
+  { q: 'summarize a pdf', expect: ['acrobat-ai-assistant', 'chatpdf', 'chatgpt'], alt: ['notebooklm', 'gemini', 'claude'], not3: ['scholarcy', 'scispace'] },
   { q: 'remove background from a photo', expect: ['photoroom', 'canva'], alt: ['chatgpt-images', 'adobe-firefly', 'mai-image-2-7'], not6: ['seedream-5-5', 'claude-duet'] },
   { q: 'build a website without code', expect: ['lovable', 'bolt', 'v0'], alt: ['wix-studio-two', 'gamma'], not6: ['opencode-browse', 'inkling-2-small', 'alpie-seed', 'problembot'] },
-  { q: 'translate a document', expect: ['deepl-translator'], alt: ['claude', 'chatgpt'], first: 'deepl-translator', not6: ['gamma', 'heygen', 'synthesia'] },
-  // Catalog gap: Intercom Fin is the only support chatbot listed, so only slot 1 is fixed.
-  { q: 'customer support chatbot for my website', expect: ['intercom-fin'], alt: [], fill: 1, first: 'intercom-fin', not6: ['nod', 'firecrawl', 'perplexity-comet', 'joveo-tandem', 'phonic-1', 'deepl-voice'] },
+  { q: 'translate a document', expect: ['deepl-translator', 'google-translate'], alt: ['claude', 'chatgpt'], first: 'deepl-translator', not6: ['gamma', 'heygen', 'synthesia'] },
+  { q: 'customer support chatbot for my website', expect: ['chatbase', 'tidio', 'intercom-fin'], alt: ['zendesk-ai', 'voiceflow'], first: 'chatbase', not6: ['nod', 'firecrawl', 'perplexity-comet', 'joveo-tandem', 'phonic-1', 'deepl-voice'] },
 ]
 
 export function check(c) {

@@ -76,7 +76,7 @@ test('apps come before raw models unless the query asks for a model', () => {
 
 test('real catalog: R1 to R4 fix the stray matches the review found', () => {
   const shown = (q) => slugs(topShown(rankTools(tools, q), 6))
-  assert.deepEqual(shown('phone calls').slice(0, 2), ['call-e', 'vapi'])
+  assert.deepEqual(shown('phone calls').slice(0, 4), ['retell-ai', 'bland-ai', 'call-e', 'vapi'])
   assert.ok(!shown('phone calls').includes('phonic-1'))
   assert.equal(shown('translate a document')[0], 'deepl-translator')
   assert.ok(!shown('translate a document').includes('gamma'))
