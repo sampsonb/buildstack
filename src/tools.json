@@ -756,7 +756,7 @@
   {
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-19",
+    "updated": "2026-11-21",
     "added": "2026-11-19",
     "slug": "chatgpt-work",
     "name": "ChatGPT Work",
@@ -767,7 +767,7 @@
     "priceChecked": "2026-11-19",
     "pricingUrl": "https://learn.chatgpt.com/docs/pricing",
     "tagline": "OpenAI's ChatGPT agent for long, multi-step tasks and finished documents, spreadsheets, and slides",
-    "description": "ChatGPT Work is OpenAI's current agent in ChatGPT, built for longer multi-step tasks that end in finished deliverables such as research, analyses, documents, spreadsheets, presentations, reports, and Sites. It replaced the earlier ChatGPT agent mode, which OpenAI says is no longer available, and the ChatGPT Atlas browser, which was retired on August 9, 2026. A cloud browser handles supported web workflows. Work uses the same usage structure as Codex and runs GPT-6.2 Astra and Sol models, depending on plan.",
+    "description": "ChatGPT Work is OpenAI's current agent in ChatGPT, built for longer multi-step tasks that end in finished deliverables such as research, analyses, documents, spreadsheets, presentations, reports, and Sites. It replaced the earlier ChatGPT agent mode, which OpenAI says is no longer available. A cloud browser handles supported web workflows. Work uses the same usage structure as Codex and runs GPT-6.2 Astra and Sol models, depending on plan.",
     "bestFor": [
       "reports, decks, and spreadsheets from a single request",
       "multi-step research with a finished document at the end",
@@ -775,7 +775,7 @@
     ],
     "pricingNote": "Included in ChatGPT Free, Go, Plus, Pro, Business, Edu, and Enterprise plans and shares usage limits and credits with Codex; Pro plans are $100, $200, or $500 a month; eligible plans can add credits or usage-based billing",
     "strength": "OpenAI's own agent for multi-step work that ends in finished documents, spreadsheets, and slides, included in every ChatGPT plan.",
-    "watchOut": "Usage counts against your plan allowance shared with Codex, which models you get depends on plan, seat, and workspace, and rollout differs by plan and region.",
+    "watchOut": "Usage counts against your plan allowance shared with Codex, which models you get depends on plan, seat, and workspace, and rollout differs by plan and region. It also replaced the ChatGPT Atlas browser, which OpenAI retired on August 9, 2026.",
     "rank": 31
   },
   {
@@ -1121,9 +1121,9 @@
     "rank": 46,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-10-22",
+    "updated": "2026-11-21",
     "added": "2026-10-22",
-    "tagline": "Anthropic's proactive agent that briefs you, works in the background, and asks before acting",
+    "tagline": "Anthropic's proactive agent that briefs you, works on its own while you're away, and asks before acting",
     "description": "Claude Duet is a new app from Anthropic where Claude works as a proactive agent, opened as a research preview on October 21, 2026. Built around Claude Opus 5.5, it sends a short morning brief from your connected apps, checks them every few hours, and messages you only when something needs attention. It runs on its own cloud computer with a browser, so tasks keep going when your devices are off, and it can use the 6,000 plus connectors in the Claude Marketplace. It shows you exactly what it will do and waits for approval before it sends a message, makes a payment, signs a document, or deletes anything. Available on iOS, Android, and claude.ai by waitlist.",
     "bestFor": [
       "daily briefs across email and calendar",
@@ -1131,7 +1131,7 @@
       "dashboards, forecasts, and prototypes"
     ],
     "pricingNote": "Research preview by waitlist for US Pro and Max subscribers; included in the plan and uses its usage limits",
-    "strength": "A proactive Anthropic agent that briefs you, works in the background, and asks before acting.",
+    "strength": "A proactive Anthropic agent that briefs you, works on its own while you're away, and asks before acting.",
     "watchOut": "Research preview by waitlist for US Pro and Max subscribers only; it uses that plan's usage limits.",
     "freeTier": false,
     "priceFrom": "See pricing"
@@ -2677,10 +2677,10 @@
     "rank": 111,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-11",
+    "updated": "2026-11-21",
     "added": "2026-11-11",
     "tagline": "Open-source personal agent with its own sandboxed computer and browser that runs on your Mac or Windows PC",
-    "description": "Nod is a standalone personal agent from n8n Labs, released as a research preview on November 10, 2026. It is a separate app from n8n and needs no n8n account. Nod runs on your Mac, Windows PC, or your own server, inside a private virtual machine with its own browser, so it can finish jobs in connected apps such as Gmail, Calendar, Drive, and Slack and on websites that have no integration at all, for example cancelling a subscription, watching a price, or downloading invoices from supplier portals each month. You talk to it in the app or on Telegram or WhatsApp while it runs several jobs in the background, and repeating jobs can run on a schedule. A separate check confirms you asked for an action before Nod sends, pays, posts, or deletes anything, saved logins and cards are encrypted on your machine and entered through forms the model cannot read, and every action is logged with what it cost. You bring your own AI provider with an API key or your ChatGPT plan, or connect an open-source model running locally. It stops when your laptop sleeps, each installation has one owner, and it cannot make phone calls.",
+    "description": "Nod is a standalone personal agent from n8n Labs, released as a research preview on November 10, 2026. It is a separate app from n8n and needs no n8n account. Nod runs on your Mac, Windows PC, or your own server, inside a private virtual machine with its own browser, so it can finish jobs in connected apps such as Gmail, Calendar, Drive, and Slack and on websites that have no integration at all, for example cancelling a subscription, watching a price, or downloading invoices from supplier portals each month. You talk to it in the app or on Telegram or WhatsApp while it runs several jobs in the background, and repeating jobs can run on a schedule. A separate check confirms you asked for an action before Nod sends, pays, posts, or deletes anything, saved logins and cards are encrypted on your machine and entered through forms the model cannot read, and every action is logged with what it cost. You bring your own AI provider with an API key or your ChatGPT plan, or connect an open-source model running locally. It stops when your laptop sleeps, and each installation has one owner.",
     "bestFor": [
       "errands on websites with no integration",
       "recurring personal jobs like price checks and invoice downloads",
@@ -2688,7 +2688,7 @@
     ],
     "pricingNote": "Free and open source under Apache 2.0; you pay your own model provider for usage, or run an open-source model locally; set a monthly spending limit, and Nod checks in once a task passes $5",
     "strength": "Open-source personal agent with its own sandboxed computer and browser, running on your Mac or Windows PC.",
-    "watchOut": "You pay your own model provider, or run an open-source model locally; Nod checks in once a task passes $5.",
+    "watchOut": "You pay your own model provider, or run an open-source model locally; Nod checks in once a task passes $5. It cannot make phone calls.",
     "freeTier": true,
     "priceFrom": "Free"
   },
