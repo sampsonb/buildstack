@@ -1847,6 +1847,13 @@ app.get('/tool/:slug', (c) => {
 const RANK_CHANGELOG = [
   {
     date: '2026-11-21',
+    title: 'Gemini moved to the Writing category',
+    summary: 'Gemini was filed under Research, while Claude and ChatGPT are under Writing. It is now in Writing too. Its overall rank is unchanged at #4.',
+    slugs: ['gemini'],
+    notes: ['Gemini stays #4 overall. The Research category now starts with Perplexity.'],
+  },
+  {
+    date: '2026-11-21',
     title: 'Three tools left the top 30 under the Available today rule',
     summary: 'Wix Studio Two, Qwen Code, and Junie were moved below the generally available tools in the coding category, so they left the top 30. Expo Simulators is now #30. Tools already below Expo Simulators kept their ranks.',
     slugs: ['wix-studio-two', 'qwen-code', 'junie'],
@@ -2034,6 +2041,15 @@ app.get('/methodology', (c) => {
     <h2>Categories</h2>
     <p>Every tool belongs to exactly one of ${Object.keys(CATEGORIES).length} categories. A category page lists only that category's tools, still in overall rank order, so the first tool on a category page is the highest ranked tool in that category.</p>
     <ul class="clean">${catCounts.map((x) => `<li><a href="/category/${x.k}">${esc(x.label)}</a>: ${x.n} tools</li>`).join('')}</ul>
+
+    <h2>Why the top 30 leans toward coding</h2>
+    <p>Coding tools take a large share of the top 30 because that category currently has the most strong, generally available options, and they are widely used on paid plans. Range still compares a tool's breadth across the whole catalog, not only inside one category. A narrower coding tool sits high only when it is clearly better at its job.</p>
+
+    <h2>Recent additions</h2>
+    <p>The catalog grew fast in November as we filled gaps. New tools enter at the rank the criteria support, including the top 30 when that is where they belong. Every change that adds, moves, or removes a ranked tool is logged on the <a href="/rank-changelog">rank changelog</a>.</p>
+
+    <h2>Sponsors and rank</h2>
+    <p>Sponsorship and affiliate links never change a tool's rank or its place in search. Any sponsor is labeled. If a sponsor's tool moves, the reason is logged on the <a href="/rank-changelog">rank changelog</a>. The full money policy is on <a href="/money">how BuildStack earns</a>.</p>
 
     <h2>How search works</h2>
     <p>When you type a job into the search box, BuildStack splits your words on spaces and scores each tool. A dotted or hyphenated word is matched whole, so bolt.new finds Bolt.new. A name made of two longer words run together, such as OpenCode, also matches either word. It skips a, an, the, of, for, to, and, or, in, on, with, at, by, and from, plus ai, my, best, tool, and tools. Everyday verbs such as make, build, create, and get are skipped when your search has other words, so a tool named Make cannot win a search for make a presentation. If every word is skipped, the full directory is shown in rank order.</p>
@@ -3184,7 +3200,7 @@ app.get(RESEARCH_PATH, (c) => {
       <h2 style="margin-top:0">How to check an AI summary before you cite it</h2>
       <ol>${RESEARCH_CHECKS.map((s) => `<li><strong>${esc(s.name)}.</strong> ${esc(s.text)}</li>`).join('')}</ol>
       <h2>How we chose</h2>
-      <p>This page lists the tools on ${NAME} that help you find, read, and summarize sources, from web search to academic papers and your own files. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. ${rl('claude')} is filed under ${catLink(find('claude') || { category: 'writing' })}; the other picks are under ${catLink({ category: 'research' })}. Sponsor labels do not affect rank. We do not publish accuracy scores. Read the full <a href="/methodology">methodology</a>, or browse every <a href="/category/research">research tool</a>.</p>
+      <p>This page lists the tools on ${NAME} that help you find, read, and summarize sources, from web search to academic papers and your own files. Ranks are the same editorial ranks used across the site, and the table is sorted by rank. ${rl('claude')} and ${rl('gemini')} are filed under ${catLink({ category: 'writing' })}; the other picks are under ${catLink({ category: 'research' })}. Sponsor labels do not affect rank. We do not publish accuracy scores. Read the full <a href="/methodology">methodology</a>, or browse every <a href="/category/research">research tool</a>.</p>
     </div>
   </section>
   <section class="section" id="faq">

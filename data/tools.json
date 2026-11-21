@@ -108,9 +108,9 @@
     "slug": "gemini",
     "name": "Gemini",
     "url": "https://gemini.google.com",
-    "category": "research",
+    "category": "writing",
     "rank": 4,
-    "rankReason": "Google's assistant for multimodal research, with Gmail and Docs help on Google AI Pro. Free plan to start.",
+    "rankReason": "Google's assistant for multimodal research, with Gmail help on Google AI Plus and Docs help on Google AI Pro. Free plan to start.",
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -122,9 +122,9 @@
       "multimodal research",
       "summarizing Drive content"
     ],
-    "pricingNote": "Free with a Google account; Google AI Plus is $4.99, Google AI Pro $19.99, and Google AI Ultra is $99.99 or $199.99 per month (US prices)",
+    "pricingNote": "Free with a Google account; Google AI Plus is $4.99, Google AI Pro $19.99, and Google AI Ultra is $99.99 or $199.99 per month (US prices). Gmail help starts on Google AI Plus; Docs help needs Google AI Pro",
     "strength": "Multimodal assistant across the web and Google Workspace, including Drive content.",
-    "watchOut": "Listed Google AI Plus, Pro, and Ultra prices are US rates; Ultra has $99.99 and $199.99 tiers. Confirm local pricing.",
+    "watchOut": "Listed Google AI Plus, Pro, and Ultra prices are US rates; Ultra has $99.99 and $199.99 tiers. Gmail help starts on Google AI Plus, and Docs help needs Google AI Pro. Confirm local pricing.",
     "freeTier": true,
     "priceFrom": "from $4.99/mo",
     "pricingUrl": "https://gemini.google/subscriptions/",
@@ -154,7 +154,7 @@
     "freeTier": true,
     "priceFrom": "from $10/mo",
     "pricingUrl": "https://github.com/features/copilot/plans",
-    "priceChecked": "2026-11-14",
+    "priceChecked": "2026-11-21",
     "freePlan": true,
     "byoModel": false
   },
@@ -402,7 +402,7 @@
     "rankReason": "The xAI assistant with real-time answers from X and the web.",
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-03",
+    "updated": "2026-11-21",
     "added": "2026-10-15",
     "tagline": "xAI assistant with real-time X awareness",
     "description": "Grok is xAI's assistant available on x.ai and X, oriented toward real-time information and a more direct conversational style.",
@@ -411,16 +411,18 @@
       "general chat",
       "coding assistance"
     ],
-    "pricingNote": "Free to try on grok.com and in the apps; paid plans are sold through The X Subscription: Plus $8, Premium $30, Super $100, and Ultra $200 a month (less billed yearly); existing SuperGrok and X Premium plans continue",
+    "pricingNote": "Free to try, with a Free plan at $0 a month and limited usage. Plus is $8, Premium is $30, Super is $100, and Ultra is $200 a month. Teams starts at $30 per user a month, and Enterprise is custom",
     "strength": "xAI assistant with real-time awareness of X, free to try on grok.com and in the apps.",
-    "watchOut": "Paid plans are sold through The X Subscription; existing SuperGrok and X Premium plans continue.",
+    "watchOut": "Paid plans are listed on x.ai/pricing. Third-party models in Cursor are billed separately from the monthly plan price.",
     "freeTier": true,
-    "priceFrom": "from $8/mo"
+    "priceFrom": "from $8/mo",
+    "pricingUrl": "https://x.ai/pricing",
+    "priceChecked": "2026-11-21"
   },
   {
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-20",
+    "updated": "2026-11-21",
     "added": "2026-11-19",
     "slug": "microsoft-copilot",
     "name": "Microsoft Copilot",
@@ -435,11 +437,13 @@
       "a free everyday assistant",
       "Microsoft 365 users who want AI in their apps"
     ],
-    "pricingNote": "Free with usage limits; Microsoft 365 Personal is $9.99 a month, Family is $12.99, Premium (the plan that replaced Copilot Pro) is $19.99, and Pro is $99.99; Copilot Pro is no longer sold",
+    "pricingNote": "Free with usage limits; Microsoft 365 Personal is $9.99 a month, Family is $12.99 a month, and Premium is $19.99 a month. Microsoft 365 Pro is listed on the official plans page, but its price was not shown in the comparison we read. Copilot Pro is no longer sold",
     "strength": "Built into Windows and the Microsoft 365 apps, with a free version and a Premium plan that adds extensive usage and agent features.",
-    "watchOut": "Copilot Pro is gone, the free version has usage limits, and the AI in Microsoft 365 apps is only for the subscription owner, not everyone on a Family plan.",
+    "watchOut": "Copilot Pro is gone, the free version has usage limits, and the AI in Microsoft 365 apps is only for the subscription owner, not everyone on a Family plan. Microsoft 365 Pro is listed, but its price was not shown on the comparison page we read.",
     "rank": 16,
-    "rankReason": "A free everyday assistant that helps most if you already use Word, Outlook, and other Microsoft 365 apps."
+    "rankReason": "A free everyday assistant that helps most if you already use Word, Outlook, and other Microsoft 365 apps.",
+    "pricingUrl": "https://www.microsoft.com/en-us/microsoft-365/buy/compare-all-microsoft-365-products",
+    "priceChecked": "2026-11-21"
   },
   {
     "featured": false,
@@ -670,8 +674,8 @@
     "affiliate": false,
     "updated": "2026-11-21",
     "added": "2026-10-24",
-    "tagline": "Open source coding agent for VS Code and the terminal",
-    "description": "Cline is an open source AI coding agent that runs as a VS Code extension and a CLI. It plans and makes multi-file changes, runs commands, and uses MCP tools, with your own API keys or the Cline provider. Version 4.1.25 (October 16, 2026) began rolling out Cline Cloud sessions, which run a task in a hosted sandbox on a GitHub repo and branch you pick and keep going after you close your editor. It also retries interrupted provider responses up to 3 times and fixes timeouts on long local-model requests.",
+    "tagline": "Open source coding agent for VS Code, JetBrains, Cursor, Windsurf, the CLI, and desktop",
+    "description": "Cline is an open source AI coding agent that runs in VS Code, JetBrains, Cursor, and Windsurf, plus a CLI and a desktop app. It plans and makes multi-file changes, runs commands, and uses MCP tools, with your own API keys or the Cline provider. Version 4.1.25 (October 16, 2026) began rolling out Cline Cloud sessions, which run a task in a hosted sandbox on a GitHub repo and branch you pick and keep going after you close your editor. It also retries interrupted provider responses up to 3 times and fixes timeouts on long local-model requests.",
     "bestFor": [
       "agentic coding inside VS Code",
       "bring-your-own-key model choice",
