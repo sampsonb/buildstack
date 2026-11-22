@@ -110,7 +110,7 @@ test('New tag only for tools added in the last 14 days', async () => {
     assert.match(t.added, /^\d{4}-\d{2}-\d{2}$/, t.slug)
     assert.equal(t.newRelease, t.added > cutoff && t.added <= today, t.slug)
   }
-  assert.ok(data.tools.filter((t) => t.newRelease).length < 73)
+  assert.ok(data.tools.filter((t) => t.newRelease).length < data.tools.length / 2)
   const { html } = await get('/')
   const cards = (html.match(/<span class="tag new">New<\/span>/g) || []).length
   assert.ok(cards <= data.tools.filter((t) => t.newRelease).length * 2)

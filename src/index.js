@@ -319,7 +319,8 @@ const SECTION_DATES = {
   '/rank-changelog': '2026-11-21',
   '/vs': '2026-11-18',
   '/alternatives': '2026-11-19',
-  '/price-changes': '2026-11-21',
+  '/price-changes': '2026-11-22',
+  '/pricing': '2026-11-22',
 }
 
 // Public AI price-change log (SEO item 6, 2026-11-20). Only changes shown on the tool maker's own
@@ -336,8 +337,39 @@ const PRICE_CHANGES = [
     source: 'https://api-docs.deepseek.com/quick_start/pricing/',
     archived: 'https://web.archive.org/web/20261116200941/https://api-docs.deepseek.com/quick_start/pricing/' },
 ]
-const PRICE_RECHECK = { date: '2026-11-20', pages: 47 }
+const PRICE_RECHECK = { date: '2026-11-22', pages: 55 }
 const PRICE_PATH = '/price-changes'
+
+// Price-filtered lists (traffic plan item 3, 2026-11-22). Generated from tools.json on every request:
+// only tools whose listed prices matched the official pricing page (priceChecked plus pricingUrl),
+// in overall rank order, capped at PRICE_LIST_MAX. Monthly limits read only a "from $X/mo" starting
+// price. Price filters a list; it never changes rank, and nothing here reads affiliate or featured.
+const PRICE_LIST_PATH = '/pricing'
+const PRICE_LIST_MAX = 15
+function monthlyFrom(t) {
+  const m = /^from \$(\d+(?:\.\d+)?)\/mo$/.exec(String(t.priceFrom || '').trim())
+  return m ? Number(m[1]) : null
+}
+function hasFreePlan(t) {
+  return typeof t.freePlan === 'boolean' ? t.freePlan : t.freeTier === true
+}
+const PRICE_LISTS = [
+  { slug: 'free-plan', name: 'AI tools with a free plan', short: 'Free plan',
+    intro: 'AI tools on BuildStack that you can use on a free plan, from the listings whose prices we matched to the official pricing page.',
+    test: (t) => hasFreePlan(t) },
+  { slug: 'up-to-10-a-month', name: 'AI tools from $10 a month or less', short: 'From $10 a month or less',
+    intro: 'AI tools on BuildStack whose paid plans start at $10 a month or less, from the listings whose prices we matched to the official pricing page.',
+    test: (t) => { const p = monthlyFrom(t); return p !== null && p <= 10 } },
+  { slug: 'up-to-20-a-month', name: 'AI tools from $20 a month or less', short: 'From $20 a month or less',
+    intro: 'AI tools on BuildStack whose paid plans start at $20 a month or less, from the listings whose prices we matched to the official pricing page.',
+    test: (t) => { const p = monthlyFrom(t); return p !== null && p <= 20 } },
+]
+function priceListPath(l) {
+  return `${PRICE_LIST_PATH}/${l.slug}`
+}
+function priceListTools(l) {
+  return tools().filter((t) => t.priceChecked && t.pricingUrl && l.test(t)).sort((a, b) => a.rank - b.rank)
+}
 
 function priceChanges() {
   const all = tools()
@@ -454,6 +486,11 @@ function pageDate(path) {
     if (/^\d{4}-\d{2}$/.test(id)) return maxDate(priceChanges().filter((x) => x.date.startsWith(id)).map((x) => x.date)) || UPDATED
     const x = priceChanges().find((e) => e.id === id)
     return (x && x.date) || UPDATED
+  }
+  if (path === '/methodology') return maxDate([SECTION_DATES['/methodology'], ...all.map((t) => t.updated)]) || UPDATED
+  if (path === PRICE_LIST_PATH || path.startsWith(`${PRICE_LIST_PATH}/`)) {
+    const lists = path === PRICE_LIST_PATH ? PRICE_LISTS : PRICE_LISTS.filter((l) => priceListPath(l) === path)
+    return maxDate([SECTION_DATES[PRICE_LIST_PATH], ...lists.flatMap((l) => priceListTools(l).slice(0, PRICE_LIST_MAX).flatMap((t) => [t.updated, t.priceChecked]))]) || UPDATED
   }
   if (path === '/vs') return maxDate([SECTION_DATES['/vs'], ...vsPairs().map((p) => maxDate([p.a.updated, p.b.updated]))]) || UPDATED
   if (path.startsWith('/vs/')) { const p = vsPairs().find((x) => x.path === path); return (p && maxDate([SECTION_DATES['/vs'], p.a.updated, p.b.updated, p.a.priceChecked, p.b.priceChecked])) || UPDATED }
@@ -1118,7 +1155,7 @@ app.get(`/${INDEXNOW_KEY}.txt`, (c) => c.text(INDEXNOW_KEY, 200, { 'cache-contro
 
 app.get('/sitemap.xml', (c) => {
   const urls = [
-    '', '/categories', '/methodology', PRICE_PATH, `${PRICE_PATH}/rss.xml`, ...priceMonths().map((m) => `${PRICE_PATH}/${m}`), ...priceChanges().map((x) => `${PRICE_PATH}/${x.id}`), '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/submit', '/money', '/rank-changelog', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
+    '', '/categories', '/methodology', PRICE_PATH, PRICE_LIST_PATH, ...PRICE_LISTS.map(priceListPath), `${PRICE_PATH}/rss.xml`, ...priceMonths().map((m) => `${PRICE_PATH}/${m}`), ...priceChanges().map((x) => `${PRICE_PATH}/${x.id}`), '/alternatives/cursor', '/best/ai-coding-agent-for-beginners', '/best/ai-research-assistant', '/best/free-ai-tools', '/best/ai-voice-generator', '/best/ai-coding-assistant', '/best/ai-agent-builder', '/best/ai-tools-for-small-business', '/best/ai-transcription-tool', '/best/ai-writing-tool', '/best/ai-image-generator', '/best/ai-video-editor-for-youtube', '/best/ai-video-generator', '/guides/how-celebrity-deepfakes-are-made', '/submit', '/money', '/rank-changelog', '/about', '/llms.txt', '/llms-full.txt', '/tools.json',
     ...Object.keys(CATEGORIES).map((k) => `/category/${k}`),
     '/vs', ...vsPairs().map((p) => p.path),
     '/alternatives', ...altPages().map((p) => p.path),
@@ -1228,6 +1265,7 @@ app.get('/llms.txt', (c) => {
     ``,
     `## AI price changes`,
     `Full log: ${SITE}${PRICE_PATH} (last full re-check of official pricing pages: ${PRICE_RECHECK.date})`,
+    ...PRICE_LISTS.map((l) => `- ${l.name} (checked prices only, top ${PRICE_LIST_MAX} by rank): ${SITE}${priceListPath(l)}`),
     ...priceChanges().map((x) => `- ${x.date}, ${x.tool}: ${x.item}. Was ${x.oldPrice}; now ${x.newPrice}. Source: ${x.source}`),
     ``,
     `## Top tools by rank`,
@@ -1397,6 +1435,7 @@ app.get('/', (c) => {
       ${altPages().map((p) => `<a class="pill" href="${p.path}">${esc(p.t.name)} alternatives</a>`).join('\n      ')}
       <a class="pill" href="/alternatives">All alternatives pages</a>
       <a class="pill" href="/price-changes">AI price changes log</a>
+      ${PRICE_LISTS.map((l) => `<a class="pill" href="${priceListPath(l)}">${esc(l.name)}</a>`).join('\n      ')}
       <a class="pill" href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>
       <a class="pill" href="/best/ai-research-assistant">Best AI research assistants</a>
       <a class="pill" href="/best/free-ai-tools">Best free AI tools</a>
@@ -2439,6 +2478,7 @@ app.get(PRICE_PATH, (c) => {
     <p>A dated record of price changes for the AI tools listed on ${NAME}. Each entry shows the old price, the new price, the day the change took effect, and a link to the tool maker's own pricing page. We only log a change when the official source shows it.</p>
     <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} ${list.length === 1 ? 'change' : 'changes'} logged · Last full re-check: ${fmtDate(PRICE_RECHECK.date)} · Edited by <a href="/about">Sampson Brueher</a></p>
     ${monthNav}
+    <p class="muted">Price lists: ${PRICE_LISTS.map((l) => `<a href="${priceListPath(l)}">${esc(l.name)}</a>`).join(' · ')}</p>
   </section>
   <section class="section">
     <h2>Price changes, newest first</h2>
@@ -2473,6 +2513,109 @@ app.get(PRICE_PATH, (c) => {
         author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         publisher: { '@type': 'Organization', name: NAME, url: SITE },
       }, breadcrumbs([['Home', '/'], ['AI price changes', PRICE_PATH]])],
+    },
+  }))
+})
+
+function priceListBody(l, list, all) {
+  const top = list[0]
+  const lead = top
+    ? `<div class="price-lead"><p>Top ranked: <a href="/tool/${esc(top.slug)}">${esc(top.name)}</a> (#${top.rank}), ${esc(top.priceFrom)}${hasFreePlan(top) ? ', free plan' : ''}, checked ${esc(fmtDate(top.priceChecked))}.</p><p>${all.length} checked ${all.length === 1 ? 'tool matches' : 'tools match'}${all.length > list.length ? `; this page shows the top ${list.length} by rank` : ''}. ${pricingLink(top, `Official ${top.name} pricing page`)}.</p></div>`
+    : '<div class="price-lead"><p>No checked tools match this list today.</p></div>'
+  const rows = list.map((t) => `<tr><td>#${t.rank}</td><td><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></td><td><a href="/category/${esc(t.category)}">${esc(CATEGORIES[t.category] ? CATEGORIES[t.category].label : t.category)}</a></td><td>${hasFreePlan(t) ? 'Yes' : 'No'}</td><td>${esc(t.priceFrom)}</td><td>${esc(fmtDate(t.priceChecked))}</td><td>${pricingLink(t, 'Official pricing')}</td></tr>`).join('\n        ')
+  return `${lead}
+  <section class="section">
+    <h2>${esc(l.name)}, by rank</h2>
+    ${list.length ? `<div class="panel" style="overflow-x:auto;padding:.5rem">
+      <table class="cmp">
+        <thead><tr><th>Rank</th><th>Tool</th><th>Category</th><th>Free plan</th><th>Starting price</th><th>Price checked</th><th>Source</th></tr></thead>
+        <tbody>
+        ${rows}
+        </tbody>
+      </table>
+    </div>` : ''}
+  </section>`
+}
+
+function priceListHow() {
+  return `
+  <section class="section" id="how">
+    <div class="panel prose">
+      <h2 style="margin-top:0">How these lists are built</h2>
+      <ul class="clean">
+        <li><strong>Checked prices only.</strong> A tool is listed only when every price in its pricing note matched the tool maker's own pricing page on the day shown. Tools we have not checked yet are left out, even if they are cheap.</li>
+        <li><strong>Starting price.</strong> Monthly limits use the lowest listed paid plan, which is often the price with yearly billing. Usage-priced APIs and per-credit prices are not in the monthly lists.</li>
+        <li><strong>Rank order.</strong> Tools appear in their overall ${NAME} rank, capped at ${PRICE_LIST_MAX}. Price never changes rank, and rank is never sold.</li>
+        <li><strong>Generated from the data.</strong> Every row comes from <a href="/tools.json">tools.json</a>, so the lists update when a price is re-checked.</li>
+      </ul>
+      <p>Prices change. See the <a href="${PRICE_PATH}">AI price changes log</a> for dated changes, or read <a href="/methodology">how we rank and check prices</a>.</p>
+      <p class="muted">Other lists: ${PRICE_LISTS.map((x) => `<a href="${priceListPath(x)}">${esc(x.name)}</a>`).join(' · ')}</p>
+    </div>
+  </section>`
+}
+
+app.get(PRICE_LIST_PATH, (c) => {
+  const PD = pageDate(PRICE_LIST_PATH)
+  const title = `AI tool price lists: free plans and plans from $10 or $20 a month or less, checked ${fmtDate(PD)} | ${NAME}`
+  const description = `Lists of AI tools by price, built from the ${NAME} listings whose prices matched the official pricing page: free plans, paid plans from $10 a month or less, and from $20 a month or less. Updated ${fmtDate(PD)}.`
+  const cards = PRICE_LISTS.map((l) => {
+    const all = priceListTools(l)
+    const names = all.slice(0, 3).map((t) => `${t.name} (#${t.rank})`)
+    return `<li><a href="${priceListPath(l)}"><strong>${esc(l.name)}</strong></a>. ${all.length} checked ${all.length === 1 ? 'tool' : 'tools'}${names.length ? `, led by ${esc(listNames(names))}` : ''}.</li>`
+  }).join('')
+  const body = `
+  <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <span aria-current="page">AI tool price lists</span></nav>
+  <section class="hero">
+    <div class="meta"><span class="tag">Pricing</span></div>
+    <h1>AI tool price lists</h1>
+    <p>AI tools sorted into price bands, using only prices we matched to each tool maker's own pricing page.</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · <a href="${PRICE_PATH}">AI price changes log</a> · <a href="${PRICE_PATH}/rss.xml">RSS feed</a> · Edited by <a href="/about">Sampson Brueher</a></p>
+  </section>
+  <section class="panel prose">
+    <ul class="clean">${cards}</ul>
+  </section>
+  ${priceListHow()}
+  ${subscribePanel('price-lists')}`
+  return c.html(layout({
+    title, description, path: PRICE_LIST_PATH, body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'CollectionPage', name: 'AI tool price lists', url: `${SITE}${PRICE_LIST_PATH}`, description, dateModified: PD,
+        isPartOf: { '@type': 'WebSite', name: NAME, url: SITE },
+      }, breadcrumbs([['Home', '/'], ['AI tool price lists', PRICE_LIST_PATH]])],
+    },
+  }))
+})
+
+app.get(`${PRICE_LIST_PATH}/:slug`, (c) => {
+  const l = PRICE_LISTS.find((x) => x.slug === c.req.param('slug'))
+  if (!l) return c.notFound()
+  const path = priceListPath(l)
+  const PD = pageDate(path)
+  const all = priceListTools(l)
+  const list = all.slice(0, PRICE_LIST_MAX)
+  const title = `${l.name}: prices checked ${fmtDate(PD)} | ${NAME}`
+  const description = `${l.name}, in ${NAME} rank order. Only tools whose prices matched the official pricing page are listed, each with its starting price, the day we checked it, and the official link. ${all.length} checked ${all.length === 1 ? 'tool matches' : 'tools match'}.`
+  const body = `
+  <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="${PRICE_LIST_PATH}">AI tool price lists</a> › <span aria-current="page">${esc(l.short)}</span></nav>
+  <section class="hero">
+    <div class="meta"><span class="tag">Pricing</span></div>
+    <h1>${esc(l.name)}</h1>
+    <p>${esc(l.intro)}</p>
+    <p class="muted">Last updated: ${fmtDate(PD)} · Prices checked against official pages · <a href="${PRICE_PATH}">AI price changes log</a> · <a href="${PRICE_PATH}/rss.xml">RSS feed</a> · Edited by <a href="/about">Sampson Brueher</a></p>
+  </section>
+  ${priceListBody(l, list, all)}
+  ${priceListHow()}
+  ${subscribePanel(`price-list-${l.slug}`)}`
+  return c.html(layout({
+    title, description, path, body,
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': 'ItemList', name: l.name, url: `${SITE}${path}`, description, numberOfItems: list.length,
+        itemListElement: list.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.name, url: `${SITE}/tool/${t.slug}` })),
+      }, breadcrumbs([['Home', '/'], ['AI tool price lists', PRICE_LIST_PATH], [l.short, path]])],
     },
   }))
 })

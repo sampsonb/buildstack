@@ -16,7 +16,7 @@ test('src and data tools.json stay identical after the methodology review', () =
     readFileSync(new URL('../src/tools.json', import.meta.url), 'utf8'),
     readFileSync(new URL('../data/tools.json', import.meta.url), 'utf8'),
   )
-  assert.equal(tools.length, 174)
+  assert.equal(tools.length, 177)
 })
 
 test('Wix Studio Two, Qwen Code, and Junie sit below generally available coding tools and left the top 30', () => {

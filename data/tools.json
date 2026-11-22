@@ -51,7 +51,7 @@
     "freeTier": true,
     "priceFrom": "from $20/mo",
     "pricingUrl": "https://claude.com/pricing",
-    "priceChecked": "2026-11-14",
+    "priceChecked": "2026-11-22",
     "plans": [
       {
         "name": "Free",
@@ -197,7 +197,7 @@
     "added": "2026-11-19",
     "freeTier": true,
     "priceFrom": "Free",
-    "priceChecked": "2026-11-19",
+    "priceChecked": "2026-11-22",
     "tagline": "OpenAI's image generation and editing in ChatGPT, Codex, and the API",
     "description": "ChatGPT Images is OpenAI's image feature, built on its GPT Image models. Images 2.6 launched on November 4, 2026 in ChatGPT, Codex, and the API. OpenAI says it generates images 50% faster than before and keeps characters, products, and brand details more consistent across edit rounds. It can make animated GIFs and make backgrounds transparent, and the API adds markup-guided edits, SVG output, and a complexity setting. Developers choose GPT-Image-2.6 Flare for speed or GPT-Image-2.6 Sunburst for detail and edit consistency.",
     "bestFor": [
@@ -286,7 +286,7 @@
     "freeTier": true,
     "priceFrom": "from $6/mo",
     "pricingUrl": "https://elevenlabs.io/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "runway",
@@ -312,7 +312,7 @@
     "freeTier": false,
     "priceFrom": "from $12/mo",
     "pricingUrl": "https://runway.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "claude-code",
@@ -457,7 +457,7 @@
     "category": "writing",
     "freeTier": true,
     "priceFrom": "Free",
-    "priceChecked": "2026-11-19",
+    "priceChecked": "2026-11-22",
     "pricingUrl": "https://mistral.ai/pricing/",
     "tagline": "Mistral's AI assistant for work, chat, and coding, renamed from Le Chat",
     "description": "Mistral Vibe is the new name, since August 12, 2026, for Mistral's Le Chat assistant, with the same web address, accounts, and conversations. It has three modes: Vibe Work for multi-step tasks across your apps and tools, Vibe Chat for turn-based conversation, and Vibe Code for coding in a terminal, VS Code, or the web. Mistral lists 100+ connectors, image generation and editing, web search, and deep research reports on its plans.",
@@ -718,7 +718,7 @@
     "freeTier": true,
     "priceFrom": "from $10/mo",
     "pricingUrl": "https://zed.dev/pricing",
-    "priceChecked": "2026-11-14",
+    "priceChecked": "2026-11-22",
     "freePlan": true,
     "byoModel": true
   },
@@ -746,7 +746,7 @@
     "freeTier": true,
     "priceFrom": "from $20/mo",
     "pricingUrl": "https://kiro.dev/pricing/",
-    "priceChecked": "2026-11-14",
+    "priceChecked": "2026-11-22",
     "freePlan": true,
     "byoModel": false
   },
@@ -761,7 +761,7 @@
     "category": "agents",
     "freeTier": true,
     "priceFrom": "Included in ChatGPT",
-    "priceChecked": "2026-11-19",
+    "priceChecked": "2026-11-22",
     "pricingUrl": "https://learn.chatgpt.com/docs/pricing",
     "tagline": "OpenAI's ChatGPT agent for long, multi-step tasks and finished documents, spreadsheets, and slides",
     "description": "ChatGPT Work is OpenAI's current agent in ChatGPT, built for longer multi-step tasks that end in finished deliverables such as research, analyses, documents, spreadsheets, presentations, reports, and Sites. It replaced the earlier ChatGPT agent mode, which OpenAI says is no longer available. A cloud browser handles supported web workflows. Work uses the same usage structure as Codex and runs GPT-6.2 Astra and Sol models, depending on plan.",
@@ -799,7 +799,7 @@
     "freeTier": false,
     "priceFrom": "from $20/mo",
     "pricingUrl": "https://replit.com/pricing",
-    "priceChecked": "2026-11-14",
+    "priceChecked": "2026-11-22",
     "rankReason": "An AI agent that builds, runs, and hosts apps inside Replit from a prompt, as part of Replit paid plans."
   },
   {
@@ -825,7 +825,7 @@
     "freeTier": false,
     "priceFrom": "from $0.10/min",
     "pricingUrl": "https://expo.dev/pricing",
-    "priceChecked": "2026-11-14",
+    "priceChecked": "2026-11-22",
     "rankReason": "Cloud iOS and Android simulators that let coding agents test mobile fixes and attach recordings to a pull request."
   },
   {
@@ -1036,7 +1036,7 @@
     "freeTier": true,
     "priceFrom": "from $49/mo",
     "pricingUrl": "https://elicit.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "featured": false,
@@ -1886,7 +1886,7 @@
     "freeTier": true,
     "priceFrom": "from $29/mo",
     "pricingUrl": "https://www.heygen.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "synthesia",
@@ -1911,14 +1911,39 @@
     "freeTier": true,
     "priceFrom": "from $19/mo",
     "pricingUrl": "https://www.synthesia.io/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
+  },
+  {
+    "featured": false,
+    "affiliate": false,
+    "updated": "2026-11-22",
+    "added": "2026-11-22",
+    "slug": "d-id",
+    "name": "D-ID",
+    "url": "https://www.d-id.com",
+    "category": "video",
+    "freeTier": false,
+    "priceFrom": "from $4.7/mo",
+    "pricingUrl": "https://www.d-id.com/pricing/studio/",
+    "priceChecked": "2026-11-22",
+    "tagline": "AI avatar videos and interactive visual agents from a script, photo, or document",
+    "description": "D-ID makes AI avatar videos and real-time interactive avatars. Its Video Studio turns scripts, briefs, decks, or documents into presenter videos with stock or personal avatars in 120+ languages, its Agentic Videos embed an AI agent that answers viewer questions, and its V4 Expressive Visual Agents hold real-time conversations. An API lets developers create avatars and videos or stream avatars in their own apps.",
+    "bestFor": [
+      "presenter videos from a script or photo",
+      "a talking avatar that answers questions",
+      "avatar video through an API"
+    ],
+    "pricingNote": "14-day trial with 3 minutes and a watermark; Lite is $4.7 a month billed annually ($56 a year, watermarked, personal use); Pro is $16 a month billed annually ($191 a year); Advanced is $108 a month billed annually ($1,293 a year); Enterprise is custom; separate API pricing",
+    "strength": "Low-cost avatar videos and interactive talking avatars, with an API for building them into your own product.",
+    "watchOut": "There is no lasting free plan, the cheapest plan keeps a D-ID watermark and is for personal use, and the listed prices are for yearly billing.",
+    "rank": 75
   },
   {
     "slug": "luma-dream-machine",
     "name": "Luma Dream Machine",
     "url": "https://lumalabs.ai/dream-machine",
     "category": "video",
-    "rank": 75,
+    "rank": 76,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-06",
@@ -1936,14 +1961,14 @@
     "freeTier": false,
     "priceFrom": "from $30/mo",
     "pricingUrl": "https://lumalabs.ai/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "descript",
     "name": "Descript",
     "url": "https://www.descript.com",
     "category": "video",
-    "rank": 76,
+    "rank": 77,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-02",
@@ -1961,14 +1986,39 @@
     "freeTier": true,
     "priceFrom": "from $16/mo",
     "pricingUrl": "https://www.descript.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
+  },
+  {
+    "featured": false,
+    "affiliate": false,
+    "updated": "2026-11-22",
+    "added": "2026-11-22",
+    "slug": "veed",
+    "name": "VEED",
+    "url": "https://www.veed.io",
+    "category": "video",
+    "freeTier": true,
+    "priceFrom": "from $12/mo",
+    "pricingUrl": "https://www.veed.io/pricing",
+    "priceChecked": "2026-11-22",
+    "tagline": "Browser video editor with AI generation, avatars, dubbing, and auto subtitles",
+    "description": "VEED is an online video editor that runs in the browser, with AI tools built in. You can generate videos, voices, avatars, and images from a prompt, clone yourself as a talking head, dub and translate videos, clean up audio, and add styled auto subtitles, then apply brand kits with your colors, fonts, and logos. It also covers everyday jobs such as trimming, compressing, converting, screen and webcam recording, and transcription, and offers a video API for developers.",
+    "bestFor": [
+      "adding auto subtitles to social videos",
+      "quick edits in the browser",
+      "dubbing and translating short videos"
+    ],
+    "pricingNote": "Start for free; Creator is $12 per user a month billed yearly with 6,000 credits and no watermark; Pro is $29 per user a month billed yearly with 18,000 credits, multiple brand kits, and translation into 50+ languages; Enterprise is custom",
+    "strength": "One browser app for subtitles, quick edits, AI generation, avatars, and dubbing, with no install.",
+    "watchOut": "The listed prices are for yearly billing, and AI generation uses credits that are capped by plan.",
+    "rank": 78
   },
   {
     "slug": "opusclip",
     "name": "OpusClip",
     "url": "https://www.opus.pro",
     "category": "video",
-    "rank": 77,
+    "rank": 79,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-05",
@@ -1986,14 +2036,39 @@
     "freeTier": true,
     "priceFrom": "from $15/mo",
     "pricingUrl": "https://www.opus.pro/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
+  },
+  {
+    "featured": false,
+    "affiliate": false,
+    "updated": "2026-11-22",
+    "added": "2026-11-22",
+    "slug": "captions",
+    "name": "Captions",
+    "url": "https://www.captions.ai",
+    "category": "video",
+    "freeTier": true,
+    "priceFrom": "from $24.99/mo",
+    "pricingUrl": "https://www.captions.ai/pricing",
+    "priceChecked": "2026-11-22",
+    "tagline": "Mobile-first AI video editor for talking-head clips, captions, and AI avatars",
+    "description": "Captions is an AI video editor and generator for creators, on iPhone, Android, and the web. AI Edit cuts scenes, adds B-roll, and applies a style to your footage in one pass; a chat-based editor takes plain-language changes; and it adds stylized auto captions, translated subtitles in 100+ languages, eye contact correction, denoise, pause and filler-word trimming, and AI music. You can also make an AI twin of yourself or use stock AI avatars.",
+    "bestFor": [
+      "captioned talking-head videos from your phone",
+      "turning raw footage into a social video",
+      "an AI twin for short videos"
+    ],
+    "pricingNote": "Free to sign up with basic editing tools and no AI credits; Max is $24.99 a month with 500 credits and 2 seats; Frontier is $69.99 a month (1,400 credits), with 2x at $139.99 and 4x at $279.99; Captions says these are its iOS plan prices",
+    "strength": "Fast phone-first editing for talking-head videos, with captions, eye contact fixes, and AI edits in one app.",
+    "watchOut": "The free plan has no AI credits, and the published prices are for the iOS app, so web or Android prices may differ.",
+    "rank": 80
   },
   {
     "slug": "riverside",
     "name": "Riverside",
     "url": "https://riverside.com",
     "category": "video",
-    "rank": 78,
+    "rank": 81,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-02",
@@ -2011,17 +2086,17 @@
     "freeTier": true,
     "priceFrom": "from $29/mo",
     "pricingUrl": "https://riverside.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "kino",
     "name": "Kino",
     "url": "https://kino.ai",
     "category": "video",
-    "rank": 79,
+    "rank": 82,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-06",
+    "updated": "2026-11-22",
     "added": "2026-11-06",
     "tagline": "Code-first AI video editor where teams and coding agents share one timeline",
     "description": "Kino is a desktop video editor and media manager (YC S23) relaunched November 4, 2026. Every edit, motion graphic, and review comment is stored as code on Remotion, so Claude Code, Codex, and teammates can work on the same timeline in real time. Footage is transcribed and indexed for agent search, and agents connect over MCP. The desktop app covers Mac, Windows, and Ubuntu; there is no browser editor yet.",
@@ -2030,19 +2105,20 @@
       "real-time team timeline collaboration",
       "motion graphics as code on Remotion"
     ],
-    "pricingNote": "Free plan with the full editor, unlimited imports and exports, and 100 MCP calls a week; Pro is $25 per editor a month or $240 a year with unlimited MCP calls; Editor Plus is $200 per person a month with agent and Seedance credits; details on kino.ai/pricing and kino.ai/docs/teams-and-billing",
+    "pricingNote": "Free plan with unlimited imports and exports, 100 MCP tool calls a week, and a monthly Kino chat allowance; Editor is $25 per editor a month, or $20 a month billed yearly ($240 a year), with unlimited MCP calls; Editor Plus is $200 per editor a month with $100 of agent credit and $75 of Seedance credit; Enterprise is custom",
     "strength": "Code-first desktop video editor where teams and coding agents share one Remotion timeline over MCP.",
     "watchOut": "There is no browser editor yet; the free plan limits MCP calls to 100 a week.",
     "freeTier": true,
     "priceFrom": "from $25/mo",
-    "pricingUrl": "https://kino.ai/pricing"
+    "pricingUrl": "https://kino.ai/pricing",
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "sora",
     "name": "Sora",
     "url": "https://openai.com/sora",
     "category": "video",
-    "rank": 80,
+    "rank": 83,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -2084,14 +2160,14 @@
     "pricingNote": "Project Genie needs a Google AI Ultra plan, from $99.99 a month (US price), and Google AI Pro subscribers can join a waitlist; on the Gemini API paid tier, Genie 4 costs $1.50 per 1M input tokens and $17.50 per 1M video output tokens with audio included, which Google puts at about $0.10 per second; there is no free API tier",
     "strength": "Real-time, promptable worlds with native audio that you can change while you move through them, from Google DeepMind.",
     "watchOut": "It is a research prototype limited to Google AI Ultra subscribers, and Google lists camera latency, complex physics, and long-term scene permanence as open problems.",
-    "rank": 81
+    "rank": 84
   },
   {
     "slug": "twelvelabs-jockey",
     "name": "Jockey by TwelveLabs",
     "url": "https://www.twelvelabs.io/jockey",
     "category": "video",
-    "rank": 82,
+    "rank": 85,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-18",
@@ -2115,7 +2191,7 @@
     "name": "Viggle JST-2",
     "url": "https://viggle.ai/jst2",
     "category": "video",
-    "rank": 83,
+    "rank": 86,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-21",
@@ -2139,7 +2215,7 @@
     "name": "Pine Drama Studio",
     "url": "https://github.com/PineComputer/pine-drama-studio",
     "category": "video",
-    "rank": 84,
+    "rank": 87,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-14",
@@ -2162,7 +2238,7 @@
     "name": "Gemini 4 Neon",
     "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-neon/",
     "category": "coding",
-    "rank": 85,
+    "rank": 88,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-19",
@@ -2180,14 +2256,14 @@
     "freeTier": false,
     "priceFrom": "API from $3/1M in",
     "pricingUrl": "https://ai.google.dev/gemini-api/docs/pricing",
-    "priceChecked": "2026-11-19"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "recursive-flint",
     "name": "Recursive Flint",
     "url": "https://recursive.com/updates/introducing-recursive-flint",
     "category": "coding",
-    "rank": 86,
+    "rank": 89,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-22",
@@ -2210,7 +2286,7 @@
     "name": "Mistral Large 4",
     "url": "https://mistral.ai/news/mistral-large-4-oss/",
     "category": "coding",
-    "rank": 87,
+    "rank": 90,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-30",
@@ -2234,7 +2310,7 @@
     "name": "Qwen4-Max",
     "url": "https://www.alibabacloud.com/blog/alibaba-unveils-qwen4-max-new-ai-teammate-for-work-creativity-and-discovery_603783",
     "category": "coding",
-    "rank": 88,
+    "rank": 91,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-16",
@@ -2259,7 +2335,7 @@
     "name": "MAI Code 2",
     "url": "https://microsoft.ai/news/introducing-mai-code-2-and-mai-code-2-flash/",
     "category": "coding",
-    "rank": 89,
+    "rank": 92,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-19",
@@ -2282,7 +2358,7 @@
     "name": "LongCat-2.5",
     "url": "https://longcat.ai",
     "category": "coding",
-    "rank": 90,
+    "rank": 93,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-03",
@@ -2306,7 +2382,7 @@
     "name": "Harness by Autonomous",
     "url": "https://www.autonomous.ai/harness",
     "category": "coding",
-    "rank": 91,
+    "rank": 94,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -2330,7 +2406,7 @@
     "name": "OpenCode Browse",
     "url": "https://github.com/anomalyco/browse",
     "category": "coding",
-    "rank": 92,
+    "rank": 95,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -2354,7 +2430,7 @@
     "name": "Replica by GitHub",
     "url": "https://github.blog/changelog/2026-10-28-introducing-replica-an-open-source-ai-prototyping-tool/",
     "category": "coding",
-    "rank": 93,
+    "rank": 96,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-29",
@@ -2377,7 +2453,7 @@
     "name": "GitHub Agentic Workflows",
     "url": "https://github.blog/changelog/2026-10-28-github-agentic-workflows-generally-available/",
     "category": "coding",
-    "rank": 94,
+    "rank": 97,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-01",
@@ -2418,14 +2494,14 @@
     "pricingNote": "Free plan with 150 credits a month; Starter is free for the first month, then $19 a month; Standard is $39 a month; Pro is $69 a month; Enterprise from $199 a month (from 10 seats); yearly billing saves 35%",
     "strength": "Tests are run by a separate agent against what the app should do, with recordings and a bug, test, or environment verdict for each failure.",
     "watchOut": "Its 94% bug-finding score comes from TestSprite's own internal benchmark, and credits limit how many runs each plan covers.",
-    "rank": 95
+    "rank": 98
   },
   {
     "slug": "easy-lens-cli",
     "name": "Easy Lens CLI by Snap",
     "url": "https://easylens.snapchat.com/cli",
     "category": "coding",
-    "rank": 96,
+    "rank": 99,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -2449,7 +2525,7 @@
     "name": "llama.cpp",
     "url": "https://github.com/ggml-org/llama.cpp",
     "category": "coding",
-    "rank": 97,
+    "rank": 100,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-15",
@@ -2472,7 +2548,7 @@
     "name": "Lindy",
     "url": "https://www.lindy.ai",
     "category": "agents",
-    "rank": 98,
+    "rank": 101,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-01",
@@ -2490,14 +2566,14 @@
     "freeTier": false,
     "priceFrom": "from $29.99/mo",
     "pricingUrl": "https://www.lindy.ai/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "manus",
     "name": "Manus",
     "url": "https://manus.im",
     "category": "agents",
-    "rank": 99,
+    "rank": 102,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-31",
@@ -2539,7 +2615,7 @@
     "pricingNote": "Free plan with 100 credits a day and 1 GB of AI Drive storage; Plus is $24.99 a month or $19.99 a month billed annually; Pro is $249.99 a month or $199.99 a month billed annually; Team is $40 per seat a month or $35 billed annually; Enterprise is custom",
     "strength": "One workspace that covers slides, docs, research, and a browser agent, with a usable free credit allotment.",
     "watchOut": "Heavier use burns monthly credits, and Pro is priced for very heavy use.",
-    "rank": 100
+    "rank": 103
   },
   {
     "featured": false,
@@ -2562,7 +2638,7 @@
     "pricingNote": "Free to download and use with no Perplexity account needed; the optional Comet Plus is $5 a month for premium publisher content and comes with Perplexity Pro and Max",
     "strength": "A free AI browser whose assistant summarizes tabs and acts on websites, with controls over what it can access.",
     "watchOut": "A browser agent that acts on sites can touch your logged-in accounts, so review its access in Settings, and some tasks need your confirmation.",
-    "rank": 101,
+    "rank": 104,
     "type": "browser",
     "keywords": [
       "ai browser",
@@ -2599,7 +2675,7 @@
       "ai browser",
       "web browser"
     ],
-    "rank": 102
+    "rank": 105
   },
   {
     "featured": false,
@@ -2631,7 +2707,7 @@
       "ai browser",
       "web browser"
     ],
-    "rank": 103
+    "rank": 106
   },
   {
     "featured": false,
@@ -2656,14 +2732,14 @@
     "pricingNote": "The agent is free and open source (MIT); Nous Portal plans for models and hosted tools are Free (pay as you go), Plus $20 a month, Super $100 a month, and Ultra $200 a month; paid plans include one cloud agent",
     "strength": "Free, open-source agent with memory and self-made skills that runs on your own machine, in chat apps, or in the cloud.",
     "watchOut": "You bring and pay for the model unless you buy a Nous Portal plan, and a self-hosted agent with tool access needs careful permission settings.",
-    "rank": 104
+    "rank": 107
   },
   {
     "slug": "gpt-6-2-astra-sol",
     "name": "GPT-6.2 Astra and Sol",
     "url": "https://openai.com/index/introducing-gpt-6-2-astra-sol/",
     "category": "agents",
-    "rank": 105,
+    "rank": 108,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-19",
@@ -2686,7 +2762,7 @@
     "name": "GPT-6.1 Terra",
     "url": "https://openai.com/index/introducing-gpt-6-1-terra",
     "category": "agents",
-    "rank": 106,
+    "rank": 109,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-27",
@@ -2709,7 +2785,7 @@
     "name": "Kimi K3.1 Pro",
     "url": "https://www.kimi.ai/blog/kimi-k3-1-pro",
     "category": "agents",
-    "rank": 107,
+    "rank": 110,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-27",
@@ -2726,14 +2802,15 @@
     "watchOut": "API access unlocks after a $1 top-up; in Kimi Code it is on Plus (Moderato) plans and above.",
     "freeTier": false,
     "priceFrom": "API from $2/1M in",
-    "pricingUrl": "https://platform.kimi.ai/docs/pricing/chat"
+    "pricingUrl": "https://platform.kimi.ai/docs/pricing/chat",
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "tencent-hy4",
     "name": "Tencent Hy4",
     "url": "https://www.tencent.com/tencent-launches-hy4-joining-the-ranks-of-the-worlds-leading-open-source-ai-models/",
     "category": "agents",
-    "rank": 108,
+    "rank": 111,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-04",
@@ -2756,7 +2833,7 @@
     "name": "MiniMax M3.1 Flash",
     "url": "https://www.minimax.io/blog/minimax-m31f",
     "category": "agents",
-    "rank": 109,
+    "rank": 112,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-21",
@@ -2774,14 +2851,14 @@
     "freeTier": false,
     "priceFrom": "API from $0.15/1M in",
     "pricingUrl": "https://platform.minimax.io/docs/pricing/overview",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "inkling-2-small",
     "name": "Inkling 2 Small",
     "url": "https://thinkingmachines.ai/news/inkling-2-small/",
     "category": "agents",
-    "rank": 110,
+    "rank": 113,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -2823,14 +2900,14 @@
     "pricingNote": "Open weights are free to download under Apache 2.0; on Tinker, Inkling 2 Mini costs $0.15 per 1M prefill tokens, $0.015 per 1M cached, and $0.50 per 1M sampled tokens, and training costs $0.75 per 1M tokens at 64K context or $1.50 at 256K",
     "strength": "A small open-weights model that its maker says beats other open models under 100B parameters on agentic coding, and it runs locally.",
     "watchOut": "The benchmark scores are Thinking Machines' own, and the Tinker serverless inference beta does not list Inkling 2 Mini yet, so you self-host it or pay Tinker sampling rates.",
-    "rank": 111
+    "rank": 114
   },
   {
     "slug": "liquid-lfm3",
     "name": "Liquid AI LFM3",
     "url": "https://www.liquid.ai/blog/lfm3",
     "category": "agents",
-    "rank": 112,
+    "rank": 115,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -2848,7 +2925,7 @@
     "freeTier": true,
     "priceFrom": "Free",
     "pricingUrl": "https://www.liquid.ai/pricing",
-    "priceChecked": "2026-11-14",
+    "priceChecked": "2026-11-22",
     "type": "open-weight-model"
   },
   {
@@ -2856,7 +2933,7 @@
     "name": "Alpie Seed",
     "url": "https://169pi.ai/models/alpie-seed",
     "category": "agents",
-    "rank": 113,
+    "rank": 116,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -2880,7 +2957,7 @@
     "name": "Local Code",
     "url": "https://getlocalcode.app",
     "category": "agents",
-    "rank": 114,
+    "rank": 117,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-31",
@@ -2903,7 +2980,7 @@
     "name": "n8n",
     "url": "https://n8n.io",
     "category": "agents",
-    "rank": 115,
+    "rank": 118,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-31",
@@ -2927,7 +3004,7 @@
     "name": "Nod by n8n Labs",
     "url": "https://nod.n8n.io",
     "category": "agents",
-    "rank": 116,
+    "rank": 119,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -2952,7 +3029,7 @@
     "name": "OpenBot by CopilotKit",
     "url": "https://open.bot",
     "category": "agents",
-    "rank": 117,
+    "rank": 120,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-12",
@@ -2976,7 +3053,7 @@
     "name": "Lumo Desktop by Proton",
     "url": "https://proton.me/lumo",
     "category": "agents",
-    "rank": 118,
+    "rank": 121,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-17",
@@ -3000,7 +3077,7 @@
     "name": "Tandem by Joveo",
     "url": "https://tandem.joveo.com",
     "category": "agents",
-    "rank": 119,
+    "rank": 122,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-18",
@@ -3023,7 +3100,7 @@
     "name": "CALL-E",
     "url": "https://www.heycall-e.com",
     "category": "agents",
-    "rank": 120,
+    "rank": 123,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-14",
@@ -3064,7 +3141,7 @@
     "pricingNote": "Start free with $5 in credits, then $0.05 per minute Vapi hosting plus pass-through model, transcriber, and voice costs; Core is $29 a month; Pro is 10% of hosting fees with a $999 a month minimum; Premier is custom",
     "strength": "A full developer platform for phone voice agents, with pass-through model costs and a free starting credit.",
     "watchOut": "Per-minute costs add up from hosting plus whatever speech and LLM providers you choose, and production support packages are priced for teams.",
-    "rank": 121
+    "rank": 124
   },
   {
     "featured": false,
@@ -3095,7 +3172,7 @@
       "phone calls",
       "phone agent"
     ],
-    "rank": 122
+    "rank": 125
   },
   {
     "featured": false,
@@ -3126,14 +3203,14 @@
       "phone calls",
       "phone agent"
     ],
-    "rank": 123
+    "rank": 126
   },
   {
     "slug": "make",
     "name": "Make",
     "url": "https://www.make.com",
     "category": "agents",
-    "rank": 124,
+    "rank": 127,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-28",
@@ -3156,7 +3233,7 @@
     "name": "Microsoft Copilot Studio",
     "url": "https://www.microsoft.com/en-us/microsoft-copilot/microsoft-copilot-studio",
     "category": "agents",
-    "rank": 125,
+    "rank": 128,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-31",
@@ -3198,7 +3275,7 @@
     "pricingNote": "Fin is $0.99 per successful outcome (resolution, procedure handoff, or disqualification; sales qualifications are $9.99); used with the Intercom helpdesk, plans also charge per seat (Essential is listed from $19 a seat a month for new customers, or $29, on intercom.com/pricing); Fin can also run on your current helpdesk at the outcome price with a monthly minimum; 14-day free trial, no lasting free plan",
     "strength": "A dedicated customer support agent you can put on a website or helpdesk, with outcome-based pricing.",
     "watchOut": "There is no lasting free plan, and costs combine per-outcome charges with Intercom seat fees if you use the Intercom helpdesk.",
-    "rank": 126,
+    "rank": 129,
     "keywords": [
       "live chat",
       "helpdesk"
@@ -3234,7 +3311,7 @@
       "live chat",
       "helpdesk"
     ],
-    "rank": 127
+    "rank": 130
   },
   {
     "featured": false,
@@ -3266,7 +3343,7 @@
       "live chat",
       "helpdesk"
     ],
-    "rank": 128
+    "rank": 131
   },
   {
     "featured": false,
@@ -3298,7 +3375,7 @@
       "live chat",
       "helpdesk"
     ],
-    "rank": 129
+    "rank": 132
   },
   {
     "featured": false,
@@ -3329,14 +3406,14 @@
       "customer support chatbot",
       "chatbot"
     ],
-    "rank": 130
+    "rank": 133
   },
   {
     "slug": "constant-contact-catalyst",
     "name": "Constant Contact Catalyst",
     "url": "https://www.constantcontact.com/catalyst",
     "category": "agents",
-    "rank": 131,
+    "rank": 134,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-13",
@@ -3359,7 +3436,7 @@
     "name": "PagerDuty SRE Agent (Paige)",
     "url": "https://www.pagerduty.com/platform/ai-agents/sre/",
     "category": "agents",
-    "rank": 132,
+    "rank": 135,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-03",
@@ -3383,7 +3460,7 @@
     "name": "Momentic Mo",
     "url": "https://momentic.ai/mo",
     "category": "agents",
-    "rank": 133,
+    "rank": 136,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-06",
@@ -3401,14 +3478,14 @@
     "freeTier": true,
     "priceFrom": "from $500/mo",
     "pricingUrl": "https://momentic.ai/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "gumloop",
     "name": "Gumloop",
     "url": "https://www.gumloop.com",
     "category": "agents",
-    "rank": 134,
+    "rank": 137,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-24",
@@ -3426,14 +3503,14 @@
     "freeTier": false,
     "priceFrom": "from $37/mo",
     "pricingUrl": "https://www.gumloop.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "relevance-ai",
     "name": "Relevance AI",
     "url": "https://relevanceai.com",
     "category": "agents",
-    "rank": 135,
+    "rank": 138,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-31",
@@ -3457,7 +3534,7 @@
     "name": "MAIA by Zyphra",
     "url": "https://www.zyphra.com/maia",
     "category": "agents",
-    "rank": 136,
+    "rank": 139,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-08",
@@ -3480,7 +3557,7 @@
     "name": "AgentSpot by ThoughtSpot",
     "url": "https://www.thoughtspot.com/agentspot",
     "category": "agents",
-    "rank": 137,
+    "rank": 140,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-26",
@@ -3504,7 +3581,7 @@
     "name": "Velozity",
     "url": "https://getvelozity.com/",
     "category": "agents",
-    "rank": 138,
+    "rank": 141,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-16",
@@ -3527,7 +3604,7 @@
     "name": "Problembot",
     "url": "https://problembo.com/news/2026-11-problembot-a-personal-ai-agent",
     "category": "agents",
-    "rank": 139,
+    "rank": 142,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-14",
@@ -3550,7 +3627,7 @@
     "name": "Mercury 3 by Inception",
     "url": "https://www.inceptionlabs.ai/blog/introducing-mercury-3",
     "category": "agents",
-    "rank": 140,
+    "rank": 143,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-20",
@@ -3573,10 +3650,10 @@
     "name": "Otter.ai",
     "url": "https://otter.ai",
     "category": "voice",
-    "rank": 141,
+    "rank": 144,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-02",
+    "updated": "2026-11-22",
     "added": "2026-10-23",
     "tagline": "AI meeting notetaker with chat and task agents",
     "description": "Otter.ai records and transcribes meetings with speaker identification, then writes summaries you can search across every conversation. Its AI Chat 2.0, rolling out on web and desktop in October 2026, adds a Work mode that completes multi-step tasks through connected apps such as Jira, Notion, Google Drive, and Gmail. An Otter MCP server also lets Claude, ChatGPT, and other assistants search your meeting transcripts.",
@@ -3585,13 +3662,13 @@
       "searching past meetings",
       "turning meeting follow-ups into tasks"
     ],
-    "pricingNote": "Free Basic plan with 300 transcription minutes a month; Pro $16.99 per user a month billed monthly, less billed yearly; Business $30 per user a month or $24 billed yearly; Enterprise is custom",
+    "pricingNote": "Free Basic plan with 300 transcription minutes a month; Pro $16.99 per user a month billed monthly or $8.33 billed yearly; Business $30 per user a month billed monthly or $19.99 billed yearly; Enterprise is custom",
     "strength": "AI meeting notetaker with chat and task agents.",
     "watchOut": "The free Basic plan includes 300 transcription minutes a month.",
     "freeTier": true,
     "priceFrom": "from $16.99/mo",
     "pricingUrl": "https://otter.ai/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "featured": false,
@@ -3604,7 +3681,7 @@
     "category": "voice",
     "freeTier": true,
     "priceFrom": "Free",
-    "priceChecked": "2026-11-19",
+    "priceChecked": "2026-11-22",
     "pricingUrl": "https://www.granola.ai/pricing",
     "tagline": "AI meeting notes that capture device audio with no bot joining the call",
     "description": "Granola takes AI meeting notes by capturing audio on your own device, so no bot joins the call. It works with any meeting app and on desktop, iOS, Android, and Apple Watch, with speaker tagging, note templates, chat across meetings, shared folders, and voice typing in any app. Paid plans add unlimited history, pre-meeting briefs, follow-up emails, integrations such as Notion, HubSpot, and Zapier, MCP access for tools like Claude and ChatGPT, and API access.",
@@ -3616,7 +3693,7 @@
     "pricingNote": "Basic is free with unlimited meetings but only the last 30 days of history in the app; Business is $14 per user a month; Enterprise is $35 per user a month; billing is per active workspace member with no seat minimum",
     "strength": "Bot-free meeting notes from your own device audio, with a free plan, chat across meetings, and no daily transcription limit.",
     "watchOut": "The free plan only shows the last 30 days of notes, and integrations beyond Slack, advanced models, and API access need Business at $14 a month.",
-    "rank": 142
+    "rank": 145
   },
   {
     "featured": false,
@@ -3641,14 +3718,14 @@
     "pricingNote": "Free plan with unlimited recordings, transcriptions, and instant summaries; Premium for individuals is about $16 to $20 a month; Team is $15 per user a month billed annually ($19 billed monthly, 2-user minimum); Business is $25 per user a month billed annually; Enterprise is custom",
     "strength": "A generous free plan with unlimited recordings and instant summaries, plus a bot-free option.",
     "watchOut": "Advanced summaries, action items, and full team features sit on paid plans, and bot-free capture is listed as beta on Mac.",
-    "rank": 143
+    "rank": 146
   },
   {
     "slug": "fireflies",
     "name": "Fireflies.ai",
     "url": "https://fireflies.ai",
     "category": "voice",
-    "rank": 144,
+    "rank": 147,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-26",
@@ -3666,7 +3743,7 @@
     "freeTier": true,
     "priceFrom": "from $10/mo",
     "pricingUrl": "https://fireflies.ai/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "featured": false,
@@ -3679,7 +3756,7 @@
     "category": "voice",
     "freeTier": true,
     "priceFrom": "Free",
-    "priceChecked": "2026-11-19",
+    "priceChecked": "2026-11-22",
     "pricingUrl": "https://wisprflow.ai/pricing",
     "tagline": "Voice dictation on Mac, Windows, iPhone, and Android, with a meeting notetaker",
     "description": "Wispr Flow is a voice dictation app that types what you say into any app on Mac, Windows, iPhone, and Android. It also has a Notetaker for meetings and voice memos on Mac, Windows, and iPhone that identifies speakers and works with no bot joining the meeting, and its notes can be used in Claude, ChatGPT, and other AI tools through MCP. Wispr says it is SOC 2 Type II and ISO 27001 certified.",
@@ -3691,14 +3768,14 @@
     "pricingNote": "Free for everyone, with weekly usage limits on the free Notetaker; Flow Pro is $15 per user a month, or $12 per user a month billed annually; students get 50% off Pro; Enterprise is custom",
     "strength": "Dictation that works in any app on Mac, Windows, iPhone, and Android, free to start, with a bot-free Notetaker included.",
     "watchOut": "The free plan has weekly meeting limits, the Notetaker is not on Android yet, and SSO and enforced HIPAA are Enterprise only.",
-    "rank": 145
+    "rank": 148
   },
   {
     "slug": "deepl-voice",
     "name": "DeepL Voice",
     "url": "https://www.deepl.com/en/products/voice",
     "category": "voice",
-    "rank": 146,
+    "rank": 149,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-11",
@@ -3721,7 +3798,7 @@
     "name": "Mistral Voxtral 3",
     "url": "https://mistral.ai/news/voxtral-3",
     "category": "voice",
-    "rank": 147,
+    "rank": 150,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-21",
@@ -3745,7 +3822,7 @@
     "name": "Deepgram",
     "url": "https://deepgram.com",
     "category": "voice",
-    "rank": 148,
+    "rank": 151,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-02",
@@ -3770,7 +3847,7 @@
     "name": "AssemblyAI-TTS-1",
     "url": "https://www.assemblyai.com/blog/text-to-speech-api",
     "category": "voice",
-    "rank": 149,
+    "rank": 152,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-29",
@@ -3788,14 +3865,14 @@
     "freeTier": false,
     "priceFrom": "from $15/1M chars",
     "pricingUrl": "https://www.assemblyai.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "phonic-1",
     "name": "Phonic-1",
     "url": "https://phonic.ai/blog/phonic-1",
     "category": "voice",
-    "rank": 150,
+    "rank": 153,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-30",
@@ -3813,14 +3890,14 @@
     "freeTier": false,
     "priceFrom": "from $0.07/min",
     "pricingUrl": "https://phonic.ai/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "zapier",
     "name": "Zapier",
     "url": "https://zapier.com",
     "category": "agents",
-    "rank": 151,
+    "rank": 154,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-28",
@@ -3844,7 +3921,7 @@
     "name": "IBM Granite Speech 5.0",
     "url": "https://huggingface.co/blog/ibm-granite/granite-speech-5",
     "category": "voice",
-    "rank": 152,
+    "rank": 155,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-22",
@@ -3867,7 +3944,7 @@
     "name": "NVIDIA Nemotron 3.5 Transcribe",
     "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B",
     "category": "voice",
-    "rank": 153,
+    "rank": 156,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-01",
@@ -3890,7 +3967,7 @@
     "name": "Fish Audio Drama 3",
     "url": "https://fish.audio/drama-3/",
     "category": "voice",
-    "rank": 154,
+    "rank": 157,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-12",
@@ -3914,7 +3991,7 @@
     "name": "Gradium Phonon",
     "url": "https://gradium.ai/blog/gradium-releases-phonon",
     "category": "voice",
-    "rank": 155,
+    "rank": 158,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-29",
@@ -3954,7 +4031,7 @@
     "pricingNote": "Free plan with 400 credits at signup that do not refill and up to 10 slides per prompt; Plus is $9 a month and Pro is $18 a month, both billed annually ($108 and $216 a year); Ultra is $90 a month billed annually; Business and Enterprise plans are for teams",
     "strength": "Fast AI presentations and documents with PowerPoint import and export, and a free plan to try it.",
     "watchOut": "Free credits run out and do not refill, free decks carry Gamma branding, and content on personal plans may train Gamma AI features unless you opt out.",
-    "rank": 156,
+    "rank": 159,
     "keywords": [
       "slide deck",
       "pitch deck",
@@ -3966,7 +4043,7 @@
     "name": "Grammarly",
     "url": "https://www.grammarly.com",
     "category": "writing",
-    "rank": 157,
+    "rank": 160,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-20",
@@ -3984,7 +4061,7 @@
     "freeTier": true,
     "priceFrom": "from $12/mo",
     "pricingUrl": "https://www.grammarly.com/plans",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "featured": false,
@@ -4009,7 +4086,7 @@
     "pricingNote": "Free plan with 50,000 characters per month and 1 file translation up to 5 MB; DeepL Pro Individual from 7.49 euros a month, Team 24.99 and Business 49.99 euros per user a month, billed annually (German prices on deepl.com/en/pro); Enterprise is custom",
     "strength": "Purpose-built text and document translation that preserves formatting, with a usable free plan.",
     "watchOut": "Pro prices on the German pricing page are listed in euros and billed annually; file limits are tight on the free plan.",
-    "rank": 158,
+    "rank": 161,
     "keywords": [
       "translate pdf",
       "translate word document"
@@ -4044,7 +4121,7 @@
       "translate a document",
       "translate pdf"
     ],
-    "rank": 159
+    "rank": 162
   },
   {
     "featured": false,
@@ -4068,14 +4145,14 @@
     "pricingNote": "Free plan with limited paraphrasing (up to 125 words) and summaries (up to 1,200 words); Premium is sold as monthly, quarterly, or annual plans, and the price varies by region on quillbot.com/premium",
     "strength": "A well-known free writing assistant for paraphrase, grammar, and citations, especially for students.",
     "watchOut": "Free limits are tight, and Premium prices vary by region, so check the official Premium page for your local price.",
-    "rank": 160
+    "rank": 163
   },
   {
     "slug": "notion-ai",
     "name": "Notion AI",
     "url": "https://www.notion.com/product/ai",
     "category": "writing",
-    "rank": 161,
+    "rank": 164,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-01",
@@ -4093,14 +4170,14 @@
     "freeTier": false,
     "priceFrom": "from $20/mo",
     "pricingUrl": "https://www.notion.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "jasper",
     "name": "Jasper",
     "url": "https://www.jasper.ai",
     "category": "writing",
-    "rank": 162,
+    "rank": 165,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-01",
@@ -4118,14 +4195,14 @@
     "freeTier": false,
     "priceFrom": "from $59/mo",
     "pricingUrl": "https://www.jasper.ai/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "slug": "suno",
     "name": "Suno",
     "url": "https://suno.com",
     "category": "voice",
-    "rank": 163,
+    "rank": 166,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-12",
@@ -4143,7 +4220,7 @@
     "freeTier": true,
     "priceFrom": "from $10/mo",
     "pricingUrl": "https://suno.com/pricing",
-    "priceChecked": "2026-11-14"
+    "priceChecked": "2026-11-22"
   },
   {
     "featured": false,
@@ -4166,14 +4243,14 @@
     "pricingNote": "Free plan with 10 credits a day and a 100 credit monthly limit; Standard includes 2,400 credits a month and Pro includes 6,000 credits a month; credits reset monthly and do not roll over",
     "strength": "Song generation from a prompt with a free daily credit allowance and higher limits on paid plans.",
     "watchOut": "Downloads of audio, video, and stems are disabled on every plan, so songs can be shared by link but not saved as files.",
-    "rank": 164
+    "rank": 167
   },
   {
     "slug": "mintlify-autopilot",
     "name": "Mintlify Autopilot",
     "url": "https://www.mintlify.com/blog/autopilot",
     "category": "writing",
-    "rank": 165,
+    "rank": 168,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-20",
@@ -4197,7 +4274,7 @@
     "name": "TK by Medium",
     "url": "https://tk.xyz",
     "category": "writing",
-    "rank": 166,
+    "rank": 169,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-10",
@@ -4220,7 +4297,7 @@
     "name": "KudoNovel",
     "url": "https://kudonovel.com",
     "category": "writing",
-    "rank": 167,
+    "rank": 170,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-19",
@@ -4243,7 +4320,7 @@
     "name": "OpenAI Whisper",
     "url": "https://openai.com/index/whisper/",
     "category": "voice",
-    "rank": 168,
+    "rank": 171,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-02",
@@ -4266,7 +4343,7 @@
     "name": "Firecrawl",
     "url": "https://www.firecrawl.dev",
     "category": "agents",
-    "rank": 169,
+    "rank": 172,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-21",
@@ -4284,7 +4361,7 @@
     "freeTier": true,
     "priceFrom": "from $19/mo",
     "pricingUrl": "https://www.firecrawl.dev/pricing",
-    "priceChecked": "2026-11-14",
+    "priceChecked": "2026-11-22",
     "type": "infrastructure"
   },
   {
@@ -4292,7 +4369,7 @@
     "name": "Muse Spark Open",
     "url": "https://research.meta.ai/blog/muse-spark-open",
     "category": "coding",
-    "rank": 170,
+    "rank": 173,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-19",
@@ -4315,7 +4392,7 @@
     "name": "Reflection Beam",
     "url": "https://reflection.ai",
     "category": "coding",
-    "rank": 171,
+    "rank": 174,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-17",
@@ -4338,7 +4415,7 @@
     "name": "DeepSeek",
     "url": "https://www.deepseek.com",
     "category": "coding",
-    "rank": 172,
+    "rank": 175,
     "featured": false,
     "affiliate": false,
     "updated": "2026-11-20",
@@ -4363,7 +4440,7 @@
     "name": "CapCut",
     "url": "https://www.capcut.com",
     "category": "video",
-    "rank": 173,
+    "rank": 176,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-15",
@@ -4387,7 +4464,7 @@
     "name": "Hume AI",
     "url": "https://www.hume.ai",
     "category": "voice",
-    "rank": 174,
+    "rank": 177,
     "featured": false,
     "affiliate": false,
     "updated": "2026-10-15",
