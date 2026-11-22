@@ -67,7 +67,7 @@ test('ChatGPT Work and Images keep their own official pricing pages', () => {
 test('checked count is 90 of 174, and copy has no em or en dashes', () => {
   const checked = tools.filter((t) => t.priceChecked && t.pricingUrl).length
   assert.equal(checked, 95)
-  assert.equal(tools.length, 177)
+  assert.equal(tools.length, 178)
   const json = readFileSync(fileURLToPath(new URL('../src/tools.json', import.meta.url)), 'utf8')
   assert.equal(/[\u2013\u2014]/.test(json), false)
   for (const slug of ['perplexity', 'chatgpt', 'meta-ai', 'wix-studio-two']) {

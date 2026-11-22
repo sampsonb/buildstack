@@ -24,7 +24,7 @@ const ADDED = [
 
 test('2026-11-21 catalog adds exist with full fields, honest flags and consecutive ranks', () => {
   assert.ok(tools.every((t, i) => t.rank === i + 1))
-  assert.equal(tools.length, 177)
+  assert.equal(tools.length, 178)
   assert.ok(tools.every((t) => t.affiliate === false))
   assert.ok(!tools.some((t) => t.slug === 'gemini-code-assist' || t.slug === 'remove-bg' || t.slug === 'removebg'))
   for (const [slug, cat] of ADDED) {
@@ -92,8 +92,8 @@ test('2026-11-21 catalog add pages, sitemap and llms include the new tools, with
   const sitemap = await (await app.request('http://local/sitemap.xml')).text()
   const llms = await (await app.request('http://local/llms.txt')).text()
   const full = await (await app.request('http://local/llms-full.txt')).text()
-  assert.ok(llms.includes('Tools: 177'))
-  assert.ok(full.includes('Tools: 177'))
+  assert.ok(llms.includes('Tools: 178'))
+  assert.ok(full.includes('Tools: 178'))
   assert.ok(!sitemap.includes('\u2014') && !llms.includes('\u2014') && !full.includes('\u2014'))
   for (const slug of slugs) {
     assert.ok(sitemap.includes(`/tool/${slug}`), `sitemap ${slug}`)

@@ -12,7 +12,7 @@ async function get(path) {
 const LISTS = ['/pricing/free-plan', '/pricing/up-to-10-a-month', '/pricing/up-to-20-a-month']
 
 test('2026-11-22 video coverage adds: VEED, Captions, D-ID with checked prices and honest flags', () => {
-  assert.equal(tools.length, 177)
+  assert.equal(tools.length, 178)
   assert.ok(tools.every((t, i) => t.rank === i + 1))
   for (const [slug, url, free] of [['veed', 'https://www.veed.io/pricing', true], ['captions', 'https://www.captions.ai/pricing', true], ['d-id', 'https://www.d-id.com/pricing/studio/', false]]) {
     const t = by[slug]
@@ -35,6 +35,18 @@ test('2026-11-22 note corrections: Otter Business yearly and Kino Editor plan', 
   assert.equal(by.otter.priceChecked, '2026-11-22')
   assert.match(by.kino.pricingNote, /Editor is \$25 per editor a month, or \$20 a month billed yearly \(\$240 a year\)/)
   assert.equal(by.kino.priceChecked, '2026-11-22')
+})
+
+test('Muse from Meta: agents, free with usage limit, no unverified pricing link', () => {
+  const t = by['muse-from-meta']
+  assert.ok(t)
+  assert.equal(t.category, 'agents')
+  assert.equal(t.rank, by.genspark.rank + 1)
+  assert.equal(t.freeTier, true)
+  assert.equal(t.priceFrom, 'Free')
+  assert.equal(t.pricingUrl, undefined)
+  assert.equal(t.priceChecked, undefined)
+  assert.match(t.pricingNote, /Power plan \$20 a month .*Maximum plan \$100 a month/)
 })
 
 test('price lists: checked tools only, rank order, capped at 15, filters hold', async () => {
@@ -76,5 +88,5 @@ test('price lists are linked from sitemap, home, price log and llms.txt; re-chec
     assert.ok(llms.includes(`https://buildstack.tier11.com${p}`), p)
   }
   assert.ok(log.includes('Nov 22, 2026 we compared the prices in our notes with 55 official pricing pages'))
-  assert.ok(llms.includes('Tools: 177'))
+  assert.ok(llms.includes('Tools: 178'))
 })
