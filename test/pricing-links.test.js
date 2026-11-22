@@ -32,7 +32,8 @@ test('tool page links the official pricing page with the checked date', async ()
   const page = (await get(`/tool/${u.slug}`)).text
   assert.ok(page.includes(`href="${u.pricingUrl}"`))
   const none = tools.find((x) => !x.pricingUrl)
-  assert.equal((await get(`/tool/${none.slug}`)).text.includes('official pricing page'), false)
+  const nonePage = (await get(`/tool/${none.slug}`)).text
+  assert.equal(/<a href="[^"]+"[^>]*>Official pricing( page)?<\/a>/.test(nonePage), false)
 })
 
 test('search result price line carries the pricing link', async () => {

@@ -37,13 +37,13 @@ test('Wix Studio Two, Qwen Code, and Junie sit below generally available coding 
   assert.ok(withReason.every((t) => t.rank <= 30))
 })
 
-test('Junie is marked retiring, Codex has a free tier, and Perplexity has an official pricing link with no new checked date', () => {
+test('Junie is marked retiring, Codex has a free tier, and Perplexity has an official pricing link', () => {
   const by = Object.fromEntries(tools.map((t) => [t.slug, t]))
   assert.equal(by.junie.status, 'retiring')
   assert.match(by.junie.watchOut, /Dec 3, 2026/)
   assert.equal(by['openai-codex'].freeTier, true)
-  assert.equal(by.perplexity.pricingUrl, 'https://www.perplexity.ai/hub/pricing')
-  assert.equal('priceChecked' in by.perplexity, false)
+  assert.equal(by.perplexity.pricingUrl, 'https://www.perplexity.ai/pro')
+  assert.equal(by.perplexity.priceChecked, '2026-11-21')
   assert.equal(by.opencode.pricingUrl, 'https://opencode.ai/console/go')
 })
 

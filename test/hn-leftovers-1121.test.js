@@ -58,17 +58,21 @@ test('rank changelog logs the Gemini category move without changing its overall 
   assert.ok(text.includes('now #4'))
 })
 
-test('confirmed price checks today have official links; unconfirmed tools stay undated', () => {
+test('confirmed price checks today have official links and dates', () => {
   assert.equal(by.grok.pricingUrl, 'https://x.ai/pricing')
   assert.equal(by.grok.priceChecked, '2026-11-21')
   assert.equal(by['microsoft-copilot'].pricingUrl, 'https://www.microsoft.com/en-us/microsoft-365/buy/compare-all-microsoft-365-products')
   assert.equal(by['microsoft-copilot'].priceChecked, '2026-11-21')
   assert.equal(by['github-copilot'].priceChecked, '2026-11-21')
-  assert.equal('priceChecked' in by.perplexity, false)
-  assert.equal('priceChecked' in by['meta-ai'], false)
-  assert.equal('priceChecked' in by['wix-studio-two'], false)
+  assert.equal(by.perplexity.pricingUrl, 'https://www.perplexity.ai/pro')
+  assert.equal(by.perplexity.priceChecked, '2026-11-21')
+  assert.equal(by.chatgpt.priceChecked, '2026-11-21')
+  assert.equal(by['meta-ai'].pricingUrl, 'https://www.meta.com/meta-one-plans/')
+  assert.equal(by['meta-ai'].priceChecked, '2026-11-21')
+  assert.equal(by['wix-studio-two'].pricingUrl, 'https://www.wix.com/studio/plans')
+  assert.equal(by['wix-studio-two'].priceChecked, '2026-11-21')
   const checked = tools.filter((t) => t.priceChecked && t.pricingUrl).length
-  assert.equal(checked, 87)
+  assert.equal(checked, 90)
   assert.equal(tools.length, 174)
 })
 

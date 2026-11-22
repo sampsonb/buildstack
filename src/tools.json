@@ -96,11 +96,11 @@
       "drafting emails and other content",
       "summarizing PDFs and documents"
     ],
-    "pricingNote": "Free plan for everyone; Go, Plus, and Pro plans for individuals and Business (from 2 users) and Enterprise plans for companies, all priced per user a month on chatgpt.com/pricing",
+    "pricingNote": "Free plan for everyone. Go is $8 a month, Plus is $20 a month, and Pro starts at $100 a month (higher Pro tiers are not shown). Business Standard is $20 per seat a month billed yearly or $25 billed monthly. Business Premium is $100 per seat a month billed yearly or $125 billed monthly.",
     "strength": "OpenAI's flagship conversational AI for everyday Q&A, drafting content, and quick coding help.",
-    "watchOut": "Paid plan prices are not listed here; confirm current Go, Plus, Pro, Business, and Enterprise prices on the official pricing page.",
+    "watchOut": "Higher Pro tiers were not shown on the official pricing page.",
     "freeTier": true,
-    "priceFrom": "See pricing",
+    "priceFrom": "from $8/mo",
     "pricingUrl": "https://chatgpt.com/pricing/",
     "priceChecked": "2026-11-21"
   },
@@ -254,12 +254,13 @@
       "ongoing agent work with Teammates",
       "private local Computer tasks on a Mac"
     ],
-    "pricingNote": "Free Standard plan; paid Pro and Max plans on perplexity.ai, plus Education Pro at $10 per month for verified students and educators",
+    "pricingNote": "Free is $0. Pro is $17 a month billed yearly (the monthly price is not shown). Max is $200 a month or $2,000 a year; the pricing page also shows $167 a month billed yearly. Enterprise Pro is $40 per seat a month or $400 per seat a year. Enterprise Max is listed, but its price is not shown.",
     "strength": "AI search with cited answers, plus agent work with Teammates and private local Computer tasks on a Mac.",
-    "watchOut": "Regular Pro and Max prices are not listed here; Education Pro is $10 a month for verified students and educators.",
+    "watchOut": "Max is listed as $200 a month or $2,000 a year on the Max help article, and as $167 a month billed yearly on the pricing page. Enterprise Max pricing is not shown.",
     "freeTier": true,
-    "priceFrom": "See pricing",
-    "pricingUrl": "https://www.perplexity.ai/hub/pricing"
+    "priceFrom": "from $17/mo",
+    "pricingUrl": "https://www.perplexity.ai/pro",
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "elevenlabs",
@@ -489,11 +490,13 @@
       "quick image creation and photo edits",
       "answers that draw on Instagram, Facebook, and Threads"
     ],
-    "pricingNote": "Free for everyday use; the optional Meta One plans give more AI usage, with single-product plans from $2.99 a month, Core at $7.99, and Premium at $19.99",
+    "pricingNote": "Free for everyday use. Optional Meta One plans, labeled limited testing and billed through the App Store or Google Play, are Core at $7.99 a month and Premium at $19.99 a month.",
     "strength": "A free assistant built into the apps billions already use, with Thinking mode, image editing, and research reports.",
-    "watchOut": "Some features are limited to certain countries and languages, and heavier image and video creation needs a paid Meta One plan.",
+    "watchOut": "Meta One is labeled limited testing and is billed through the App Store or Google Play. Some features are limited to certain countries and languages.",
     "rank": 18,
-    "rankReason": "A free everyday assistant inside WhatsApp and Instagram, with quick image creation and photo edits."
+    "rankReason": "A free everyday assistant inside WhatsApp and Instagram, with quick image creation and photo edits.",
+    "pricingUrl": "https://www.meta.com/meta-one-plans/",
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "v0",
@@ -842,12 +845,13 @@
       "designers handing sites to developers",
       "visual editing plus real React code"
     ],
-    "pricingNote": "Parts of Wix Studio Two are still tagged beta or coming soon. Wix Studio site plans are listed on wix.com/studio/plans",
+    "pricingNote": "Parts of Wix Studio Two are still tagged beta or coming soon. Site plans billed yearly and paid upfront are Basic at $19 a month, Standard at $27 a month, Plus at $34 a month, and Elite at $159 a month. Enterprise is listed, but its price is not shown.",
     "strength": "AI-native visual site builder that exports real React code.",
-    "watchOut": "Parts are still in beta or coming soon; site plan prices are on the official Wix Studio plans page and were not confirmed on this check.",
+    "watchOut": "Parts are still in beta or coming soon. Site plan prices are billed yearly and paid upfront. Enterprise pricing is not shown.",
     "freeTier": false,
-    "priceFrom": "See pricing",
-    "pricingUrl": "https://www.wix.com/studio/plans"
+    "priceFrom": "from $19/mo",
+    "pricingUrl": "https://www.wix.com/studio/plans",
+    "priceChecked": "2026-11-21"
   },
   {
     "slug": "qwen-code",
