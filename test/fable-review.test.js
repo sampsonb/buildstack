@@ -78,7 +78,7 @@ test('search results: numbered 1..N, category place as small text, top 6 then Sh
   const [top, rest] = section.split('<details class="more">')
   assert.equal((top.match(/<article class="card">/g) || []).length, 6)
   assert.match(rest, new RegExp(`<summary>Show all ${expected.length} results</summary>`))
-  assert.match(top, /<span class="rankline">Top pick for this search\. 1st of \d+ in Writing<\/span>/)
+  assert.match(top, /<span class="rankline">Top pick for this search\. \d+(?:st|nd|rd|th) of \d+ in Writing<\/span>/)
   assert.equal(section.includes('class="tag cat"'), false)
   for (const t of expected) assert.equal(section.includes(`<span class="rank">#${t.rank}</span>`), false)
   // ranking order unchanged

@@ -316,7 +316,7 @@ const SECTION_DATES = {
   '/guides/how-celebrity-deepfakes-are-made': '2026-11-13',
   '/submit': '2026-11-21',
   '/money': '2026-11-21',
-  '/rank-changelog': '2026-11-21',
+  '/rank-changelog': '2026-11-22',
   '/vs': '2026-11-18',
   '/alternatives': '2026-11-19',
   '/price-changes': '2026-11-22',
@@ -1896,6 +1896,16 @@ app.get('/tool/:slug', (c) => {
 // Trust pages (2026-11-21): free submissions at /submit (the old /get-featured redirects there),
 // how BuildStack earns at /money, and a dated rank changelog. Counts and dates come from tools.json.
 const RANK_CHANGELOG = [
+  {
+    date: '2026-11-22',
+    title: 'Catalog add: 23 tools',
+    summary: 'Twenty-three tools were added, taking the catalog from 178 to 201 tools. Each new tool was placed at one rank, and every tool below it moved down one place for each new tool above it. Existing tools kept their order relative to each other, and none of the 23 entered the top 30. VEED, Captions, and D-ID were already added earlier today, so they were not added again.',
+    slugs: ['researchrabbit', 'litmaps', 'julius', 'paperpal', 'playground', 'getimg', 'picsart', 'invideo', 'pictory', 'hyperframes', 'remotion', 'warp', 'aider', 'coderabbit', 'krisp', 'tldv', 'notta', 'murf', 'speechify', 'jenni', 'copy-ai', 'writesonic', 'sudowrite'],
+    notes: [
+      'Prices were checked on official pricing pages today, only where the public page showed a figure.',
+      'Murf, ResearchRabbit, tl;dv, Aider, and Paperpal were listed without a checked price because no official starting price was shown on a public pricing page today.',
+    ],
+  },
   {
     date: '2026-11-21',
     title: 'Gemini moved to the Writing category',

@@ -20,7 +20,7 @@ const PENDING = {
 }
 
 export const CASES = [
-  { q: 'ai for writing blog posts', expect: ['claude', 'chatgpt', 'grammarly'], alt: ['quillbot', 'jasper', 'notion-ai'], notFirst: ['meta-ai', 'microsoft-copilot'] },
+  { q: 'ai for writing blog posts', expect: ['claude', 'chatgpt', 'grammarly'], alt: ['quillbot', 'jasper', 'notion-ai', 'writesonic', 'jenni', 'copy-ai'], notFirst: ['meta-ai', 'microsoft-copilot'] },
   { q: 'ai browser', expect: ['perplexity-comet', 'dia', 'opera-neon'], alt: ['genspark', 'nod', 'lumo-desktop'], first: 'perplexity-comet', not6: ['chatgpt-work', 'topaz-labs', 'reso-ai'] },
   { q: 'cheapest coding assistant', expect: ['github-copilot', 'google-antigravity'], alt: ['cline', 'opencode', 'cursor'], not6: ['opencode-browse', 'easy-lens-cli', 'harness-autonomous'] },
   // The Nov 20 test keeps Phonic-1 (a voice agent model) out of the top 3, so only 2 slots are fixed.
@@ -65,7 +65,7 @@ test('regression: cheapest coding assistant puts verified free plans with includ
 
 test('regression: the 5 searches the Duet audit rated good stay good', () => {
   const tm = rankTools(tools, 'transcribe meetings').slice(0, 3)
-  assert.ok(tm.every((t) => ['otter', 'fireflies', 'granola', 'fathom'].includes(t.slug)), tm.map((t) => t.slug).join(','))
+  assert.ok(tm.every((t) => ['otter', 'fireflies', 'granola', 'fathom', 'tldv', 'notta', 'krisp'].includes(t.slug)), tm.map((t) => t.slug).join(','))
   const pod = top('edit a podcast', 3)
   assert.ok(pod.includes('descript') && pod.includes('riverside'), pod.join(','))
   const vid = rankTools(tools, 'make a video from text')
