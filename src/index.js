@@ -6,6 +6,26 @@ import { INDEXNOW_KEY } from './indexnow.js'
 const app = new Hono()
 const SITE = 'https://buildstack.tier11.com'
 const NAME = 'BuildStack'
+const ORG_ID = `${SITE}/#organization`
+const ORGANIZATION = {
+  '@type': 'Organization',
+  '@id': ORG_ID,
+  name: NAME,
+  url: `${SITE}/`,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${SITE}/og.png`,
+    width: 1200,
+    height: 630,
+  },
+  description: 'Free ranked directory of AI tools. Type a use case, get best-fit tools. Rank and search position are never sold.',
+  email: 'buildstack@tier11.com',
+  sameAs: [
+    'https://x.com/itsbuildstack',
+    'https://github.com/sampsonb/buildstack',
+    'https://itsbuildstack.substack.com',
+  ],
+}
 const UPDATED = toolsData.reduce((latest, t) => (t.updated && t.updated > latest ? t.updated : latest), '2026-11-13')
 const LICENSE_NAME = 'CC BY 4.0'
 const LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/'
@@ -1455,15 +1475,7 @@ app.get('/', (c) => {
           target: { '@type': 'EntryPoint', urlTemplate: `${SITE}/?q={search_term_string}` },
           'query-input': 'required name=search_term_string',
         },
-      }, {
-        '@type': 'Organization',
-        '@id': `${SITE}/#organization`,
-        name: NAME,
-        url: `${SITE}/`,
-        logo: `${SITE}/favicon.png`,
-        email: 'buildstack@tier11.com',
-        sameAs: ['https://itsbuildstack.substack.com'],
-      }, {
+      }, ORGANIZATION, {
         '@type': 'FAQPage',
         '@id': `${SITE}/#faq`,
         dateModified: PD,
@@ -2113,7 +2125,8 @@ app.get('/methodology', (c) => {
         dateModified: PD,
         author: { '@type': 'Person', '@id': EDITOR_ID, name: 'Sampson Brueher', jobTitle: 'editor', url: `${SITE}/about` },
         isPartOf: { '@type': 'WebSite', name: NAME, url: SITE },
-      }, breadcrumbs([['Home', '/'], ['How we rank', '/methodology']])],
+        publisher: { '@id': ORG_ID },
+      }, ORGANIZATION, breadcrumbs([['Home', '/'], ['How we rank', '/methodology']])],
     },
   }))
 })
@@ -5287,8 +5300,8 @@ app.get('/about', (c) => {
         url: `${SITE}/about`,
         description,
         mainEntity: { '@id': EDITOR_ID },
-        publisher: { '@type': 'Organization', name: NAME, url: SITE },
-      }, EDITOR, breadcrumbs([['Home', '/'], ['About', '/about']])],
+        publisher: { '@id': ORG_ID },
+      }, ORGANIZATION, EDITOR, breadcrumbs([['Home', '/'], ['About', '/about']])],
     },
   }))
 })
