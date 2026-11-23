@@ -69,6 +69,8 @@ const JOB_HINTS = [
   { any: ['chatbot', 'chatbots'], add: ['chatbot'], category: 'agents' },
   { any: ['browser'], add: ['browser'], category: 'agents' },
   { any: ['translate', 'translation', 'translator'], add: ['translate'], category: 'writing' },
+  { any: ['news'], add: [], category: 'research' },
+  { all: ['happening', 'today'], add: ['news'], category: 'research' },
   { any: ['website', 'websites', 'webpage', 'webpages'], add: ['website'] },
   { all: ['video', 'text'], add: ['text-to-video'] },
   // Building an app is app-builder work, which BuildStack files under coding. R4 would otherwise

@@ -302,7 +302,7 @@ const SECTION_DATES = {
   '/methodology': '2026-11-21',
   '/alternatives/cursor': '2026-10-30',
   '/best/ai-coding-agent-for-beginners': '2026-11-21',
-  '/best/ai-research-assistant': '2026-11-21',
+  '/best/ai-research-assistant': '2026-11-23',
   '/best/free-ai-tools': '2026-11-21',
   '/best/ai-voice-generator': '2026-11-21',
   '/best/ai-coding-assistant': '2026-11-21',
@@ -316,7 +316,7 @@ const SECTION_DATES = {
   '/guides/how-celebrity-deepfakes-are-made': '2026-11-13',
   '/submit': '2026-11-21',
   '/money': '2026-11-21',
-  '/rank-changelog': '2026-11-22',
+  '/rank-changelog': '2026-11-23',
   '/vs': '2026-11-23',
   '/alternatives': '2026-11-19',
   '/price-changes': '2026-11-22',
@@ -1897,6 +1897,17 @@ app.get('/tool/:slug', (c) => {
 // how BuildStack earns at /money, and a dated rank changelog. Counts and dates come from tools.json.
 const RANK_CHANGELOG = [
   {
+    date: '2026-11-23',
+    title: 'Grok moved to the Research category',
+    summary: 'Grok was filed under Writing, which hid its live news and real-time X strengths. It is now in Research, next to Perplexity. Its overall rank is unchanged at #15.',
+    slugs: ['grok'],
+    notes: [
+      'Grok stays #15 overall. It is now 2nd in Research, after Perplexity (#9) and ahead of the paper-focused tools.',
+      'The job: Grok is the better fit for live news and what is happening on X right now. Perplexity remains the pick for web research with citations, so it stays ahead.',
+      'Perplexity also gained a best-for tag for current news with citations, so news searches still surface it. Its rank is unchanged.',
+    ],
+  },
+  {
     date: '2026-11-22',
     title: 'Catalog add: 23 tools',
     summary: 'Twenty-three tools were added, taking the catalog from 178 to 201 tools. Each new tool was placed at one rank, and every tool below it moved down one place for each new tool above it. Existing tools kept their order relative to each other, and none of the 23 entered the top 30. VEED, Captions, and D-ID were already added earlier today, so they were not added again.',
@@ -3235,6 +3246,7 @@ app.get(BEGINNER_PATH, (c) => {
 const RESEARCH_PICKS = [
   { slug: 'gemini', group: 'web', sources: 'The web through Deep Research, plus your Google apps', best: 'Long research reports from hundreds of web sources' },
   { slug: 'perplexity', group: 'web', sources: 'The live web, with a citation on each answer', best: 'Quick answers you can check against cited sources' },
+  { slug: 'grok', group: 'web', sources: 'The live web and X', best: 'Live news and what is happening right now' },
   { slug: 'notebooklm', group: 'docs', sources: 'Only the documents and sources you add', best: 'Studying and questioning your own documents' },
   { slug: 'elicit', group: 'papers', sources: 'More than 138 million academic papers', best: 'Literature reviews and pulling data out of studies' },
   { slug: 'consensus', group: 'papers', sources: 'Peer-reviewed research papers', best: 'Seeing what studies say on a yes or no question' },
@@ -3248,6 +3260,7 @@ const RESEARCH_PICKS = [
 ]
 const RESEARCH_TASKS = [
   ['Answer a question from the web, with sources', 'perplexity'],
+  ['Follow live news and what is happening on X right now', 'grok'],
   ['Write a long report on a topic from many web sources', 'gemini'],
   ['Ask questions about my own notes, PDFs, or slides', 'notebooklm'],
   ['Run a literature review or extract data from studies', 'elicit'],

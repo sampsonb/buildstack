@@ -152,7 +152,9 @@ test('a short word does not steal the category from the job', () => {
   assert.ok(lead('ai writing tool').every((tool) => tool.category === 'writing'))
   assert.ok(lead('best ai for coding').every((tool) => tool.category === 'coding'))
   assert.ok(lead('ai image generator').every((tool) => tool.category === 'images'))
-  assert.deepEqual(names('news'), [])
+  assert.ok(lead('news').every((tool) => tool.category === 'research'))
+  assert.equal(lead('news')[0].slug, 'perplexity')
+  assert.ok(names('news').includes('Grok'))
   assert.equal(rankTools(tools, 'debug python')[0].category, 'coding')
 })
 

@@ -72,7 +72,7 @@ test('research guide covers Semantic Scholar, Scite and Undermind with honest pr
   assert.ok(html.includes('How do I check whether a paper still holds up?'))
   assert.ok(html.includes('What is the best free tool to find research papers?'))
   assert.ok(!html.includes('Pricing notes were checked on each official pricing page on'))
-  assert.ok(html.includes('12 research picks'))
+  assert.ok(html.includes('13 research picks'))
   assert.ok(!html.includes('\u2014'))
   const tool = await (await app.request('http://local/tool/scite')).text()
   assert.ok(tool.includes('href="/best/ai-research-assistant"'))

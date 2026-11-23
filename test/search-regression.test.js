@@ -78,6 +78,21 @@ test('regression: the 5 searches the Duet audit rated good stay good', () => {
   assert.ok(!logo.includes('make'), logo.join(','))
 })
 
+test('regression: live news leads with Grok, and Perplexity also shows', () => {
+  for (const q of ['live news', 'latest news', 'what\'s happening today', 'real-time news']) {
+    const rows = rankTools(tools, q)
+    const top3 = rows.slice(0, 3).map((t) => t.slug)
+    const shown = topShown(rows, 8).map((t) => t.slug)
+    const slugs = rows.map((t) => t.slug)
+    assert.ok(top3.includes('grok'), `${q} top: ${top3.join(',')}`)
+    if (q.includes('news')) {
+      assert.ok(shown.includes('perplexity'), `${q} shown: ${shown.join(',')}`)
+    } else {
+      assert.ok(slugs.includes('perplexity'), `${q} results: ${slugs.slice(0, 8).join(',')}`)
+    }
+  }
+})
+
 test('regression: the data fixes keep incidental words out of listings', () => {
   const t = (s) => tools.find((x) => x.slug === s)
   assert.ok(!/phone/i.test(t('nod').description) && /cannot make phone calls/.test(t('nod').watchOut))
