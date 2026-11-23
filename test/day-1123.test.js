@@ -23,6 +23,16 @@ test('voice adds: Read AI, Rev, Cartesia are checked, honest and in voice', () =
   assert.equal(by.cartesia.rank, by.deepgram.rank + 1)
 })
 
+test('Netlify: coding, after Junie (still rolling out), free plan, checked prices', () => {
+  const t = by.netlify
+  assert.ok(t)
+  assert.equal(t.category, 'coding')
+  assert.equal(t.rank, by.junie.rank + 1)
+  assert.equal(t.freeTier, true)
+  assert.equal(t.pricingUrl, 'https://www.netlify.com/pricing/')
+  assert.match(t.pricingNote, /Personal \$9 a month .*Pro \$20 a month/)
+})
+
 test('price corrections: Topaz Studio yearly and OpenBot for Business', () => {
   assert.match(by['topaz-labs'].pricingNote, /\$69 a month or \$499 a year \(\$299 for the first year/)
   assert.ok(!by['topaz-labs'].pricingNote.includes('$399'))
