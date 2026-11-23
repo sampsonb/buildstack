@@ -4068,7 +4068,7 @@
   {
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-19",
+    "updated": "2026-11-23",
     "added": "2026-11-19",
     "slug": "granola",
     "name": "Granola",
@@ -4076,7 +4076,7 @@
     "category": "voice",
     "freeTier": true,
     "priceFrom": "Free",
-    "priceChecked": "2026-11-22",
+    "priceChecked": "2026-11-23",
     "pricingUrl": "https://www.granola.ai/pricing",
     "tagline": "AI meeting notes that capture device audio with no bot joining the call",
     "description": "Granola takes AI meeting notes by capturing audio on your own device, so no bot joins the call. It works with any meeting app and on desktop, iOS, Android, and Apple Watch, with speaker tagging, note templates, chat across meetings, shared folders, and voice typing in any app. Paid plans add unlimited history, pre-meeting briefs, follow-up emails, integrations such as Notion, HubSpot, and Zapier, MCP access for tools like Claude and ChatGPT, and API access.",
@@ -4085,9 +4085,9 @@
       "in-person and video meetings on your own device",
       "searching and chatting across past meetings"
     ],
-    "pricingNote": "Basic is free with unlimited meetings but only the last 30 days of history in the app; Business is $14 per user a month; Enterprise is $35 per user a month; billing is per active workspace member with no seat minimum",
+    "pricingNote": "Basic is free with unlimited meetings; the app shows only the last 30 days of notes, and older notes are stored, not deleted. Business is $14 per user a month, billed monthly. Enterprise starts from $35 per user a month and can be billed monthly or annually. Billing is per active workspace member with no seat minimum. No plan has a daily transcription limit.",
     "strength": "Bot-free meeting notes from your own device audio, with a free plan, chat across meetings, and no daily transcription limit.",
-    "watchOut": "The free plan only shows the last 30 days of notes, and integrations beyond Slack, advanced models, and API access need Business at $14 a month.",
+    "watchOut": "The free plan only shows the last 30 days of notes in the app (older notes are stored, not deleted), and integrations beyond Slack, advanced models, and API access need Business at $14 a month.",
     "rank": 161
   },
   {

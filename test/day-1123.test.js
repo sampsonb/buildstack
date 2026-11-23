@@ -64,6 +64,27 @@ test('giant vs giant pages have no price table', async () => {
   assert.ok(!html.includes('id="prices"'))
 })
 
+test('Granola note: older notes stored, Business billed monthly, Enterprise from $35', async () => {
+  const t = by.granola
+  assert.equal(t.priceChecked, '2026-11-23')
+  assert.equal(t.updated, '2026-11-23')
+  assert.equal(t.priceFrom, 'Free')
+  assert.equal(t.freeTier, true)
+  assert.equal(t.pricingUrl, 'https://www.granola.ai/pricing')
+  assert.match(t.pricingNote, /older notes are stored, not deleted/)
+  assert.match(t.pricingNote, /Business is \$14 per user a month, billed monthly/)
+  assert.match(t.pricingNote, /Enterprise starts from \$35 per user a month/)
+  assert.match(t.pricingNote, /billed monthly or annually/)
+  assert.match(t.pricingNote, /No plan has a daily transcription limit/)
+  assert.equal(/[\u2013\u2014]/.test(`${t.pricingNote} ${t.watchOut}`), false)
+  const { status, html } = await get('/tool/granola')
+  assert.equal(status, 200)
+  assert.ok(html.includes('older notes are stored, not deleted'))
+  assert.ok(html.includes('Enterprise starts from $35 per user a month'))
+  assert.ok(html.includes('billed monthly'))
+  assert.equal(html.includes('\u2014'), false)
+})
+
 test('price re-check of Nov 23 is reflected on the log', async () => {
   const { html } = await get('/price-changes')
   assert.ok(html.includes('Nov 23, 2026'))
