@@ -317,7 +317,7 @@ const SECTION_DATES = {
   '/submit': '2026-11-21',
   '/money': '2026-11-21',
   '/rank-changelog': '2026-11-22',
-  '/vs': '2026-11-18',
+  '/vs': '2026-11-23',
   '/alternatives': '2026-11-19',
   '/price-changes': '2026-11-22',
   '/pricing': '2026-11-22',
@@ -337,7 +337,7 @@ const PRICE_CHANGES = [
     source: 'https://api-docs.deepseek.com/quick_start/pricing/',
     archived: 'https://web.archive.org/web/20261116200941/https://api-docs.deepseek.com/quick_start/pricing/' },
 ]
-const PRICE_RECHECK = { date: '2026-11-22', pages: 55 }
+const PRICE_RECHECK = { date: '2026-11-23', pages: 81 }
 const PRICE_PATH = '/price-changes'
 
 // Price-filtered lists (traffic plan item 3, 2026-11-22). Generated from tools.json on every request:
@@ -2292,6 +2292,31 @@ function vsPairs() {
     .map((p) => ({ ...p, path: `/vs/${p.a.slug}-vs-${p.b.slug}` }))
 }
 
+// Dated price table at the top of a vs page (traffic plan item 4, 2026-11-23). Shown when at least one
+// of the two tools is not a giant (GIANT_SLUGS). Every cell comes from tools.json: free plan, starting
+// price, the official pricing link and the day its listed prices last matched that page. The page title
+// carries the check date only when both tools are checked, and then it is the older of the two dates.
+function vsHasPriceTable(a, b) {
+  return !(isGiant(a) && isGiant(b))
+}
+function vsCheckedDate(a, b) {
+  if (!(a.priceChecked && a.pricingUrl && b.priceChecked && b.pricingUrl)) return ''
+  return a.priceChecked < b.priceChecked ? a.priceChecked : b.priceChecked
+}
+function vsPriceTable(a, b) {
+  const free = (t) => typeof t.freeTier === 'boolean' ? (t.freeTier ? 'Yes' : 'None listed') : 'Not confirmed'
+  const checked = (t) => t.pricingUrl && t.priceChecked ? esc(fmtDate(t.priceChecked)) : 'Not yet checked'
+  const src = (t) => t.pricingUrl ? pricingLink(t, `${t.name} pricing`) : 'No official pricing page linked'
+  const tr = (t) => `<tr><th scope="row"><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a></th><td>${free(t)}</td><td>${esc(t.priceFrom || 'See pricing')}</td><td>${src(t)}</td><td>${checked(t)}</td></tr>`
+  return `<div class="panel prose" id="prices" style="overflow-x:auto">
+    <table class="plans">
+      <thead><tr><th scope="col">Tool</th><th scope="col">Free plan</th><th scope="col">Starts at</th><th scope="col">Official source</th><th scope="col">Price checked</th></tr></thead>
+      <tbody>${tr(a)}${tr(b)}</tbody>
+    </table>
+    <p class="muted" style="font-size:.88rem;margin:.5rem 0 0">Prices as listed on each official pricing page on the date shown. Changes we find go in the <a href="${PRICE_PATH}">AI price changes log</a>.</p>
+    </div>`
+}
+
 function vsPairsFor(slug) {
   return vsPairs().filter((p) => p.a.slug === slug || p.b.slug === slug)
 }
@@ -2675,8 +2700,14 @@ app.get('/vs/:pair', (c) => {
   const link = (t) => `<a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>`
   const sameCat = a.category === b.category
   const faq = vsFaq(a, b)
-  const title = `${a.name} vs ${b.name} (2026): Ranks, Pricing, Which to Pick | ${NAME}`
-  const description = `${a.name} vs ${b.name}: ${hi.name} ranks #${hi.rank} and ${lo.name} #${lo.rank} on ${NAME}. Compare free plans, starting prices, strengths, and downsides. Updated ${fmtDate(PD)}.`
+  const priceTable = vsHasPriceTable(a, b)
+  const cd = priceTable ? vsCheckedDate(a, b) : ''
+  const title = cd
+    ? `${a.name} vs ${b.name} Pricing, Checked ${fmtDate(cd)}: Free Plans, Starting Prices | ${NAME}`
+    : `${a.name} vs ${b.name} (2026): Ranks, Pricing, Which to Pick | ${NAME}`
+  const description = cd
+    ? `${a.name} vs ${b.name} pricing, checked against official pages on ${fmtDate(cd)}: ${a.name} ${a.priceFrom || 'see pricing'}, ${b.name} ${b.priceFrom || 'see pricing'}. ${hi.name} ranks #${hi.rank} and ${lo.name} #${lo.rank} on ${NAME}.`
+    : `${a.name} vs ${b.name}: ${hi.name} ranks #${hi.rank} and ${lo.name} #${lo.rank} on ${NAME}. Compare free plans, starting prices, strengths, and downsides. Updated ${fmtDate(PD)}.`
   const row = (label, f) => `<tr><th scope="row">${label}</th><td>${f(a)}</td><td>${f(b)}</td></tr>`
   const body = `
   <section class="hero">
@@ -2684,7 +2715,11 @@ app.get('/vs/:pair', (c) => {
     <h1>${esc(a.name)} vs ${esc(b.name)}</h1>
     <p><strong>Short answer:</strong> ${link(hi)} ranks #${hi.rank} overall on ${NAME} and ${link(lo)} ranks #${lo.rank}${sameCat ? ` (#${catRankOf(hi)} and #${catRankOf(lo)} in ${esc(lab(a))})` : `, in different categories (${esc(lab(hi))} and ${esc(lab(lo))})`}. Pick ${esc(a.name)} for ${esc((a.bestFor || [])[0] || lab(a).toLowerCase())}; pick ${esc(b.name)} for ${esc((b.bestFor || [])[0] || lab(b).toLowerCase())}.</p>
     <p class="muted">Last updated: ${fmtDate(PD)} · <a href="/methodology">How we rank</a> · Edited by <a href="/about">Sampson Brueher</a></p>
-  </section>
+  </section>${priceTable ? `
+  <section class="section">
+    <h2>${esc(a.name)} vs ${esc(b.name)} pricing${cd ? `, checked ${esc(fmtDate(cd))}` : ''}</h2>
+    ${vsPriceTable(a, b)}
+  </section>` : ''}
   <section class="section">
     <h2>${esc(a.name)} vs ${esc(b.name)} at a glance</h2>
     <div class="panel prose" style="overflow-x:auto">

@@ -60,9 +60,9 @@ test('rank changelog logs the Gemini category move without changing its overall 
 
 test('confirmed price checks today have official links and dates', () => {
   assert.equal(by.grok.pricingUrl, 'https://x.ai/pricing')
-  assert.equal(by.grok.priceChecked, '2026-11-21')
+  assert.equal(by.grok.priceChecked, '2026-11-23')
   assert.equal(by['microsoft-copilot'].pricingUrl, 'https://www.microsoft.com/en-us/microsoft-365/buy/compare-all-microsoft-365-products')
-  assert.equal(by['microsoft-copilot'].priceChecked, '2026-11-21')
+  assert.equal(by['microsoft-copilot'].priceChecked, '2026-11-23')
   assert.equal(by['github-copilot'].priceChecked, '2026-11-21')
   assert.equal(by.perplexity.pricingUrl, 'https://www.perplexity.ai/pro')
   assert.equal(by.perplexity.priceChecked, '2026-11-21')
@@ -72,8 +72,8 @@ test('confirmed price checks today have official links and dates', () => {
   assert.equal(by['wix-studio-two'].pricingUrl, 'https://www.wix.com/studio/plans')
   assert.equal(by['wix-studio-two'].priceChecked, '2026-11-21')
   const checked = tools.filter((t) => t.priceChecked && t.pricingUrl).length
-  assert.equal(checked, 113)
-  assert.equal(tools.length, 201)
+  assert.equal(checked, 118)
+  assert.equal(tools.length, 204)
 })
 
 test('index.js and tools.json have no em or en dashes', () => {

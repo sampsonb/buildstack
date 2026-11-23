@@ -48,7 +48,7 @@ test('R1 fills to 3 from the best 1-term matches, and does not fill a descriptio
 
 test('real catalog: note taker leads with meeting notetakers, not Scholarcy', () => {
   const t3 = shown('note taker').slice(0, 3)
-  const ok = new Set(['granola', 'otter', 'fathom', 'fireflies', 'wispr-flow'])
+  const ok = new Set(['granola', 'otter', 'fathom', 'fireflies', 'wispr-flow', 'read-ai'])
   assert.ok(t3.every((s) => ok.has(s)), t3.join(', '))
   assert.ok(t3.length === 3, t3.join(', '))
   assert.notEqual(shown('note taker')[0], 'scholarcy')
