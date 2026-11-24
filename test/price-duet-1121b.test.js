@@ -16,7 +16,7 @@ test('src and data tools.json stay identical', () => {
 test('Perplexity, ChatGPT, Meta AI, and Wix Studio have confirmed Nov 21 prices', () => {
   const p = by.perplexity
   assert.equal(p.pricingUrl, 'https://www.perplexity.ai/pro')
-  assert.equal(p.priceChecked, '2026-11-21')
+  assert.ok(p.priceChecked >= '2026-11-21')
   assert.equal(p.priceFrom, 'from $17/mo')
   assert.match(p.pricingNote, /Free is \$0/)
   assert.match(p.pricingNote, /Pro is \$17 a month billed yearly/)
@@ -28,7 +28,7 @@ test('Perplexity, ChatGPT, Meta AI, and Wix Studio have confirmed Nov 21 prices'
 
   const c = by.chatgpt
   assert.equal(c.pricingUrl, 'https://chatgpt.com/pricing/')
-  assert.equal(c.priceChecked, '2026-11-21')
+  assert.ok(c.priceChecked >= '2026-11-21')
   assert.equal(c.priceFrom, 'from $8/mo')
   assert.match(c.pricingNote, /Go is \$8 a month/)
   assert.match(c.pricingNote, /Plus is \$20 a month/)
@@ -39,7 +39,7 @@ test('Perplexity, ChatGPT, Meta AI, and Wix Studio have confirmed Nov 21 prices'
   const m = by['meta-ai']
   assert.equal(m.priceFrom, 'Free')
   assert.equal(m.pricingUrl, 'https://www.meta.com/meta-one-plans/')
-  assert.equal(m.priceChecked, '2026-11-21')
+  assert.ok(m.priceChecked >= '2026-11-21')
   assert.match(m.pricingNote, /Core at \$7\.99 a month/)
   assert.match(m.pricingNote, /Premium at \$19\.99 a month/)
   assert.match(m.pricingNote, /limited testing/)
@@ -47,7 +47,7 @@ test('Perplexity, ChatGPT, Meta AI, and Wix Studio have confirmed Nov 21 prices'
 
   const w = by['wix-studio-two']
   assert.equal(w.pricingUrl, 'https://www.wix.com/studio/plans')
-  assert.equal(w.priceChecked, '2026-11-21')
+  assert.ok(w.priceChecked >= '2026-11-21')
   assert.equal(w.priceFrom, 'from $19/mo')
   assert.match(w.pricingNote, /Basic at \$19 a month/)
   assert.match(w.pricingNote, /Standard at \$27 a month/)
@@ -66,8 +66,8 @@ test('ChatGPT Work and Images keep their own official pricing pages', () => {
 
 test('checked count is 90 of 174, and copy has no em or en dashes', () => {
   const checked = tools.filter((t) => t.priceChecked && t.pricingUrl).length
-  assert.equal(checked, 119)
-  assert.equal(tools.length, 205)
+  assert.equal(checked, 123)
+  assert.equal(tools.length, 209)
   const json = readFileSync(fileURLToPath(new URL('../src/tools.json', import.meta.url)), 'utf8')
   assert.equal(/[\u2013\u2014]/.test(json), false)
   for (const slug of ['perplexity', 'chatgpt', 'meta-ai', 'wix-studio-two']) {

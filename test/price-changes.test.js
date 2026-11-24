@@ -20,7 +20,7 @@ test('price changes page lists dated entries with old, new and official source',
   const ld = [...text.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]))
   const art = ld.flatMap((x) => x['@graph'] || [x]).find((x) => x['@type'] === 'Article')
   assert.equal(art.author.name, 'Sampson Brueher')
-  assert.equal(art.dateModified, '2026-11-23')
+  assert.equal(art.dateModified, '2026-11-24')
 })
 
 test('every logged change points at a listed tool and an official https source, with no future dates', () => {
@@ -35,7 +35,7 @@ test('every logged change points at a listed tool and an official https source, 
 
 test('price changes page is in the sitemap with its own date, llms files, home, methodology and tool page', async () => {
   const sm = (await get('/sitemap.xml')).text
-  assert.match(sm, /<loc>https:\/\/buildstack\.tier11\.com\/price-changes<\/loc><lastmod>2026-11-23<\/lastmod>/)
+  assert.match(sm, /<loc>https:\/\/buildstack\.tier11\.com\/price-changes<\/loc><lastmod>2026-11-24<\/lastmod>/)
   assert.ok((await get('/llms.txt')).text.includes('https://buildstack.tier11.com/price-changes'))
   assert.ok((await get('/llms-full.txt')).text.includes('2026-11-18, DeepSeek:'))
   assert.ok((await get('/')).text.includes('href="/price-changes"'))

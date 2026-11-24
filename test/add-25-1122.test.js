@@ -39,10 +39,10 @@ const ADDED = [
 ]
 
 test('2026-11-22 catalog add: 23 tools, 201 total, unique contiguous ranks, src matches data', () => {
-  assert.equal(tools.length, 205)
+  assert.equal(tools.length, 209)
   assert.equal(srcJson, dataJson)
   assert.ok(tools.every((t, i) => t.rank === i + 1))
-  assert.equal(new Set(tools.map((t) => t.slug)).size, 205)
+  assert.equal(new Set(tools.map((t) => t.slug)).size, 209)
   assert.equal(/[\u2013\u2014]/.test(srcJson), false)
   assert.equal(tools.filter((t) => t.rankReason).every((t) => t.rank <= 30), true)
   assert.equal(tools[29].rank, 30)
@@ -68,13 +68,13 @@ test('2026-11-22 added tools have official urls, honest flags, and checked price
     const copy = `${t.tagline} ${t.description} ${t.pricingNote} ${t.strength} ${t.watchOut} ${t.bestFor.join(' ')}`
     assert.equal(/[\u2013\u2014]/.test(copy), false, slug)
     if (checked) {
-      assert.equal(t.priceChecked, '2026-11-22', slug)
+      assert.ok(t.priceChecked >= '2026-11-22', slug)
       assert.ok(t.pricingUrl && t.pricingUrl.startsWith('https://'), slug)
     } else {
       assert.equal(t.priceChecked, undefined, slug)
     }
   }
-  assert.equal(tools.filter((t) => t.priceChecked && t.pricingUrl).length, 119)
+  assert.equal(tools.filter((t) => t.priceChecked && t.pricingUrl).length, 123)
 })
 
 test('2026-11-22 added tools sit in the intended bands, with neighbors in order', () => {
@@ -106,7 +106,7 @@ test('2026-11-22 added tools sit in the intended bands, with neighbors in order'
   assert.equal(by.murf.rank, by.rev.rank + 1)
   assert.equal(by.speechify.rank, by.murf.rank + 1)
   assert.equal(by['deepl-voice'].rank, by.speechify.rank + 1)
-  assert.equal(by.jenni.rank, by['notion-ai'].rank + 1)
+  assert.equal(by.jenni.rank, by.wordtune.rank + 1)
   assert.equal(by['copy-ai'].rank, by.jenni.rank + 1)
   assert.equal(by.jasper.rank, by['copy-ai'].rank + 1)
   assert.equal(by.writesonic.rank, by.jasper.rank + 1)
@@ -135,10 +135,10 @@ test('rank changelog leads with the 23-tool add, and new tool pages and counts w
     assert.ok(log.html.includes(`<a href="/tool/${slug}">${t.name}</a>, now #${t.rank} overall`), slug)
   }
   const llms = (await get('/llms.txt')).html
-  assert.ok(llms.includes('Tools: 205'))
+  assert.ok(llms.includes('Tools: 209'))
   const home = await get('/')
   assert.equal(home.status, 200)
-  assert.ok(home.html.includes('205') || home.html.replace(/<[^>]+>/g, ' ').includes('205'))
+  assert.ok(home.html.includes('209') || home.html.replace(/<[^>]+>/g, ' ').includes('209'))
   for (const slug of ['invideo', 'hyperframes', 'remotion', 'warp', 'jenni', 'researchrabbit']) {
     const page = await get(`/tool/${slug}`)
     assert.equal(page.status, 200, slug)

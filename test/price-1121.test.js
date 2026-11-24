@@ -87,7 +87,7 @@ test('non-giant tool pages use a pricing-intent title and a two-line answer; gia
     const { html } = await get(`/tool/${t.slug}`)
     const title = decode(html.match(/<title>([^<]+)<\/title>/)[1])
     const checked = t.priceChecked ? `checked ${fmt(t.priceChecked)}` : 'not yet checked'
-    assert.equal(title, `${t.name} pricing: free plan, starting price, ${checked} | BuildStack`, t.slug)
+    assert.match(title, new RegExp(`^${t.name.replace(/[.()$+]/g, '\\$&')} pricing: (free plan|no free plan), (starting price|${String(t.priceFrom).replace(/[.()$+/]/g, '\\$&')}), ${checked} \\| BuildStack$`), t.slug)
     assert.match(html, new RegExp(`<h1>${t.name.replace(/[()]/g, '\\$&')}</h1>`))
     assert.ok(html.includes('class="price-lead"'), t.slug)
     assert.ok(html.includes('Free plan:'), t.slug)

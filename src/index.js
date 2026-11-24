@@ -337,7 +337,7 @@ const PRICE_CHANGES = [
     source: 'https://api-docs.deepseek.com/quick_start/pricing/',
     archived: 'https://web.archive.org/web/20261116200941/https://api-docs.deepseek.com/quick_start/pricing/' },
 ]
-const PRICE_RECHECK = { date: '2026-11-23', pages: 81 }
+const PRICE_RECHECK = { date: '2026-11-24', pages: 104 }
 const PRICE_PATH = '/price-changes'
 
 // Price-filtered lists (traffic plan item 3, 2026-11-22). Generated from tools.json on every request:
@@ -384,10 +384,20 @@ const GIANT_SLUGS = new Set(['chatgpt', 'claude', 'gemini', 'github-copilot', 'm
 function isGiant(t) {
   return GIANT_SLUGS.has(t.slug)
 }
+// Titles name the real free plan answer and starting price only when the price was matched to the
+// official pricing page (priceChecked plus pricingUrl); otherwise they keep the generic wording.
+function titlePrice(t) {
+  if (!t.priceChecked || !t.pricingUrl) return null
+  const from = String(t.priceFrom || '').trim()
+  if (!/^(from|API from|API about|Credits from) (\$|\d)/.test(from)) return null
+  const plan = typeof t.freePlan === 'boolean' ? t.freePlan : typeof t.freeTier === 'boolean' ? t.freeTier : null
+  if (plan === null) return null
+  return `${plan ? 'free plan' : 'no free plan'}, ${from}`
+}
 function toolPageTitle(t) {
   if (isGiant(t)) return `${t.name}: ${t.tagline} | ${NAME}`
   const checked = t.priceChecked ? `checked ${fmtDate(t.priceChecked)}` : 'not yet checked'
-  return `${t.name} pricing: free plan, starting price, ${checked} | ${NAME}`
+  return `${t.name} pricing: ${titlePrice(t) || 'free plan, starting price'}, ${checked} | ${NAME}`
 }
 function priceLead(t) {
   if (isGiant(t)) return ''
