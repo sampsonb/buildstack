@@ -39,10 +39,10 @@ const ADDED = [
 ]
 
 test('2026-11-22 catalog add: 23 tools, 201 total, unique contiguous ranks, src matches data', () => {
-  assert.equal(tools.length, 209)
+  assert.equal(tools.length, 213)
   assert.equal(srcJson, dataJson)
   assert.ok(tools.every((t, i) => t.rank === i + 1))
-  assert.equal(new Set(tools.map((t) => t.slug)).size, 209)
+  assert.equal(new Set(tools.map((t) => t.slug)).size, 213)
   assert.equal(/[\u2013\u2014]/.test(srcJson), false)
   assert.equal(tools.filter((t) => t.rankReason).every((t) => t.rank <= 30), true)
   assert.equal(tools[29].rank, 30)
@@ -74,7 +74,7 @@ test('2026-11-22 added tools have official urls, honest flags, and checked price
       assert.equal(t.priceChecked, undefined, slug)
     }
   }
-  assert.equal(tools.filter((t) => t.priceChecked && t.pricingUrl).length, 123)
+  assert.equal(tools.filter((t) => t.priceChecked && t.pricingUrl).length, 126)
 })
 
 test('2026-11-22 added tools sit in the intended bands, with neighbors in order', () => {
@@ -135,10 +135,10 @@ test('rank changelog leads with the 23-tool add, and new tool pages and counts w
     assert.ok(log.html.includes(`<a href="/tool/${slug}">${t.name}</a>, now #${t.rank} overall`), slug)
   }
   const llms = (await get('/llms.txt')).html
-  assert.ok(llms.includes('Tools: 209'))
+  assert.ok(llms.includes('Tools: 213'))
   const home = await get('/')
   assert.equal(home.status, 200)
-  assert.ok(home.html.includes('209') || home.html.replace(/<[^>]+>/g, ' ').includes('209'))
+  assert.ok(home.html.includes('213') || home.html.replace(/<[^>]+>/g, ' ').includes('213'))
   for (const slug of ['invideo', 'hyperframes', 'remotion', 'warp', 'jenni', 'researchrabbit']) {
     const page = await get(`/tool/${slug}`)
     assert.equal(page.status, 200, slug)

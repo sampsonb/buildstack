@@ -14,7 +14,7 @@ test('voice adds: Read AI, Rev, Cartesia are checked, honest and in voice', () =
     const t = by[s]
     assert.ok(t, s)
     assert.equal(t.category, 'voice')
-    assert.equal(t.priceChecked, '2026-11-23')
+    assert.ok(t.priceChecked >= '2026-11-23', s)
     assert.match(t.pricingUrl, /^https:\/\//)
     assert.equal(t.affiliate, false)
   }
@@ -66,7 +66,7 @@ test('giant vs giant pages have no price table', async () => {
 
 test('Granola note: older notes stored, Business billed monthly, Enterprise from $35', async () => {
   const t = by.granola
-  assert.equal(t.priceChecked, '2026-11-23')
+  assert.ok(t.priceChecked >= '2026-11-23')
   assert.equal(t.updated, '2026-11-23')
   assert.equal(t.priceFrom, 'Free')
   assert.equal(t.freeTier, true)
@@ -85,7 +85,7 @@ test('Granola note: older notes stored, Business billed monthly, Enterprise from
   assert.equal(html.includes('\u2014'), false)
 })
 
-test('price re-check of Nov 24 is reflected on the log', async () => {
+test('price re-check of Nov 25 is reflected on the log', async () => {
   const { html } = await get('/price-changes')
-  assert.ok(html.includes('Nov 24, 2026'))
+  assert.ok(html.includes('Nov 25, 2026'))
 })

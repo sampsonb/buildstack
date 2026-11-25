@@ -337,7 +337,7 @@ const PRICE_CHANGES = [
     source: 'https://api-docs.deepseek.com/quick_start/pricing/',
     archived: 'https://web.archive.org/web/20261116200941/https://api-docs.deepseek.com/quick_start/pricing/' },
 ]
-const PRICE_RECHECK = { date: '2026-11-24', pages: 104 }
+const PRICE_RECHECK = { date: '2026-11-25', pages: 92 }
 const PRICE_PATH = '/price-changes'
 
 // Price-filtered lists (traffic plan item 3, 2026-11-22). Generated from tools.json on every request:
@@ -498,6 +498,7 @@ function pageDate(path) {
     return (x && x.date) || UPDATED
   }
   if (path === '/methodology') return maxDate([SECTION_DATES['/methodology'], ...all.map((t) => t.updated)]) || UPDATED
+  if (path === '/rank-changelog') return maxDate([SECTION_DATES['/rank-changelog'], ...all.map((t) => t.added).filter((d) => d && d >= RANK_AUTO_FROM)]) || UPDATED
   if (path === PRICE_LIST_PATH || path.startsWith(`${PRICE_LIST_PATH}/`)) {
     const lists = path === PRICE_LIST_PATH ? PRICE_LISTS : PRICE_LISTS.filter((l) => priceListPath(l) === path)
     return maxDate([SECTION_DATES[PRICE_LIST_PATH], ...lists.flatMap((l) => priceListTools(l).slice(0, PRICE_LIST_MAX).flatMap((t) => [t.updated, t.priceChecked]))]) || UPDATED
@@ -1959,6 +1960,33 @@ const RANK_CHANGELOG = [
   },
 ]
 
+// Catalog adds after the last hand-written entry are generated from tools.json `added` dates
+// (2026-11-25), so the changelog cannot fall behind the tool count. Counts are from the current catalog.
+const RANK_AUTO_FROM = '2026-11-23'
+const NUM_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve']
+function autoAddEntries() {
+  const all = tools()
+  const dates = [...new Set(all.map((t) => t.added).filter((d) => d && d >= RANK_AUTO_FROM))].sort()
+  return dates.map((d) => {
+    const added = all.filter((t) => t.added === d).sort((a, b) => a.rank - b.rank)
+    const before = all.filter((t) => t.added && t.added < d).length
+    const after = before + added.length
+    const n = added.length
+    const word = NUM_WORDS[n] || String(n)
+    const top = added.filter((t) => t.rank <= 30)
+    return {
+      date: d,
+      title: `Catalog add: ${n} tool${n === 1 ? '' : 's'}`,
+      summary: `${word} tool${n === 1 ? ' was' : 's were'} added, taking the catalog from ${before} to ${after} tools. Each new tool was placed at one rank, and every tool below it moved down one place for each new tool above it. Existing tools kept their order relative to each other, and ${top.length ? `${top.map((t) => t.name).join(', ')} entered the top 30` : `none of the ${n} entered the top 30`}.`,
+      slugs: added.map((t) => t.slug),
+      notes: ['This entry is generated from the added dates in /tools.json. Ranks shown are current.'],
+    }
+  })
+}
+function rankChangelog() {
+  return [...RANK_CHANGELOG, ...autoAddEntries()].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+}
+
 app.get('/get-featured', (c) => c.redirect('/submit', 301))
 
 app.get('/submit', (c) => {
@@ -2047,7 +2075,7 @@ app.get('/money', (c) => {
 app.get('/rank-changelog', (c) => {
   const PD = pageDate('/rank-changelog')
   const description = `A dated log of every change that adds, moves, or removes a ranked tool on ${NAME}. ${tools().length} tools, updated ${fmtDate(PD)}.`
-  const entries = RANK_CHANGELOG.map((e) => {
+  const entries = rankChangelog().map((e) => {
     const items = (e.slugs || []).map((s) => bySlug(s)).filter(Boolean)
     const list = items.length ? `<ul class="clean">${items.map((t) => `<li><a href="/tool/${esc(t.slug)}">${esc(t.name)}</a>, now #${t.rank} overall in ${esc(CATEGORIES[t.category].label)}</li>`).join('')}</ul>` : ''
     const notes = (e.notes || []).map((n) => `<p class="muted">${esc(n)}</p>`).join('')

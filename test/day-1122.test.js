@@ -12,7 +12,7 @@ async function get(path) {
 const LISTS = ['/pricing/free-plan', '/pricing/up-to-10-a-month', '/pricing/up-to-20-a-month']
 
 test('2026-11-22 video coverage adds: VEED, Captions, D-ID with checked prices and honest flags', () => {
-  assert.equal(tools.length, 209)
+  assert.equal(tools.length, 213)
   assert.ok(tools.every((t, i) => t.rank === i + 1))
   for (const [slug, url, free] of [['veed', 'https://www.veed.io/pricing', true], ['captions', 'https://www.captions.ai/pricing', true], ['d-id', 'https://www.d-id.com/pricing/studio/', false]]) {
     const t = by[slug]
@@ -88,6 +88,6 @@ test('price lists are linked from sitemap, home, price log and llms.txt; re-chec
     assert.ok(log.includes(`href="${p}"`), p)
     assert.ok(llms.includes(`https://buildstack.tier11.com${p}`), p)
   }
-  assert.ok(log.includes('Nov 24, 2026 we compared the prices in our notes with 104 official pricing pages'))
-  assert.ok(llms.includes('Tools: 209'))
+  assert.ok(log.includes('Nov 25, 2026 we compared the prices in our notes with 92 official pricing pages'))
+  assert.ok(llms.includes('Tools: 213'))
 })
