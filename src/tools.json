@@ -1476,7 +1476,7 @@
   {
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-19",
+    "updated": "2026-11-25",
     "added": "2026-11-19",
     "slug": "recraft",
     "name": "Recraft",
@@ -1484,7 +1484,7 @@
     "category": "images",
     "freeTier": true,
     "priceFrom": "from $12/mo",
-    "priceChecked": "2026-11-19",
+    "priceChecked": "2026-11-25",
     "pricingUrl": "https://www.recraft.ai/docs/plans-and-billing/paid-plans",
     "tagline": "Image generator for design work that makes raster images and vector graphics",
     "description": "Recraft is an AI image generator aimed at designers and brands. Its current model, Recraft V4, is available on every plan including Free and makes both raster images and vector graphics, with a Pro version for higher quality. It is also available through an API.",
@@ -1493,7 +1493,7 @@
       "brand and marketing visuals",
       "design assets through an API"
     ],
-    "pricingNote": "Free plan; Basic is $12 a month ($10 billed annually) with 1,000 credits and Pro starts at $20 a month ($16 billed annually) with 2,000 credits; API pricing for Recraft V4 is $0.04 per standard raster image, $0.25 per Pro raster image, $0.08 per standard vector image, and $0.30 per Pro vector image",
+    "pricingNote": "Free plan; Basic is $12 a month ($10 billed annually) with 1,000 credits and Pro starts at $20 a month ($16 billed annually) with 2,000 credits; API pricing for Recraft V4 is $0.04 per raster image, $0.08 per vector image, $0.25 per Pro raster (2K) image, and $0.30 per Pro vector image",
     "strength": "Design-focused image generation that outputs vector graphics as well as raster images, on every plan including Free.",
     "watchOut": "Vector and Pro images cost far more per image in the API than standard raster images, and credits on the free and Basic plans run out quickly.",
     "rank": 57
@@ -2096,7 +2096,7 @@
     "rank": 82,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-06",
+    "updated": "2026-11-25",
     "added": "2026-10-27",
     "tagline": "AI avatar videos, video translation, and the HeyGen Voice model",
     "description": "HeyGen turns scripts into videos presented by stock or custom AI avatars, translates videos into 175+ languages and dialects, and includes a Video Agent and an AI Studio editor. On October 21, 2026 HeyGen opened HeyGen Voice Turbo, the fast mode of its in-house text-to-speech model, to developers through its API, free through November 30, 2026 on a best-effort basis. Turbo works with public voices and instant voice clones made from one recording. HeyGen says Turbo and the full HeyGen Voice model rank first and second on the Artificial Analysis text-to-speech leaderboard, which is based on blind listening tests.",
@@ -2105,13 +2105,13 @@
       "translating videos into other languages",
       "text to speech through an API"
     ],
-    "pricingNote": "Free plan with 3 watermarked videos a month; Creator $29 a month ($24 billed annually) with 600 credits; Pro from $49 a month; Business $149 a month plus $20 per extra seat; see heygen.com/pricing",
+    "pricingNote": "Free plan includes up to 3 videos a month, watermarked, up to 1 minute each; Creator is $29 a month ($24 a month billed annually) with 600 credits; Pro starts at $49 a month with 1,000 credits; Business is $149 a month with 1,500 credits, plus $20 per seat a month",
     "strength": "AI avatar videos, translation into 175+ languages, and a Voice model API.",
-    "watchOut": "The free plan is 3 watermarked videos a month; Voice Turbo is free through November 30, 2026 on a best-effort basis.",
+    "watchOut": "The free plan is up to 3 watermarked videos a month, up to 1 minute each; Voice Turbo is free through November 30, 2026 on a best-effort basis.",
     "freeTier": true,
     "priceFrom": "from $29/mo",
     "pricingUrl": "https://www.heygen.com/pricing",
-    "priceChecked": "2026-11-24"
+    "priceChecked": "2026-11-25"
   },
   {
     "slug": "synthesia",
@@ -2271,7 +2271,7 @@
     "rank": 89,
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-05",
+    "updated": "2026-11-25",
     "added": "2026-11-05",
     "tagline": "AI video editor that turns raw talking-head footage into finished clips and Shorts",
     "description": "OpusClip is an AI video editor for creators. OpusClip 4.0, launched November 2, 2026, goes beyond clipping finished videos: Auto-edit turns raw talking-head footage into a finished video with speech cleanup, captions, and B-roll; one edit can become highlight clips, a longer cut, or a lo-fi update; Recipes save your editing setup; Viral Hook and Motion Graphics cover openings and on-screen graphics; AI Producer lets you edit from ChatGPT or Claude. Clipping long videos into short social clips remains part of the product.",
@@ -2280,13 +2280,13 @@
       "auto-editing talking-head footage",
       "captions and social clips for YouTube"
     ],
-    "pricingNote": "Free plan with watermarked caption templates and limited exports; Starter $15 a month; Pro $29 a month; Business is custom; details on opus.pro/pricing",
+    "pricingNote": "Free plan is $0, with MP4 exports available for 3 days, up to 1080p on rendered clips, and a watermark; Starter is $15 a month; Pro is $29 a month; Business is custom",
     "strength": "Turns raw talking-head footage into finished videos, Shorts, and social clips, including edits from ChatGPT or Claude.",
-    "watchOut": "The free plan uses watermarked caption templates and has limited exports.",
+    "watchOut": "The free plan has a watermark, and MP4 exports are available for 3 days, up to 1080p on rendered clips.",
     "freeTier": true,
     "priceFrom": "from $15/mo",
     "pricingUrl": "https://www.opus.pro/pricing",
-    "priceChecked": "2026-11-24"
+    "priceChecked": "2026-11-25"
   },
   {
     "featured": false,
