@@ -3684,7 +3684,7 @@
     "freePlan": false,
     "priceFrom": "from $0.07/min",
     "pricingUrl": "https://www.retellai.com/pricing",
-    "priceChecked": "2026-11-25",
+    "priceChecked": "2026-11-26",
     "tagline": "Platform and API for AI phone assistants that answer and place calls",
     "description": "Retell AI is a platform for building, testing, and deploying AI phone assistants that answer and place calls. Contact center teams can use a no-code studio, and developers can extend agents with APIs and SDKs. Agents can navigate phone trees, take actions during a call, keep a brief on each contact, and transfer to a person with context. Pricing is pay as you go per minute, with $10 in starting credits and no annual contract.",
     "bestFor": [
@@ -3692,7 +3692,7 @@
       "contact center calls with a transfer to a person",
       "appointment booking and lead qualification by phone"
     ],
-    "pricingNote": "Pay as you go from $0.07 to $0.31 per minute for phone assistants, depending on the model, speech, and telephony; chat agents start at $0.002 per message; new accounts get $10 in credits; the first 20 concurrent calls are free; Enterprise is custom",
+    "pricingNote": "Pay as you go from $0.07 to $0.31 per minute for AI voice agents, depending on the model, speech, and telephony; chat agents start at $0.002 per message; new accounts get $10 in credits; pay-as-you-go workspaces include 20 concurrent voice calls by default (how many can run at once), and additional capacity is $8 per concurrent call a month; Enterprise is custom",
     "strength": "A full platform for inbound and outbound phone assistants, with a low per-minute start and no annual contract.",
     "watchOut": "The $10 starting credit is not a lasting free plan, and the per-minute rate varies with the model, voice, and telephony you choose.",
     "keywords": [
@@ -3822,7 +3822,7 @@
     "freePlan": false,
     "priceFrom": "from $120/mo",
     "pricingUrl": "https://www.chatbase.co/pricing",
-    "priceChecked": "2026-11-25",
+    "priceChecked": "2026-11-26",
     "tagline": "Customer support chatbots trained on your content, for chat, email, and more",
     "description": "Chatbase is a platform for customer support and sales chatbots that you train on your help center, website, or other sources. You set instructions, procedures, and guardrails, then publish the same agent on live chat, email, WhatsApp, Slack, and other channels. It can hand off to a person in a shared helpdesk. Paid plans are sold as message credits, with a 7-day trial and no lasting free plan.",
     "bestFor": [
@@ -3830,7 +3830,7 @@
       "support and sales chat on your website",
       "handing off hard questions to a person"
     ],
-    "pricingNote": "Basic is $120 a month billed yearly ($150 month to month), with a 7-day trial; Enterprise is custom; extra message credits auto-recharge at $40 per 1,000; no lasting free plan",
+    "pricingNote": "There is no free plan. Paid plans have a 7-day trial. Basic is $120 a month billed yearly ($150 month to month) with 4,000 message credits a month. Business is $400 a month billed yearly ($500 month to month) with 15,000 message credits a month. Enterprise is custom. Extra storage is $25 per 10 MB a month. Extra message credits auto-recharge at $40 per 1,000",
     "strength": "A support chatbot you train on your own content and publish across chat, email, and messaging, with no per-seat fee on the listed plans.",
     "watchOut": "There is no lasting free plan, only a 7-day trial, and usage is billed in message credits that can add up.",
     "keywords": [
