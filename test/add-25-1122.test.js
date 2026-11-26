@@ -39,10 +39,10 @@ const ADDED = [
 ]
 
 test('2026-11-22 catalog add: 23 tools, 201 total, unique contiguous ranks, src matches data', () => {
-  assert.equal(tools.length, 213)
+  assert.equal(tools.length, 216)
   assert.equal(srcJson, dataJson)
   assert.ok(tools.every((t, i) => t.rank === i + 1))
-  assert.equal(new Set(tools.map((t) => t.slug)).size, 213)
+  assert.equal(new Set(tools.map((t) => t.slug)).size, 216)
   assert.equal(/[\u2013\u2014]/.test(srcJson), false)
   assert.equal(tools.filter((t) => t.rankReason).every((t) => t.rank <= 30), true)
   assert.equal(tools[29].rank, 30)
@@ -74,7 +74,7 @@ test('2026-11-22 added tools have official urls, honest flags, and checked price
       assert.equal(t.priceChecked, undefined, slug)
     }
   }
-  assert.equal(tools.filter((t) => t.priceChecked && t.pricingUrl).length, 126)
+  assert.equal(tools.filter((t) => t.priceChecked && t.pricingUrl).length, 129)
 })
 
 test('2026-11-22 added tools sit in the intended bands, with neighbors in order', () => {
@@ -96,9 +96,9 @@ test('2026-11-22 added tools sit in the intended bands, with neighbors in order'
   assert.equal(by.hyperframes.rank, by.kino.rank + 1)
   assert.equal(by.remotion.rank, by.hyperframes.rank + 1)
   assert.equal(by.sora.rank, by.remotion.rank + 1)
-  assert.equal(by.warp.rank, by['gemini-4-neon'].rank - 2)
+  assert.ok(by.warp.rank < by['gemini-4-neon'].rank)
   assert.equal(by.aider.rank, by.warp.rank + 1)
-  assert.equal(by['gemini-4-neon'].rank, by.aider.rank + 1)
+  assert.equal(by['gemini-4-neon'].rank, by.aider.rank + 3)
   assert.equal(by.testsprite.rank, by.coderabbit.rank + 1)
   assert.equal(by.krisp.rank, by['wispr-flow'].rank + 1)
   assert.equal(by.tldv.rank, by.krisp.rank + 1)
@@ -135,10 +135,10 @@ test('rank changelog leads with the 23-tool add, and new tool pages and counts w
     assert.ok(log.html.includes(`<a href="/tool/${slug}">${t.name}</a>, now #${t.rank} overall`), slug)
   }
   const llms = (await get('/llms.txt')).html
-  assert.ok(llms.includes('Tools: 213'))
+  assert.ok(llms.includes('Tools: 216'))
   const home = await get('/')
   assert.equal(home.status, 200)
-  assert.ok(home.html.includes('213') || home.html.replace(/<[^>]+>/g, ' ').includes('213'))
+  assert.ok(home.html.includes('216') || home.html.replace(/<[^>]+>/g, ' ').includes('216'))
   for (const slug of ['invideo', 'hyperframes', 'remotion', 'warp', 'jenni', 'researchrabbit']) {
     const page = await get(`/tool/${slug}`)
     assert.equal(page.status, 200, slug)

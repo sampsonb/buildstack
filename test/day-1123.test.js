@@ -85,7 +85,7 @@ test('Granola note: older notes stored, Business billed monthly, Enterprise from
   assert.equal(html.includes('\u2014'), false)
 })
 
-test('price re-check of Nov 25 is reflected on the log', async () => {
+test('price re-check of Nov 26 is reflected on the log', async () => {
   const { html } = await get('/price-changes')
-  assert.ok(html.includes('Nov 25, 2026'))
+  assert.ok(html.includes('Nov 26, 2026'))
 })

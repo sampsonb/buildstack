@@ -72,8 +72,8 @@ test('confirmed price checks today have official links and dates', () => {
   assert.equal(by['wix-studio-two'].pricingUrl, 'https://www.wix.com/studio/plans')
   assert.ok(by['wix-studio-two'].priceChecked >= '2026-11-21')
   const checked = tools.filter((t) => t.priceChecked && t.pricingUrl).length
-  assert.equal(checked, 126)
-  assert.equal(tools.length, 213)
+  assert.equal(checked, 129)
+  assert.equal(tools.length, 216)
 })
 
 test('index.js and tools.json have no em or en dashes', () => {

@@ -12,9 +12,9 @@ async function get(path) {
 const title = (html) => decode(html.match(/<title>([^<]+)<\/title>/)[1])
 
 test('checked non-giant tool titles name the free plan answer and the starting price', async () => {
-  assert.equal(title((await get('/tool/wordtune')).html), 'Wordtune pricing: free plan, from $4.89/mo, checked Nov 24, 2026 | BuildStack')
-  assert.equal(title((await get('/tool/writesonic')).html), 'Writesonic pricing: no free plan, from $79/mo, checked Nov 24, 2026 | BuildStack')
-  assert.equal(title((await get('/tool/photoroom')).html), 'Photoroom pricing: free plan, from $7.50/mo, checked Nov 24, 2026 | BuildStack')
+  assert.equal(title((await get('/tool/wordtune')).html), 'Wordtune pricing: free plan, from $4.89/mo, checked Nov 26, 2026 | BuildStack')
+  assert.equal(title((await get('/tool/writesonic')).html), 'Writesonic pricing: no free plan, from $79/mo, checked Nov 26, 2026 | BuildStack')
+  assert.equal(title((await get('/tool/photoroom')).html), 'Photoroom pricing: free plan, from $7.50/mo, checked Nov 26, 2026 | BuildStack')
 })
 
 test('unchecked or vague prices keep the generic title; giants keep name and tagline', async () => {
@@ -38,7 +38,7 @@ test('every tool title is free of em and en dashes and ranks ignore affiliate', 
 test('Nov 24 adds: writing coverage and Claude Ship are checked and placed honestly', () => {
   for (const s of ['prowritingaid', 'languagetool', 'wordtune']) {
     assert.equal(by[s].category, 'writing', s)
-    assert.equal(by[s].priceChecked, '2026-11-24', s)
+    assert.ok(by[s].priceChecked >= '2026-11-24', s)
     assert.equal(by[s].affiliate, false, s)
     assert.ok(!by[s].bestFor.join(' ').toLowerCase().includes('writing'), s)
   }
@@ -56,7 +56,7 @@ test('maker replies applied: Photoroom free plan, Bolt details, Lovable confirme
   assert.match(by.photoroom.pricingNote, /7-day free trial comes with yearly Pro and Max only/)
   assert.match(by.bolt.pricingNote, /10M tokens/)
   assert.match(by.bolt.pricingNote, /\$30 per member a month/)
-  assert.equal(by.lovable.priceChecked, '2026-11-24')
+  assert.ok(by.lovable.priceChecked >= '2026-11-24')
 })
 
 test('search still finds the new tools by name', async () => {

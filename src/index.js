@@ -320,7 +320,7 @@ const SECTION_DATES = {
   '/vs': '2026-11-23',
   '/alternatives': '2026-11-19',
   '/price-changes': '2026-11-22',
-  '/pricing': '2026-11-22',
+  '/pricing': '2026-11-26',
 }
 
 // Public AI price-change log (SEO item 6, 2026-11-20). Only changes shown on the tool maker's own
@@ -337,7 +337,7 @@ const PRICE_CHANGES = [
     source: 'https://api-docs.deepseek.com/quick_start/pricing/',
     archived: 'https://web.archive.org/web/20261116200941/https://api-docs.deepseek.com/quick_start/pricing/' },
 ]
-const PRICE_RECHECK = { date: '2026-11-25', pages: 92 }
+const PRICE_RECHECK = { date: '2026-11-26', pages: 99 }
 const PRICE_PATH = '/price-changes'
 
 // Price-filtered lists (traffic plan item 3, 2026-11-22). Generated from tools.json on every request:
@@ -364,6 +364,25 @@ const PRICE_LISTS = [
     intro: 'AI tools on BuildStack whose paid plans start at $20 a month or less, from the listings whose prices we matched to the official pricing page.',
     test: (t) => { const p = monthlyFrom(t); return p !== null && p <= 20 } },
 ]
+// Free-plan lists by category (2026-11-26, traffic plan item 3): same rules as the lists above,
+// filtered to one category. Generated from tools.json, capped at PRICE_LIST_MAX.
+const CATEGORY_FREE_LISTS = [
+  ['coding', 'free-ai-coding-tools', 'AI coding tools with a free plan', 'AI coding tools'],
+  ['writing', 'free-ai-writing-tools', 'AI writing tools with a free plan', 'AI writing tools'],
+  ['images', 'free-ai-image-tools', 'AI image tools with a free plan', 'AI image tools'],
+  ['video', 'free-ai-video-tools', 'AI video tools with a free plan', 'AI video tools'],
+  ['agents', 'free-ai-agents', 'AI agents and automation tools with a free plan', 'AI agents and automation tools'],
+  ['research', 'free-ai-research-tools', 'AI research tools with a free plan', 'AI research tools'],
+  ['voice', 'free-ai-voice-tools', 'AI voice, transcription, and music tools with a free plan', 'AI voice, transcription, and music tools'],
+]
+for (const [category, slug, name, noun] of CATEGORY_FREE_LISTS) {
+  PRICE_LISTS.push({ slug, name, short: `${CATEGORIES[category].label}, free plan`, category,
+    intro: `${noun} on BuildStack that you can use on a free plan, from the listings whose prices we matched to the official pricing page.`,
+    test: (t) => t.category === category && hasFreePlan(t) })
+}
+function categoryFreeList(category) {
+  return PRICE_LISTS.find((l) => l.category === category) || null
+}
 function priceListPath(l) {
   return `${PRICE_LIST_PATH}/${l.slug}`
 }
@@ -1446,7 +1465,8 @@ app.get('/', (c) => {
       ${altPages().map((p) => `<a class="pill" href="${p.path}">${esc(p.t.name)} alternatives</a>`).join('\n      ')}
       <a class="pill" href="/alternatives">All alternatives pages</a>
       <a class="pill" href="/price-changes">AI price changes log</a>
-      ${PRICE_LISTS.map((l) => `<a class="pill" href="${priceListPath(l)}">${esc(l.name)}</a>`).join('\n      ')}
+      ${PRICE_LISTS.filter((l) => !l.category).map((l) => `<a class="pill" href="${priceListPath(l)}">${esc(l.name)}</a>`).join('\n      ')}
+      <a class="pill" href="${PRICE_LIST_PATH}#by-category">Free plans by category</a>
       <a class="pill" href="/best/ai-coding-agent-for-beginners">Best AI coding agents for beginners</a>
       <a class="pill" href="/best/ai-research-assistant">Best AI research assistants</a>
       <a class="pill" href="/best/free-ai-tools">Best free AI tools</a>
@@ -1591,7 +1611,7 @@ app.get('/category/:slug', (c) => {
     ${slug === 'writing' ? '<p class="muted">Want the full comparison? See the <a href="/best/ai-writing-tool">best AI writing tools, and the best for blog posts</a>.</p>' : ''}
     ${slug === 'research' ? '<p class="muted">Comparing research tools? See the <a href="/best/ai-research-assistant">best AI research assistants, including tools to summarize papers</a>.</p>' : ''}
     ${altPages().some((p) => p.t.category === slug) ? `<p class="muted">Switching tools? See the ${listNames(altPages().filter((p) => p.t.category === slug).map((p) => `<a href="${p.path}">${esc(p.t.name)} alternatives</a>`))}, or <a href="/alternatives">all alternatives pages</a>.</p>` : ''}
-    <p class="muted">On a budget? See the <a href="/best/free-ai-tools#${slug === 'agents' ? 'automation' : esc(slug)}">best free AI tools for ${esc(cat.label.toLowerCase())}</a>.</p>
+    <p class="muted">On a budget? See the <a href="/best/free-ai-tools#${slug === 'agents' ? 'automation' : esc(slug)}">best free AI tools for ${esc(cat.label.toLowerCase())}</a>${categoryFreeList(slug) ? `, or the <a href="${priceListPath(categoryFreeList(slug))}">${esc(categoryFreeList(slug).name)}, prices checked</a>` : ''}.</p>
   </section>
   <h2 class="cathead">All ${list.length} ${esc(cat.label.toLowerCase())} tools, ranked</h2>
   <div class="rows catrows">${list.map((t, i) => toolCardAt(t, i + 1, 'cat')).join('')}</div>`
@@ -2562,7 +2582,7 @@ app.get(PRICE_PATH, (c) => {
     <p>A dated record of price changes for the AI tools listed on ${NAME}. Each entry shows the old price, the new price, the day the change took effect, and a link to the tool maker's own pricing page. We only log a change when the official source shows it.</p>
     <p class="muted">Last updated: ${fmtDate(PD)} · ${list.length} ${list.length === 1 ? 'change' : 'changes'} logged · Last full re-check: ${fmtDate(PRICE_RECHECK.date)} · Edited by <a href="/about">Sampson Brueher</a></p>
     ${monthNav}
-    <p class="muted">Price lists: ${PRICE_LISTS.map((l) => `<a href="${priceListPath(l)}">${esc(l.name)}</a>`).join(' · ')}</p>
+    <p class="muted">Price lists: ${PRICE_LISTS.filter((l) => !l.category).map((l) => `<a href="${priceListPath(l)}">${esc(l.name)}</a>`).join(' · ')} · <a href="${PRICE_LIST_PATH}#by-category">Free plans by category</a></p>
   </section>
   <section class="section">
     <h2>Price changes, newest first</h2>
@@ -2640,13 +2660,15 @@ function priceListHow() {
 
 app.get(PRICE_LIST_PATH, (c) => {
   const PD = pageDate(PRICE_LIST_PATH)
-  const title = `AI tool price lists: free plans and plans from $10 or $20 a month or less, checked ${fmtDate(PD)} | ${NAME}`
-  const description = `Lists of AI tools by price, built from the ${NAME} listings whose prices matched the official pricing page: free plans, paid plans from $10 a month or less, and from $20 a month or less. Updated ${fmtDate(PD)}.`
-  const cards = PRICE_LISTS.map((l) => {
+  const title = `AI tool price lists: free plans by category, plans from $10 or $20 a month, checked ${fmtDate(PD)} | ${NAME}`
+  const description = `Lists of AI tools by price, built from the ${NAME} listings whose prices matched the official pricing page: free plans overall and by category, paid plans from $10 a month or less, and from $20 a month or less. Updated ${fmtDate(PD)}.`
+  const card = (l) => {
     const all = priceListTools(l)
     const names = all.slice(0, 3).map((t) => `${t.name} (#${t.rank})`)
     return `<li><a href="${priceListPath(l)}"><strong>${esc(l.name)}</strong></a>. ${all.length} checked ${all.length === 1 ? 'tool' : 'tools'}${names.length ? `, led by ${esc(listNames(names))}` : ''}.</li>`
-  }).join('')
+  }
+  const cards = PRICE_LISTS.filter((l) => !l.category).map(card).join('')
+  const catCards = PRICE_LISTS.filter((l) => l.category).map(card).join('')
   const body = `
   <nav class="crumb" aria-label="Breadcrumb"><a href="/">Home</a> › <span aria-current="page">AI tool price lists</span></nav>
   <section class="hero">
@@ -2657,6 +2679,12 @@ app.get(PRICE_LIST_PATH, (c) => {
   </section>
   <section class="panel prose">
     <ul class="clean">${cards}</ul>
+  </section>
+  <section class="section" id="by-category">
+    <h2>Free plans by category</h2>
+    <div class="panel prose">
+      <ul class="clean">${catCards}</ul>
+    </div>
   </section>
   ${priceListHow()}
   ${subscribePanel('price-lists')}`
