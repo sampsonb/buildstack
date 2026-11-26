@@ -3648,26 +3648,26 @@
   {
     "featured": false,
     "affiliate": false,
-    "updated": "2026-11-20",
+    "updated": "2026-11-25",
     "added": "2026-11-20",
     "slug": "vapi",
     "name": "Vapi",
     "url": "https://vapi.ai",
     "category": "agents",
-    "freeTier": true,
+    "freeTier": false,
     "priceFrom": "from $0.05/min",
     "pricingUrl": "https://vapi.ai/pricing",
     "priceChecked": "2026-11-25",
     "tagline": "Developer platform for building, deploying, and monitoring AI phone and voice agents",
-    "description": "Vapi is a platform for building voice agents that make and take phone calls. You configure the voice, conversation flow, telephony, and tools, then test and monitor calls on a hosted platform. Model, transcriber, and voice costs are passed through at the provider price, plus a Vapi hosting fee. You can start with free credits and pay per minute, or add a Core, Pro, or Premier success package.",
+    "description": "Vapi is a platform for building voice agents that make and take phone calls. You configure the voice, conversation flow, telephony, and tools, then test and monitor calls on a hosted platform. Model, transcriber, and voice costs are passed through at the provider price, plus a Vapi hosting fee. You start at $0 with $5 in free credits, then pay per minute, or add a Core, Pro, or Premier success package. There is no lasting free plan.",
     "bestFor": [
       "building AI phone agents",
       "voice agents that call tools during a live call",
       "telephony for inbound and outbound business calls"
     ],
-    "pricingNote": "Start free with $5 in credits, then $0.05 per minute Vapi hosting plus pass-through model, transcriber, and voice costs; Core is $29 a month; Pro is 10% of hosting fees with a $999 a month minimum; Premier is custom",
-    "strength": "A full developer platform for phone voice agents, with pass-through model costs and a free starting credit.",
-    "watchOut": "Per-minute costs add up from hosting plus whatever speech and LLM providers you choose, and production support packages are priced for teams.",
+    "pricingNote": "There is no lasting free plan. You start at $0 with $5 in free credits, then pay $0.05 a minute for Vapi hosting plus pass-through model, transcriber, and voice costs, and any telephony fees. Vapi says typical calls run about $0.08 to $0.13 a minute once you add the model, transcriber and voice, plus any phone carrier fees. Core is $29 a month; Pro is 10% of hosting fees with a $999 a month minimum; Premier is custom",
+    "strength": "A full developer platform for phone voice agents, with pass-through model costs and a $5 starting credit.",
+    "watchOut": "There is no lasting free plan, $0.05 a minute is only the Vapi hosting fee, and per-minute costs add up once you add speech, LLM, and telephony providers. Production support packages are priced for teams.",
     "rank": 145
   },
   {
