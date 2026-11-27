@@ -307,7 +307,7 @@ const SECTION_DATES = {
   '/best/ai-voice-generator': '2026-11-21',
   '/best/ai-coding-assistant': '2026-11-21',
   '/best/ai-agent-builder': '2026-11-21',
-  '/best/ai-tools-for-small-business': '2026-11-21',
+  '/best/ai-tools-for-small-business': '2026-11-27',
   '/best/ai-transcription-tool': '2026-11-21',
   '/best/ai-writing-tool': '2026-11-21',
   '/best/ai-image-generator': '2026-11-21',
@@ -4365,7 +4365,7 @@ function smbFaq(d) {
     { q: 'Is it safe to put customer data into AI tools?',
       a: 'It depends on the tool and the plan. Read each vendor\'s data policy and check whether your data can be used to train models, prefer business or team plans that add admin controls, and keep passwords, card numbers, and sensitive customer records out of prompts. This is not legal advice; check the privacy rules that apply to your business.' },
     { q: 'How much do AI tools cost for a small business?',
-      a: `Many start free. Paid plans on this page include ${r('grammarly')} Pro from $12 a month, ${r('zapier')} Professional from $19.99 a month billed annually, ${r('notion-ai')} on the Notion Business plan from $20 per member a month, ${r('lindy')} from $29.99 per active user a month, and ${r('jasper')} Pro at $59 per seat a month billed yearly. Prices change often, so check each official pricing page before you buy.` },
+      a: `Many start free. Paid plans on this page include ${r('grammarly')} Pro from $12 a month, ${r('zapier')} Professional from $19.99 a month billed annually, ${r('notion-ai')} on the Notion Business plan from $20 per member a month, ${r('lindy')} from $49.99 per user a month, and ${r('jasper')} Pro at $59 per seat a month billed yearly. Prices change often, so check each official pricing page before you buy.` },
   ]
 }
 

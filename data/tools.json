@@ -3065,13 +3065,13 @@
       "email and calendar automation",
       "no-code agent setups"
     ],
-    "pricingNote": "Start with $50 in free credits for 7 days, no card; then Team seats from $29.99 per active user a month with 3,000 credits each (more credits in steps, such as 5,000 for $49.99) in a shared pool; top-ups $10 per 1,000 credits; Enterprise is custom",
+    "pricingNote": "There is no lasting free plan. You start with $50 in free credits that last 7 days. Team starts at $49.99 per user a month with 5,000 credits each, in a shared pool. Top-ups are $10 per 1,000 credits. Enterprise is custom",
     "strength": "No-code AI agents for business workflows such as email and calendar automation.",
-    "watchOut": "The $50 in free credits lasts 7 days; after that, Team seats start at $29.99 per active user a month.",
+    "watchOut": "The $50 in free credits lasts 7 days; after that, Team starts at $49.99 per user a month with 5,000 credits.",
     "freeTier": false,
-    "priceFrom": "from $29.99/mo",
+    "priceFrom": "from $49.99/mo",
     "pricingUrl": "https://www.lindy.ai/pricing",
-    "priceChecked": "2026-11-26"
+    "priceChecked": "2026-11-27"
   },
   {
     "slug": "manus",
